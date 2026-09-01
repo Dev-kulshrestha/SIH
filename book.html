@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book a Safe Ride — WideEYE | Intelligent Passenger & Driver Safety</title>
+  <meta name="description" content="Book a safe ride with WideEYE. Real-time driver safety monitoring, transparent fares, and instant driver matching.">
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23050505' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3.2' fill='%23DFFF00'/></svg>">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="booking-page-body">
+
+  <!-- Minimalist Booking Header (Black Background + Lemon Yellow Brand Mark) -->
+  <header class="booking-nav-header">
+    <div class="container-fluid booking-header-inner">
+      <div class="booking-nav-left">
+        <a href="index.html" class="back-link" id="back-to-home">
+          <i data-lucide="arrow-left"></i>
+          <span>Back to Home</span>
+        </a>
+        <div class="nav-divider"></div>
+        <a href="index.html" class="brand-logo">
+          <div class="logo-mark">
+            <svg viewBox="0 0 28 28" fill="none" class="logo-icon">
+              <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="14" cy="14" r="4.2" fill="#DFFF00" class="logo-pupil-yellow"/>
+              <circle cx="15.5" cy="12.5" r="1.2" fill="#050505"/>
+            </svg>
+          </div>
+          <span class="brand-name">WideEYE</span>
+        </a>
+      </div>
+
+      <div class="booking-nav-right">
+        <div class="gps-status-pill">
+          <span class="gps-dot"></span>
+          <span>GPS Ready · Live Location</span>
+        </div>
+        <div class="safety-indicator-mini">
+          <i data-lucide="shield-check"></i>
+          <span>WideEYE Safety Ready</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN BOOKING CONTAINER -->
+  <main class="booking-layout-wrapper">
+    
+    <!-- LEFT PANEL: LOCATION INPUTS & RIDE SELECTION -->
+    <section class="booking-sidebar-panel" id="booking-sidebar">
+      
+      <!-- STATE 1: BOOKING CONTROLS (DEFAULT VIEW) -->
+      <div class="booking-view-state" id="state-select-ride">
+        
+        <!-- Header & Subtitle -->
+        <div class="booking-page-title-group">
+          <span class="booking-eyebrow">Intelligent Mobility & Safety</span>
+          <h1 class="booking-main-heading">Where are you going?</h1>
+          <p class="booking-sub-heading">Book your ride with intelligent safety built in.</p>
+        </div>
+
+        <!-- LOCATION INPUT CARD (WHITE CARD) -->
+        <div class="location-input-card">
+          <div class="location-inputs-wrapper">
+            
+            <!-- Pickup Input Group -->
+            <div class="loc-input-row" id="pickup-row">
+              <div class="loc-icon pickup-icon">
+                <i data-lucide="map-pin"></i>
+              </div>
+              <div class="loc-input-content">
+                <label for="input-pickup">📍 Pickup Location</label>
+                <input type="text" id="input-pickup" value="Current Location" placeholder="Enter pickup location" autocomplete="off">
+              </div>
+              <button class="btn-input-action" id="btn-use-curr-loc" title="Use current GPS location">
+                <i data-lucide="crosshair"></i>
+              </button>
+            </div>
+
+            <!-- Swap Line / Button -->
+            <div class="loc-swap-divider">
+              <div class="loc-connector-line"></div>
+              <button class="btn-swap-locations" id="btn-swap" title="Swap pickup and destination" aria-label="Swap locations">
+                <i data-lucide="arrow-up-down"></i>
+              </button>
+            </div>
+
+            <!-- Destination Input Group -->
+            <div class="loc-input-row" id="dest-row">
+              <div class="loc-icon dest-icon">
+                <i data-lucide="map-pin"></i>
+              </div>
+              <div class="loc-input-content">
+                <label for="input-dest">📍 Destination</label>
+                <input type="text" id="input-dest" value="City Centre" placeholder="Where do you want to go?" autocomplete="off">
+              </div>
+              <button class="btn-input-action" id="btn-search-dest" title="Search destination">
+                <i data-lucide="search"></i>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Quick Action: Use Current Location -->
+          <div class="loc-quick-bar">
+            <button class="btn-quick-gps" id="btn-quick-current-loc">
+              <i data-lucide="navigation"></i>
+              <span>Use Current Location</span>
+            </button>
+            <span class="loc-gps-acc">Accuracy: 5m</span>
+          </div>
+
+          <!-- LOCATION SUGGESTIONS DROPDOWN -->
+          <div class="location-suggestions-box" id="location-suggestions">
+            <div class="suggestions-header">
+              <i data-lucide="clock"></i>
+              <span>Recent Locations</span>
+            </div>
+            <div class="suggestions-list">
+              <div class="suggestion-item" data-address="Home (DLF Phase 2, Gurugram)">
+                <div class="sugg-icon"><i data-lucide="home"></i></div>
+                <div class="sugg-details">
+                  <span class="sugg-title">Home</span>
+                  <span class="sugg-sub">DLF Phase 2, Gurugram</span>
+                </div>
+              </div>
+              <div class="suggestion-item" data-address="College (IIT Delhi Campus Gate 1)">
+                <div class="sugg-icon"><i data-lucide="graduation-cap"></i></div>
+                <div class="sugg-details">
+                  <span class="sugg-title">College</span>
+                  <span class="sugg-sub">Hauz Khas, New Delhi</span>
+                </div>
+              </div>
+              <div class="suggestion-item" data-address="Railway Station (New Delhi Rly Station)">
+                <div class="sugg-icon"><i data-lucide="train"></i></div>
+                <div class="sugg-details">
+                  <span class="sugg-title">Railway Station</span>
+                  <span class="sugg-sub">Ajmeri Gate Side, New Delhi</span>
+                </div>
+              </div>
+              <div class="suggestion-item" data-address="Airport (IGI Terminal 3)">
+                <div class="sugg-icon"><i data-lucide="plane"></i></div>
+                <div class="sugg-details">
+                  <span class="sugg-title">Airport</span>
+                  <span class="sugg-sub">Terminal 3 Departures, New Delhi</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="suggestions-header" style="margin-top: 14px;">
+              <i data-lucide="compass"></i>
+              <span>Nearby</span>
+            </div>
+            <div class="suggestions-list">
+              <div class="suggestion-item" data-address="City Centre">
+                <div class="sugg-icon"><i data-lucide="map-pin"></i></div>
+                <div class="sugg-details">
+                  <span class="sugg-title">City Centre</span>
+                  <span class="sugg-sub">Sector 29, Leisure Valley</span>
+                </div>
+              </div>
+              <div class="suggestion-item" data-address="Bus Stand (Gurugram Central)">
+                <div class="sugg-icon"><i data-lucide="bus"></i></div>
+                <div class="sugg-details">
+                  <span class="sugg-title">Bus Stand</span>
+                  <span class="sugg-sub">Old Railway Road, Gurugram</span>
+                </div>
+              </div>
+              <div class="suggestion-item" data-address="Main Market (Galleria Market)">
+                <div class="sugg-icon"><i data-lucide="shopping-bag"></i></div>
+                <div class="sugg-details">
+                  <span class="sugg-title">Main Market</span>
+                  <span class="sugg-sub">Galleria Market, DLF Phase 4</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHOOSE YOUR RIDE -->
+        <div class="ride-selection-section">
+          <div class="ride-section-header">
+            <h2 class="ride-section-title">Choose your ride</h2>
+            <div class="nearby-badge">
+              <span class="pulse-indicator-yellow"></span>
+              <span>12 nearby drivers</span>
+            </div>
+          </div>
+
+          <div class="ride-cards-grid">
+            
+            <!-- BIKE CARD -->
+            <div class="ride-option-card" id="ride-bike" data-type="Bike" data-fare-min="50" data-fare-max="70" data-fare="58" data-eta="2 min" data-passengers="1 passenger" onclick="selectBookingRide('Bike')">
+              <div class="ride-card-left">
+                <div class="vehicle-icon-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="veh-icon">
+                    <circle cx="18.5" cy="17.5" r="3.5"/>
+                    <circle cx="5.5" cy="17.5" r="3.5"/>
+                    <circle cx="15" cy="5" r="1"/>
+                    <path d="M12 17.5V14l-3-3 4-3 2 3h2"/>
+                  </svg>
+                </div>
+                <div class="vehicle-info">
+                  <div class="veh-name-row">
+                    <h3 class="veh-name">Bike</h3>
+                    <span class="veh-capacity"><i data-lucide="user"></i> 1 passenger</span>
+                  </div>
+                  <div class="veh-eta-row">
+                    <span class="veh-eta">2 min</span>
+                    <span class="veh-dot">·</span>
+                    <span class="veh-speed">Fastest</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ride-card-right">
+                <div class="veh-price" id="bike-price-display">₹50–₹70</div>
+                <div class="veh-select-badge">
+                  <span class="badge-text">Select</span>
+                  <i data-lucide="check" class="check-icon"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- AUTO CARD (DEFAULT SELECTED: BLACK BG + LEMON YELLOW BORDER + WHITE TEXT) -->
+            <div class="ride-option-card active" id="ride-auto" data-type="Auto" data-fare-min="80" data-fare-max="110" data-fare="96" data-eta="3 min" data-passengers="3 passengers" onclick="selectBookingRide('Auto')">
+              <div class="ride-card-left">
+                <div class="vehicle-icon-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="veh-icon">
+                    <circle cx="6" cy="18" r="3"/>
+                    <circle cx="18" cy="18" r="3"/>
+                    <path d="M6 15h12"/>
+                    <path d="M9 6h6l3 6H6l3-6z"/>
+                    <path d="M6 12v3"/>
+                    <path d="M18 12v3"/>
+                  </svg>
+                </div>
+                <div class="vehicle-info">
+                  <div class="veh-name-row">
+                    <h3 class="veh-name">Auto</h3>
+                    <span class="veh-capacity"><i data-lucide="users"></i> 3 passengers</span>
+                    <span class="popular-tag">Popular</span>
+                  </div>
+                  <div class="veh-eta-row">
+                    <span class="veh-eta">3 min</span>
+                    <span class="veh-dot">·</span>
+                    <span class="veh-speed">Comfort</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ride-card-right">
+                <div class="veh-price" id="auto-price-display">₹80–₹110</div>
+                <div class="veh-select-badge">
+                  <span class="badge-text">AUTO ✓</span>
+                  <i data-lucide="check" class="check-icon"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- CAB CARD -->
+            <div class="ride-option-card" id="ride-cab" data-type="Cab" data-fare-min="150" data-fare-max="200" data-fare="178" data-eta="5 min" data-passengers="4 passengers" onclick="selectBookingRide('Cab')">
+              <div class="ride-card-left">
+                <div class="vehicle-icon-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="veh-icon">
+                    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 3c-.1.2-.1.4-.1.6v4.5c0 .6.4 1 1 1h2"/>
+                    <circle cx="7" cy="17" r="2"/>
+                    <path d="M9 17h6"/>
+                    <circle cx="17" cy="17" r="2"/>
+                  </svg>
+                </div>
+                <div class="vehicle-info">
+                  <div class="veh-name-row">
+                    <h3 class="veh-name">Cab</h3>
+                    <span class="veh-capacity"><i data-lucide="users"></i> 4 passengers</span>
+                  </div>
+                  <div class="veh-eta-row">
+                    <span class="veh-eta">5 min</span>
+                    <span class="veh-dot">·</span>
+                    <span class="veh-speed">AC Premier</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ride-card-right">
+                <div class="veh-price" id="cab-price-display">₹150–₹200</div>
+                <div class="veh-select-badge">
+                  <span class="badge-text">Select</span>
+                  <i data-lucide="check" class="check-icon"></i>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TRIP ESTIMATE (BLACK CARD WITH LEMON YELLOW ₹96) -->
+        <div class="fare-estimate-card">
+          <div class="estimate-header">
+            <span class="estimate-title">Trip Estimate</span>
+            <span class="estimate-arrival-tag" id="summary-driver-arrival">
+              <span class="pulse-indicator-yellow"></span> Driver arrival: <strong>3 min away</strong>
+            </span>
+          </div>
+
+          <div class="estimate-metrics-row">
+            <div class="est-metric">
+              <span class="est-lbl">Distance</span>
+              <span class="est-val">8.4 km</span>
+            </div>
+            <div class="est-divider"></div>
+            <div class="est-metric">
+              <span class="est-lbl">Estimated time</span>
+              <span class="est-val">24 min</span>
+            </div>
+            <div class="est-divider"></div>
+            <div class="est-metric">
+              <span class="est-lbl">Estimated fare</span>
+              <span class="est-val fare-highlight" id="summary-fare">₹96</span>
+            </div>
+          </div>
+
+          <p class="fare-disclaimer">Fare may vary based on traffic and ride conditions.</p>
+        </div>
+
+        <!-- WIDEEYE SAFETY PREVIEW CARD (BLACK BG + LEMON YELLOW BORDER) -->
+        <div class="safety-preview-card">
+          <div class="safety-preview-header">
+            <div class="safety-brand-group">
+              <svg viewBox="0 0 28 28" fill="none" class="safety-card-eye">
+                <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#FFFFFF" stroke-width="2.4"/>
+                <circle cx="14" cy="14" r="4" fill="#DFFF00"/>
+              </svg>
+              <span class="safety-preview-brand">WIDEEYE SAFETY</span>
+            </div>
+            <span class="safety-status-ready">
+              <span class="ready-dot"></span> READY
+            </span>
+          </div>
+
+          <div class="safety-grid-3col">
+            <div class="safety-col-item">
+              <span class="safety-col-lbl">Driver Safety</span>
+              <span class="safety-col-val lemon">READY</span>
+            </div>
+            <div class="safety-col-item">
+              <span class="safety-col-lbl">Camera Monitoring</span>
+              <span class="safety-col-val">Ready to activate</span>
+            </div>
+            <div class="safety-col-item">
+              <span class="safety-col-lbl">Risk Detection</span>
+              <span class="safety-col-val">Available in ride</span>
+            </div>
+          </div>
+
+          <ul class="safety-included-list">
+            <li><i data-lucide="check"></i> <span>Real-time monitoring</span></li>
+            <li><i data-lucide="check"></i> <span>Driver fatigue detection</span></li>
+            <li><i data-lucide="check"></i> <span>Emergency assistance</span></li>
+          </ul>
+        </div>
+
+        <!-- PRIMARY ACTION: BOOK SAFE RIDE (LEMON YELLOW BUTTON) -->
+        <div class="booking-cta-container">
+          <button class="btn btn-primary btn-full btn-book-hero" id="btn-book-ride">
+            <span>BOOK SAFE RIDE</span>
+            <i data-lucide="arrow-right" class="btn-icon"></i>
+          </button>
+          <p class="booking-cta-footnote">
+            <i data-lucide="shield-check"></i>
+            <span>WideEYE Safety Monitoring activates when your ride starts.</span>
+          </p>
+        </div>
+
+      </div>
+
+      <!-- STATE 2: DRIVER MATCHING SCREEN (BLACK BG + LEMON YELLOW RADAR SEARCH) -->
+      <div class="booking-view-state hidden" id="state-matching">
+        <div class="matching-container">
+          
+          <div class="radar-animation-box">
+            <div class="radar-circle circle-1"></div>
+            <div class="radar-circle circle-2"></div>
+            <div class="radar-circle circle-3"></div>
+            <div class="radar-center-icon">
+              <i data-lucide="eye" class="radar-eye"></i>
+            </div>
+          </div>
+
+          <h2 class="matching-heading">Finding your driver...</h2>
+          <p class="matching-subheading">Looking for the nearest available driver.</p>
+          
+          <div class="matching-badge">
+            <span class="matching-pulse"></span>
+            <span>Matching you with a safe ride</span>
+          </div>
+
+          <!-- Active Trip Specs -->
+          <div class="matching-trip-specs">
+            <div class="spec-row">
+              <span class="spec-label">Pickup:</span>
+              <span class="spec-value" id="match-pickup-val">Current Location</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Destination:</span>
+              <span class="spec-value" id="match-dest-val">City Centre</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Selected vehicle:</span>
+              <span class="spec-value highlight" id="match-veh-val">Auto</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Estimated fare:</span>
+              <span class="spec-value highlight" id="match-fare-val">₹96</span>
+            </div>
+          </div>
+
+          <button class="btn btn-secondary btn-full" id="btn-cancel-matching" style="margin-top: 24px; color: #FFFFFF; border-color: rgba(255,255,255,0.3);">
+            <span>Cancel Search</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- STATE 3: DRIVER MATCHED & RIDE CONFIRMED SCREEN (WHITE DRIVER CARD) -->
+      <div class="booking-view-state hidden" id="state-confirmed">
+        <div class="confirmed-container">
+          
+          <!-- Top Confirmation Banner -->
+          <div class="confirmed-header-card">
+            <div class="confirmed-badge">
+              <i data-lucide="check-circle-2"></i>
+              <span>Your ride is confirmed. ✓</span>
+            </div>
+            <h2 class="confirmed-heading">Rahul Kumar is on the way</h2>
+            <p class="confirmed-eta-text">Arriving in <strong id="confirmed-eta-countdown">3 min</strong></p>
+          </div>
+
+          <!-- Driver Profile Card (White Card) -->
+          <div class="driver-matched-card">
+            <div class="driver-card-top">
+              <div class="driver-avatar-wrapper">
+                <div class="driver-avatar-img">
+                  <i data-lucide="user"></i>
+                </div>
+                <span class="driver-online-dot"></span>
+              </div>
+
+              <div class="driver-identity">
+                <div class="driver-name-row">
+                  <h3 class="driver-name">Rahul Kumar</h3>
+                  <span class="driver-rating"><i data-lucide="star"></i> 4.8</span>
+                </div>
+                <div class="driver-vehicle-details">
+                  <span class="driver-ride-type" id="driver-veh-type">Auto</span>
+                  <span class="driver-veh-dot">·</span>
+                  <span class="driver-plate">UP32 AB 1234</span>
+                </div>
+                <div class="driver-verified-tag">
+                  <i data-lucide="shield-check"></i>
+                  <span>● Verified Driver</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="driver-action-buttons">
+              <button class="btn-driver-action" onclick="alert('Calling Rahul Kumar (+91 98765-XXXXX)...')">
+                <i data-lucide="phone"></i>
+                <span>Call</span>
+              </button>
+              <button class="btn-driver-action" onclick="alert('Opening chat message with Rahul Kumar...')">
+                <i data-lucide="message-square"></i>
+                <span>Message</span>
+              </button>
+              <button class="btn-driver-action" onclick="alert('Trip share link copied to clipboard!')">
+                <i data-lucide="share-2"></i>
+                <span>Share Trip</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- WideEYE Safety Active Notice -->
+          <div class="safety-trip-card">
+            <div class="safety-trip-head">
+              <div class="brand-monitor-tag">
+                <i data-lucide="eye"></i>
+                <span>WideEYE Safety Monitoring</span>
+              </div>
+              <span class="trip-safety-status">STANDBY</span>
+            </div>
+            <p class="safety-trip-desc">
+              Will activate automatically when the ride begins. Real-time fatigue & drowsiness AI will protect both driver and rider.
+            </p>
+          </div>
+
+          <!-- Trip Detail Summary Card -->
+          <div class="trip-confirmation-summary">
+            <div class="conf-row">
+              <span class="conf-lbl">Pickup</span>
+              <strong class="conf-val" id="conf-pickup">Current Location</strong>
+            </div>
+            <div class="conf-row">
+              <span class="conf-lbl">Destination</span>
+              <strong class="conf-val" id="conf-dest">City Centre</strong>
+            </div>
+            <div class="conf-row">
+              <span class="conf-lbl">Driver</span>
+              <strong class="conf-val">Rahul Kumar (★ 4.8)</strong>
+            </div>
+            <div class="conf-row">
+              <span class="conf-lbl">Vehicle</span>
+              <strong class="conf-val">UP32 AB 1234</strong>
+            </div>
+            <div class="conf-row">
+              <span class="conf-lbl">Fare</span>
+              <strong class="conf-val fare-price" id="conf-fare">₹96</strong>
+            </div>
+            <div class="conf-row">
+              <span class="conf-lbl">ETA</span>
+              <strong class="conf-val">3 min</strong>
+            </div>
+          </div>
+
+          <!-- Actions: Lemon Yellow Primary + Black Outline Secondary -->
+          <div class="confirmed-actions-grid">
+            <a href="track.html" class="btn btn-primary btn-full" id="btn-view-live-ride">
+              <i data-lucide="navigation"></i>
+              <span>View Live Ride</span>
+            </a>
+            <button class="btn btn-secondary btn-full" id="btn-cancel-ride" onclick="cancelBookedRide()">
+              <span>Cancel Ride</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT PANEL: INTERACTIVE REALISTIC MOCK MAP (LEMON YELLOW ROUTE & VEHICLES) -->
+    <section class="booking-map-panel" id="map-panel">
+      <div class="map-viewport-container">
+        
+        <!-- Map Canvas / SVG Layer -->
+        <div class="map-canvas-layer" id="map-canvas">
+          
+          <svg class="map-vector-svg" viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="map-grid-pattern" width="80" height="80" patternUnits="userSpaceOnUse">
+                <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
+              </pattern>
+              <!-- Road Shadow Filter -->
+              <filter id="road-shadow" x="-5%" y="-5%" width="110%" height="110%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.12"/>
+              </filter>
+            </defs>
+
+            <!-- Map Background Fill (White/Light Gray) -->
+            <rect width="1000" height="800" fill="#F4F4F4"/>
+            <rect width="1000" height="800" fill="url(#map-grid-pattern)"/>
+
+            <!-- Urban Blocks (Subtle Monochrome Grays) -->
+            <rect x="80" y="60" width="220" height="140" rx="8" fill="#EAEAEA"/>
+            <rect x="340" y="40" width="260" height="180" rx="8" fill="#E6E6E6"/>
+            <rect x="640" y="80" width="280" height="150" rx="8" fill="#EAEAEA"/>
+            <rect x="100" y="260" width="180" height="240" rx="8" fill="#E4E4E4"/>
+            <rect x="660" y="280" width="260" height="200" rx="8" fill="#EAEAEA"/>
+            <rect x="120" y="560" width="240" height="180" rx="8" fill="#E6E6E6"/>
+            <rect x="420" y="580" width="280" height="160" rx="8" fill="#E8E8E8"/>
+            <rect x="740" y="530" width="200" height="210" rx="8" fill="#E4E4E4"/>
+
+            <!-- BLACK ROADS -->
+            <!-- Main Highway 1 -->
+            <path d="M -50 220 L 1050 220" stroke="#050505" stroke-width="34" filter="url(#road-shadow)"/>
+            <path d="M -50 220 L 1050 220" stroke="#1A1A1A" stroke-width="30"/>
+            <path d="M -50 220 L 1050 220" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="16 12"/>
+
+            <!-- Main Express Expressway -->
+            <path d="M 320 -50 L 320 850" stroke="#050505" stroke-width="34" filter="url(#road-shadow)"/>
+            <path d="M 320 -50 L 320 850" stroke="#1A1A1A" stroke-width="30"/>
+            <path d="M 320 -50 L 320 850" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="16 12"/>
+
+            <!-- Secondary Ring Road -->
+            <path d="M -50 520 L 1050 520" stroke="#050505" stroke-width="26" filter="url(#road-shadow)"/>
+            <path d="M -50 520 L 1050 520" stroke="#1A1A1A" stroke-width="22"/>
+
+            <path d="M 620 -50 L 620 850" stroke="#050505" stroke-width="26" filter="url(#road-shadow)"/>
+            <path d="M 620 -50 L 620 850" stroke="#1A1A1A" stroke-width="22"/>
+
+            <!-- Diagonal Avenue -->
+            <path d="M 80 750 Q 320 400, 750 180 T 1050 100" stroke="#050505" stroke-width="30" filter="url(#road-shadow)"/>
+            <path d="M 80 750 Q 320 400, 750 180 T 1050 100" stroke="#1A1A1A" stroke-width="26"/>
+
+            <!-- LEMON YELLOW TRIP ROUTE LINE -->
+            <g id="map-route-group">
+              <!-- Route Glow -->
+              <path id="route-path-glow" d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="rgba(223, 255, 0, 0.4)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- Core Lemon Yellow Route Line -->
+              <path id="route-path-line" d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="#DFFF00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- Animated Direction Dots -->
+              <path d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="#050505" stroke-width="2.5" stroke-dasharray="8 12" stroke-linecap="round" class="animated-route-dots"/>
+            </g>
+
+            <!-- DARK GRAY ROAD LABELS -->
+            <text x="140" y="210" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700" fill="#AAAAAA" letter-spacing="1">CYBER CITY EXPRESSWAY</text>
+            <text x="335" y="120" font-family="'Space Grotesk', sans-serif" font-size="10" font-weight="700" fill="#888888" letter-spacing="0.5" transform="rotate(90 335 120)">MG ROAD ARTERIAL</text>
+            <text x="490" y="510" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700" fill="#AAAAAA" letter-spacing="1">GOLF COURSE EXTENSION</text>
+            <text x="760" y="195" font-family="'Space Grotesk', sans-serif" font-size="12" font-weight="800" fill="#050505">SECTOR 29 · CITY CENTRE</text>
+          </svg>
+
+          <!-- MAP OVERLAY PINS & MARKERS -->
+          
+          <!-- LEMON YELLOW PICKUP PIN (Current Location) -->
+          <div class="map-pin-marker pickup-pin" style="top: 57.5%; left: 24%;">
+            <div class="pin-pulse-ring"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-tooltip">
+              <span class="pin-tag">PICKUP</span>
+              <span class="pin-addr">Current Location</span>
+            </div>
+          </div>
+
+          <!-- BLACK DESTINATION PIN -->
+          <div class="map-pin-marker destination-pin" style="top: 27.5%; left: 78%;">
+            <div class="dest-pin-body">
+              <i data-lucide="map-pin"></i>
+            </div>
+            <div class="pin-tooltip dest-tt">
+              <span class="pin-tag">DESTINATION</span>
+              <span class="pin-addr">City Centre</span>
+            </div>
+          </div>
+
+          <!-- 12 LEMON YELLOW VEHICLE MARKERS -->
+          <div class="nearby-vehicles-layer" id="nearby-vehicles">
+            <!-- 1 -->
+            <div class="vehicle-marker auto-marker" style="top: 52%; left: 29%;" title="Nearby Auto · 2 min away">
+              <div class="v-icon"><i data-lucide="navigation"></i></div>
+            </div>
+            <!-- 2 -->
+            <div class="vehicle-marker bike-marker" style="top: 61%; left: 20%;" title="Nearby Bike · 2 min away">
+              <div class="v-icon"><i data-lucide="navigation"></i></div>
+            </div>
+            <!-- 3 (Driver Rahul Kumar - moves toward pickup on match) -->
+            <div class="vehicle-marker driver-active-marker" id="active-driver-marker" style="top: 48%; left: 34%;" title="Assigned Driver Rahul Kumar">
+              <div class="v-pulse-ring"></div>
+              <div class="v-icon active-driver-icon"><i data-lucide="car"></i></div>
+              <div class="driver-map-tag" id="driver-map-tag">Rahul is arriving · 3 min</div>
+            </div>
+            <!-- 4 -->
+            <div class="vehicle-marker cab-marker" style="top: 42%; left: 45%;" title="Nearby Cab · 4 min away">
+              <div class="v-icon"><i data-lucide="navigation"></i></div>
+            </div>
+            <!-- 5 -->
+            <div class="vehicle-marker auto-marker" style="top: 66%; left: 38%;">
+              <div class="v-icon"><i data-lucide="navigation"></i></div>
+            </div>
+            <!-- 6 -->
+            <div class="vehicle-marker bike-marker" style="top: 35%; left: 52%;">
+              <div class="v-icon"><i data-lucide="navigation"></i></div>
+            </div>
+            <!-- 7 -->
+            <div class="vehicle-marker cab-marker" style="top: 29%; left: 68%;">
+              <div class="v-icon"><i data-lucide="navigation"></i></div>
+            </div>
+            <!-- 8 -->
+            <div class="vehicle-marker auto-marker" style="top: 31%; left: 74%;">
+              <div class="v-icon"><i data-lucide="navigation"></i></div>
+            </div>
+            <!-- 9 -->
+            <div class="vehicle-marker bike-marker" style="top: 55%; left: 60%;">
+              <div class="v-icon"><i data-lucide="navigation"></i></div>
+            </div>
+            <!-- 10 -->
+            <div class="vehicle-marker cab-marker" style="top: 68%; left: 70%;">
+              <div class="v-icon"><i data-lucide="navigation"></i></div>
+            </div>
+            <!-- 11 -->
+            <div class="vehicle-marker auto-marker" style="top: 75%; left: 48%;">
+              <div class="v-icon"><i data-lucide="navigation"></i></div>
+            </div>
+            <!-- 12 -->
+            <div class="vehicle-marker bike-marker" style="top: 22%; left: 36%;">
+              <div class="v-icon"><i data-lucide="navigation"></i></div>
+            </div>
+          </div>
+
+          <!-- MAP HUD / FLOATING CONTROLS -->
+          <div class="map-hud-top-left">
+            <div class="map-hud-badge">
+              <span class="live-dot-lemon"></span>
+              <span>● LIVE LOCATION</span>
+            </div>
+            <div class="map-hud-badge" style="background: #050505; color: #DFFF00; border-color: rgba(223,255,0,0.4);">
+              <i data-lucide="users" style="width: 13px; height: 13px; margin-right: 4px;"></i>
+              <span>12 drivers nearby</span>
+            </div>
+            <div class="map-hud-eta-pill" id="map-eta-pill">
+              <i data-lucide="clock"></i>
+              <span>24 min route · 8.4 km</span>
+            </div>
+          </div>
+
+          <div class="map-hud-bottom-right">
+            <div class="map-zoom-controls">
+              <button class="btn-map-control" onclick="simulateMapZoom(1)" title="Zoom In"><i data-lucide="plus"></i></button>
+              <button class="btn-map-control" onclick="simulateMapZoom(-1)" title="Zoom Out"><i data-lucide="minus"></i></button>
+              <button class="btn-map-control" onclick="recenterMap()" title="Recenter to GPS"><i data-lucide="locate"></i></button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="booking.js"></script>
+</body>
+</html>

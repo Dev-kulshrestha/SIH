@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WideEYE — Ride Safe. Arrive Safe. | Intelligent Passenger & Driver Safety</title>
+  <meta name="description" content="WideEYE combines premium ride mobility with real-time driver safety monitoring and automated emergency assistance to make journeys safer.">
+  
+  <!-- Favicon / Minimal Icon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3.2' fill='%23000'/></svg>">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Announcement / Trust Ribbon -->
+  <div class="top-banner">
+    <div class="container banner-inner">
+      <div class="banner-badge">
+        <span class="pulse-dot"></span>
+        <span>SIH 2026 Prototype</span>
+      </div>
+      <p class="banner-text">Next-Generation Mobility with Camera-Based Driver Fatigue Monitoring & Emergency Triage</p>
+      <a href="#safety-preview" class="banner-link">Explore Safety Engine <i data-lucide="arrow-right"></i></a>
+    </div>
+  </div>
+
+  <!-- STICKY NAVBAR -->
+  <header class="site-header" id="navbar">
+    <div class="container header-container">
+      <a href="#" class="brand-logo" aria-label="WideEYE Home">
+        <div class="logo-mark">
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
+            <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="14" cy="14" r="4.2" fill="#DFFF00" class="logo-pupil-yellow"/>
+            <circle cx="15.5" cy="12.5" r="1.2" fill="#050505"/>
+          </svg>
+        </div>
+        <span class="brand-name">WideEYE</span>
+      </a>
+
+      <nav class="nav-links desktop-nav" aria-label="Main Navigation">
+        <a href="#hero" class="nav-link active">Home</a>
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+        <a href="#safety-preview" class="nav-link">Safety</a>
+        <a href="#benefits" class="nav-link">Benefits</a>
+        <a href="#why-wideeye" class="nav-link">Why WideEYE</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="book.html" class="btn btn-primary nav-cta" id="nav-book-btn">
+          <span>Book a Safe Ride</span>
+          <i data-lucide="arrow-up-right" class="btn-icon"></i>
+        </a>
+        <button class="mobile-menu-toggle" id="mobile-toggle" aria-label="Toggle menu" aria-expanded="false">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MOBILE NAVIGATION DRAWER -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <div class="mobile-drawer-content">
+      <div class="drawer-header">
+        <div class="brand-logo">
+          <div class="logo-mark">
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
+              <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="14" cy="14" r="4.2" fill="#DFFF00" class="logo-pupil-yellow"/>
+              <circle cx="15.5" cy="12.5" r="1.2" fill="#050505"/>
+            </svg>
+          </div>
+          <span class="brand-name">WideEYE</span>
+        </div>
+        <button class="drawer-close" id="drawer-close" aria-label="Close menu">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <nav class="mobile-nav-links">
+        <a href="#hero" class="mobile-nav-link">Home</a>
+        <a href="#how-it-works" class="mobile-nav-link">How It Works</a>
+        <a href="#safety-preview" class="mobile-nav-link">Safety Monitor</a>
+        <a href="#benefits" class="mobile-nav-link">Benefits</a>
+        <a href="#why-wideeye" class="mobile-nav-link">Why WideEYE</a>
+      </nav>
+      <div class="mobile-drawer-footer">
+        <a href="book.html" class="btn btn-primary btn-full">
+          <span>Book a Safe Ride</span>
+          <i data-lucide="arrow-up-right"></i>
+        </a>
+        <p class="drawer-tagline">Ride Safe. Arrive Safe.</p>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <div class="container hero-container">
+        <div class="hero-content">
+          <div class="hero-eyebrow">
+            <span class="hero-badge">Next-Gen Mobility</span>
+            <span class="hero-eyebrow-text">Intelligent Ride Safety Architecture</span>
+          </div>
+
+          <h1 class="hero-headline">
+            Ride Safe.<br>
+            <span class="text-gradient-subtle">Arrive Safe.</span>
+          </h1>
+
+          <p class="hero-subheadline">
+            Your ride, powered by intelligent safety.
+          </p>
+
+          <p class="hero-description">
+            WideEYE combines seamless on-demand ride mobility with real-time driver safety monitoring and automated risk prevention to make every journey genuinely safer.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="book.html" class="btn btn-primary btn-lg" id="hero-book-btn">
+              <span>Book a Safe Ride</span>
+              <i data-lucide="chevron-right" class="btn-icon"></i>
+            </a>
+            <a href="#safety-preview" class="btn btn-secondary btn-lg">
+              <span>Explore WideEYE Safety</span>
+              <i data-lucide="shield-check" class="btn-icon"></i>
+            </a>
+          </div>
+
+          <div class="hero-trust">
+            <div class="trust-pill">
+              <i data-lucide="check-circle-2" class="trust-icon"></i>
+              <span>Smart mobility. Intelligent safety.</span>
+            </div>
+            <div class="trust-metrics">
+              <div class="metric-item">
+                <span class="metric-val">0ms</span>
+                <span class="metric-lbl">Cloud Latency on Edge</span>
+              </div>
+              <div class="metric-divider"></div>
+              <div class="metric-item">
+                <span class="metric-val">100%</span>
+                <span class="metric-lbl">Camera-Only Sensor</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HERO VISUAL: UNIQUE ABSTRACT ARTISTIC WIDEEYE CAR -->
+        <div class="hero-visual" id="hero-artwork-wrap">
+          <div class="abstract-hero-canvas-frame">
+            
+            <!-- Abstract Editorial Vector Artwork -->
+            <svg class="abstract-car-svg" viewBox="0 0 900 620" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <!-- Minimal Grid Pattern -->
+                <pattern id="hero-dot-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <circle cx="20" cy="20" r="1.2" fill="rgba(255, 255, 255, 0.08)"/>
+                </pattern>
+
+                <!-- Soft Lemon Radial Glow -->
+                <radialGradient id="hero-lemon-glow" cx="45%" cy="50%" r="48%">
+                  <stop offset="0%" stop-color="rgba(223, 255, 0, 0.16)"/>
+                  <stop offset="50%" stop-color="rgba(223, 255, 0, 0.04)"/>
+                  <stop offset="100%" stop-color="rgba(5, 5, 5, 0)"/>
+                </radialGradient>
+
+                <!-- AI Vision Cone Gradient -->
+                <linearGradient id="vision-cone-grad" x1="0%" y1="50%" x2="100%" y2="50%">
+                  <stop offset="0%" stop-color="rgba(223, 255, 0, 0.35)"/>
+                  <stop offset="60%" stop-color="rgba(223, 255, 0, 0.08)"/>
+                  <stop offset="100%" stop-color="rgba(223, 255, 0, 0)"/>
+                </linearGradient>
+
+                <!-- Car Body Gradients -->
+                <linearGradient id="car-roof-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#FFFFFF"/>
+                  <stop offset="50%" stop-color="#CCCCCC"/>
+                  <stop offset="100%" stop-color="#555555"/>
+                </linearGradient>
+
+                <linearGradient id="car-body-grad" x1="0%" y1="0%" x2="100%" y2="40%">
+                  <stop offset="0%" stop-color="#1F1F1F"/>
+                  <stop offset="40%" stop-color="#141414"/>
+                  <stop offset="80%" stop-color="#0A0A0A"/>
+                  <stop offset="100%" stop-color="#050505"/>
+                </linearGradient>
+
+                <linearGradient id="glass-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(255, 255, 255, 0.22)"/>
+                  <stop offset="60%" stop-color="rgba(223, 255, 0, 0.08)"/>
+                  <stop offset="100%" stop-color="rgba(5, 5, 5, 0.8)"/>
+                </linearGradient>
+
+                <!-- Flowing Safety Path Glow Filter -->
+                <filter id="lemon-path-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#DFFF00" flood-opacity="0.6"/>
+                </filter>
+              </defs>
+
+              <!-- Deep Black Background Canvas & Dot Grid -->
+              <rect width="900" height="620" fill="#050505" rx="28"/>
+              <rect width="900" height="620" fill="url(#hero-dot-grid)" rx="28"/>
+              <circle cx="440" cy="330" r="320" fill="url(#hero-lemon-glow)"/>
+
+              <!-- ABSTRACT BACKGROUND GEOMETRIC ELEMENTS -->
+              <!-- Concentric Radar / Vision Arcs -->
+              <circle cx="210" cy="355" r="260" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1.2" stroke-dasharray="6 10"/>
+              <circle cx="210" cy="355" r="380" fill="none" stroke="rgba(223, 255, 0, 0.06)" stroke-width="1.5" stroke-dasharray="8 14"/>
+
+              <!-- Dynamic Floating Geometric Data Dots -->
+              <circle cx="160" cy="180" r="3" fill="#DFFF00" opacity="0.6" class="floating-data-dot d1"/>
+              <circle cx="720" cy="160" r="2.5" fill="#FFFFFF" opacity="0.4" class="floating-data-dot d2"/>
+              <circle cx="780" cy="420" r="3" fill="#DFFF00" opacity="0.5" class="floating-data-dot d3"/>
+              <circle cx="280" cy="500" r="2" fill="#FFFFFF" opacity="0.3" class="floating-data-dot d4"/>
+
+              <!-- FORWARD AI OPTICAL VISION CONE BEAM (Emanating from Eye Headlight) -->
+              <path d="M 210 355 L -40 240 L -40 450 Z" fill="url(#vision-cone-grad)" class="animated-vision-beam"/>
+
+              <!-- FLOWING LEMON YELLOW SAFETY STREAM (Encircling Car & Guiding Route) -->
+              <g class="safety-stream-group">
+                <!-- Under-car grounding stream line -->
+                <path d="M 940 450 C 720 450, 600 440, 480 435 C 320 430, 220 415, 80 415 C -20 415, -60 420, -100 420" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="2"/>
+                <!-- Upper flowing safety protection arc (Eye Contour Inspired) -->
+                <path d="M 880 340 C 740 210, 520 180, 360 210 C 240 235, 170 310, 110 370 C 50 430, -20 420, -80 420" fill="none" stroke="#DFFF00" stroke-width="3" stroke-linecap="round" filter="url(#lemon-path-glow)" class="animated-safety-line"/>
+                <path d="M 880 340 C 740 210, 520 180, 360 210 C 240 235, 170 310, 110 370 C 50 430, -20 420, -80 420" fill="none" stroke="#050505" stroke-width="1.5" stroke-dasharray="6 14" class="animated-safety-dots"/>
+              </g>
+
+              <!-- ABSTRACT CAR SILHOUETTE GROUP -->
+              <g class="abstract-car-body-group" id="abstract-car">
+                
+                <!-- Aerodynamic Shadow Floor -->
+                <ellipse cx="460" cy="430" rx="320" ry="24" fill="rgba(0, 0, 0, 0.85)"/>
+                <ellipse cx="430" cy="432" rx="260" ry="12" fill="rgba(223, 255, 0, 0.12)"/>
+
+                <!-- Main Lower Sculpted Body Shape -->
+                <path d="M 170 375 C 190 350, 240 340, 310 340 L 660 340 C 740 340, 790 360, 810 395 C 815 405, 810 418, 790 422 L 200 422 C 175 422, 160 405, 170 375 Z" fill="url(#car-body-grad)" stroke="rgba(255, 255, 255, 0.18)" stroke-width="1.8"/>
+
+                <!-- Sleek Minimalist Side Character Line (White/Gray Accent) -->
+                <path d="M 185 378 C 260 360, 480 355, 785 398" fill="none" stroke="rgba(255, 255, 255, 0.4)" stroke-width="1.6" stroke-linecap="round"/>
+
+                <!-- Flowing Greenhouse Canopy / Upper Eyelid Arch -->
+                <path d="M 290 340 C 330 260, 420 220, 520 220 C 620 220, 690 270, 725 340 Z" fill="url(#glass-grad)" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1.5"/>
+
+                <!-- Sleek Fastback Roofline Contour (Crisp White to Silver) -->
+                <path d="M 230 350 C 300 270, 410 215, 530 215 C 630 215, 715 265, 765 355" fill="none" stroke="url(#car-roof-grad)" stroke-width="3.5" stroke-linecap="round"/>
+
+                <!-- A-Pillar & B-Pillar Structural Lines -->
+                <path d="M 390 338 L 470 222" stroke="rgba(255, 255, 255, 0.35)" stroke-width="1.8"/>
+                <path d="M 550 218 L 570 338" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1.5"/>
+
+                <!-- SUBTLE EYE-MOTIF HEADLIGHT (Refined feline/digital eye contour with Lemon Yellow pupil) -->
+                <g class="eye-headlight-group">
+                  <!-- Eye Outer Contour -->
+                  <path d="M 160 368 C 185 350, 230 355, 255 365 C 230 375, 185 380, 160 368 Z" fill="#0A0A0A" stroke="#FFFFFF" stroke-width="2"/>
+                  <!-- Upper Eyelid Glow Line in Lemon Yellow -->
+                  <path d="M 162 366 C 188 350, 232 355, 253 364" fill="none" stroke="#DFFF00" stroke-width="2.5" stroke-linecap="round" filter="url(#lemon-path-glow)"/>
+                  <!-- Core Eye Pupil Projector Light (Lemon Yellow #DFFF00) -->
+                  <circle cx="205" cy="365" r="5.5" fill="#DFFF00" filter="url(#lemon-path-glow)"/>
+                  <circle cx="205" cy="365" r="2.2" fill="#050505"/>
+                  <!-- Horizontal Laser DRL Blade -->
+                  <line x1="165" y1="368" x2="245" y2="368" stroke="#FFFFFF" stroke-width="1.2" opacity="0.8"/>
+                </g>
+
+                <!-- TAIL LIGHT (Minimalist Horizontal White/Red Accent) -->
+                <path d="M 770 375 C 790 380, 805 388, 810 395" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+
+                <!-- MINIMALIST ABSTRACT WHEELS (Concentric Architectural Rings) -->
+                <!-- Front Wheel -->
+                <g class="abstract-wheel front-wheel" transform="translate(285, 420)">
+                  <circle cx="0" cy="0" r="52" fill="#080808" stroke="#222222" stroke-width="4"/>
+                  <circle cx="0" cy="0" r="42" fill="none" stroke="rgba(255, 255, 255, 0.35)" stroke-width="1.8"/>
+                  <circle cx="0" cy="0" r="26" fill="#111111" stroke="#333333" stroke-width="1.5"/>
+                  <!-- Lemon Yellow Center Hub Accent -->
+                  <circle cx="0" cy="0" r="8" fill="#DFFF00"/>
+                  <circle cx="0" cy="0" r="3" fill="#050505"/>
+                  <!-- Minimal Spokes -->
+                  <line x1="-38" y1="0" x2="38" y2="0" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1.5"/>
+                  <line x1="0" y1="-38" x2="0" y2="38" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1.5"/>
+                </g>
+
+                <!-- Rear Wheel -->
+                <g class="abstract-wheel rear-wheel" transform="translate(685, 420)">
+                  <circle cx="0" cy="0" r="52" fill="#080808" stroke="#222222" stroke-width="4"/>
+                  <circle cx="0" cy="0" r="42" fill="none" stroke="rgba(255, 255, 255, 0.35)" stroke-width="1.8"/>
+                  <circle cx="0" cy="0" r="26" fill="#111111" stroke="#333333" stroke-width="1.5"/>
+                  <!-- Lemon Yellow Center Hub Accent -->
+                  <circle cx="0" cy="0" r="8" fill="#DFFF00"/>
+                  <circle cx="0" cy="0" r="3" fill="#050505"/>
+                  <!-- Minimal Spokes -->
+                  <line x1="-38" y1="0" x2="38" y2="0" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1.5"/>
+                  <line x1="0" y1="-38" x2="0" y2="38" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1.5"/>
+                </g>
+
+                <!-- Aerodynamic Side Skirt Line -->
+                <line x1="345" y1="424" x2="625" y2="424" stroke="rgba(223, 255, 0, 0.5)" stroke-width="1.8"/>
+              </g>
+            </svg>
+
+            <!-- 4 MINIMAL FLOATING UI BADGES -->
+            
+            <!-- 1. TOP LEFT: WIDEEYE SAFETY ● ACTIVE -->
+            <div class="abstract-ui-card ui-card-top-left">
+              <div class="ui-card-indicator">
+                <span class="pulse-lemon-dot"></span>
+                <span class="ui-card-label">WIDEEYE SAFETY</span>
+              </div>
+              <span class="ui-card-status-lemon">● ACTIVE</span>
+            </div>
+
+            <!-- 2. TOP RIGHT: Driver Risk 18% -->
+            <div class="abstract-ui-card ui-card-top-right">
+              <div class="ui-card-metric-group">
+                <span class="ui-card-muted-lbl">Driver Risk</span>
+                <span class="ui-card-large-val lemon">18%</span>
+              </div>
+              <span class="ui-card-tag-safe">SAFE</span>
+            </div>
+
+            <!-- 3. BOTTOM LEFT: ETA 3 min -->
+            <div class="abstract-ui-card ui-card-bottom-left">
+              <div class="ui-card-icon-circle"><i data-lucide="clock"></i></div>
+              <div class="ui-card-metric-group">
+                <span class="ui-card-muted-lbl">Driver ETA</span>
+                <strong class="ui-card-large-val lemon">3 min</strong>
+              </div>
+            </div>
+
+            <!-- 4. BOTTOM RIGHT: AI Monitoring READY -->
+            <div class="abstract-ui-card ui-card-bottom-right">
+              <div class="ui-card-icon-circle lemon"><i data-lucide="eye"></i></div>
+              <div class="ui-card-metric-group">
+                <span class="ui-card-muted-lbl">AI Monitoring</span>
+                <strong class="ui-card-val-white">READY</strong>
+              </div>
+              <span class="ui-card-chk-lemon">✓</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROBLEM -> SOLUTION SECTION -->
+    <section class="section problem-solution-section" id="problem-solution">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-kicker">The Reality & The Innovation</span>
+          <h2 class="section-heading">Every ride should feel safe.</h2>
+          <p class="section-subheading">
+            Current ride-sharing platforms focus almost entirely on GPS tracking, leaving driver fatigue and in-cabin safety unaddressed.
+          </p>
+        </div>
+
+        <div class="problem-solution-grid">
+          <!-- LEFT CARD: THE PROBLEM -->
+          <div class="card problem-card">
+            <div class="card-badge problem-badge">
+              <i data-lucide="alert-triangle"></i>
+              <span>The Problem</span>
+            </div>
+            <h3 class="card-title">Traditional rides leave critical blind spots.</h3>
+            <p class="card-desc">
+              Long working hours and late-night trips introduce unseen vulnerabilities for passengers and drivers alike.
+            </p>
+
+            <ul class="problem-list">
+              <li class="problem-item">
+                <div class="list-bullet bullet-problem"><i data-lucide="x"></i></div>
+                <div>
+                  <strong>Driver fatigue increases accident risk:</strong> Sleep deprivation slows reaction time just like intoxication.
+                </div>
+              </li>
+              <li class="problem-item">
+                <div class="list-bullet bullet-problem"><i data-lucide="x"></i></div>
+                <div>
+                  <strong>Drivers don't realize drowsiness:</strong> Micro-sleeps happen in split seconds without conscious awareness.
+                </div>
+              </li>
+              <li class="problem-item">
+                <div class="list-bullet bullet-problem"><i data-lucide="x"></i></div>
+                <div>
+                  <strong>Hardware barriers limit adoption:</strong> Expensive dedicated automotive sensors are cost-prohibitive for fleets.
+                </div>
+              </li>
+              <li class="problem-item">
+                <div class="list-bullet bullet-problem"><i data-lucide="x"></i></div>
+                <div>
+                  <strong>Detection without response fails:</strong> Simple warnings mean nothing without connected emergency support.
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- RIGHT CARD: THE SOLUTION -->
+          <div class="card solution-card">
+            <div class="card-badge solution-badge">
+              <i data-lucide="shield-check"></i>
+              <span>The WideEYE Solution</span>
+            </div>
+            <h3 class="card-title">Intelligent vision meets instant intervention.</h3>
+            <p class="card-desc">
+              WideEYE transforms any smartphone or vehicle camera into an intelligent active safety copilot.
+            </p>
+
+            <ul class="solution-list">
+              <li class="solution-item">
+                <div class="list-bullet bullet-solution"><i data-lucide="check"></i></div>
+                <div>
+                  <strong>Camera-based driver monitoring:</strong> Uses existing standard optical devices without costly hardware.
+                </div>
+              </li>
+              <li class="solution-item">
+                <div class="list-bullet bullet-solution"><i data-lucide="check"></i></div>
+                <div>
+                  <strong>Real-time drowsiness detection:</strong> Computes eye-closure and yawn metrics to detect fatigue instantly.
+                </div>
+              </li>
+              <li class="solution-item">
+                <div class="list-bullet bullet-solution"><i data-lucide="check"></i></div>
+                <div>
+                  <strong>Intelligent safety alerts:</strong> Escalating audio and haptic cues help drivers regain alertness promptly.
+                </div>
+              </li>
+              <li class="solution-item">
+                <div class="list-bullet bullet-solution"><i data-lucide="check"></i></div>
+                <div>
+                  <strong>Automated emergency assistance:</strong> Triggers emergency SOS triage when critical risk is detected.
+                </div>
+              </li>
+            </ul>
+
+            <!-- VISUAL TRANSITION STEPPER -->
+            <div class="transition-stepper">
+              <div class="stepper-label">Integrated Safety Pipeline</div>
+              <div class="stepper-flow">
+                <div class="step-node">
+                  <span class="step-circle">1</span>
+                  <span class="step-text">Risk</span>
+                </div>
+                <div class="step-arrow"><i data-lucide="arrow-right"></i></div>
+                <div class="step-node">
+                  <span class="step-circle">2</span>
+                  <span class="step-text">Detection</span>
+                </div>
+                <div class="step-arrow"><i data-lucide="arrow-right"></i></div>
+                <div class="step-node">
+                  <span class="step-circle">3</span>
+                  <span class="step-text">Alert</span>
+                </div>
+                <div class="step-arrow"><i data-lucide="arrow-right"></i></div>
+                <div class="step-node highlight">
+                  <span class="step-circle">4</span>
+                  <span class="step-text">Help</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WIDEEYE SAFETY FEATURE HIGHLIGHT (CORE SHOWCASE) -->
+    <section class="section safety-feature-section" id="safety-preview">
+      <div class="container">
+        <div class="safety-feature-wrapper">
+          
+          <!-- LEFT: DESCRIPTION & CHECKLIST -->
+          <div class="safety-feature-info">
+            <div class="section-kicker">Core Safety Architecture</div>
+            <h2 class="section-heading">Safety is built into every ride.</h2>
+            <p class="safety-lead">
+              WideEYE continuously monitors driver behavior through a camera-based system and can identify signs of fatigue in real time.
+            </p>
+
+            <div class="safety-feature-points">
+              <div class="feature-point">
+                <div class="point-icon"><i data-lucide="check"></i></div>
+                <div class="point-content">
+                  <h4>Real-time monitoring</h4>
+                  <p>Continuous edge-computed analysis of facial landmarks, blink rates, and micro-naps.</p>
+                </div>
+              </div>
+
+              <div class="feature-point">
+                <div class="point-icon"><i data-lucide="check"></i></div>
+                <div class="point-content">
+                  <h4>AI-powered risk scoring</h4>
+                  <p>Dynamic 0–100% drowsiness risk index calculating cumulative fatigue trends.</p>
+                </div>
+              </div>
+
+              <div class="feature-point">
+                <div class="point-icon"><i data-lucide="check"></i></div>
+                <div class="point-content">
+                  <h4>Smart alerts</h4>
+                  <p>Multi-stage adaptive sound alarms and vibration alerts to re-engage driver focus.</p>
+                </div>
+              </div>
+
+              <div class="feature-point">
+                <div class="point-icon"><i data-lucide="check"></i></div>
+                <div class="point-content">
+                  <h4>Emergency SOS</h4>
+                  <p>Automatic emergency contact notification and dispatch triggers during severe anomalies.</p>
+                </div>
+              </div>
+
+              <div class="feature-point">
+                <div class="point-icon"><i data-lucide="check"></i></div>
+                <div class="point-content">
+                  <h4>Passenger safety</h4>
+                  <p>Transparent live safety status visible to the rider for total peace of mind.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="safety-cta-row">
+              <a href="#how-it-works" class="btn btn-primary">
+                <span>See How WideEYE Works</span>
+                <i data-lucide="arrow-right" class="btn-icon"></i>
+              </a>
+              <a href="book.html" class="btn btn-secondary">
+                <span>Open Booking System</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- RIGHT: SAFETY MONITOR CARD MOCKUP (REQUIRED DISPLAY) -->
+          <div class="safety-monitor-container">
+            <div class="monitor-card-wrapper">
+              
+              <!-- TOP MONITOR HEADER BAR -->
+              <div class="monitor-terminal-bar">
+                <div class="terminal-dots">
+                  <span></span><span></span><span></span>
+                </div>
+                <div class="terminal-title">WideEYE Safety Engine v1.0</div>
+                <div class="terminal-status-tag">
+                  <span class="pulse-indicator"></span>
+                  <span>LIVE SENSOR</span>
+                </div>
+              </div>
+
+              <!-- MAIN MONITOR CARD -->
+              <div class="monitor-card" id="safety-monitor-card">
+                
+                <!-- Monitor Header -->
+                <div class="monitor-header">
+                  <div class="brand-monitor">
+                    <span class="monitor-brand-name">WIDEEYE SAFETY</span>
+                    <span class="monitor-status-pill status-active">
+                      <span class="indicator-dot"></span> ACTIVE
+                    </span>
+                  </div>
+                  <div class="monitor-trip-id">TRIP #WE-8842</div>
+                </div>
+
+                <!-- Driver Cockpit Feed Preview -->
+                <div class="monitor-visual-feed">
+                  <img src="assets/driver-cockpit.jpg" alt="Driver cockpit camera view" class="monitor-bg-feed">
+                  <div class="feed-hud-overlay">
+                    <div class="face-mesh-box">
+                      <div class="corner-tl"></div>
+                      <div class="corner-tr"></div>
+                      <div class="corner-bl"></div>
+                      <div class="corner-br"></div>
+                      <div class="tracking-tag">DRIVER_EYE_TRACK [OK]</div>
+                    </div>
+                    <div class="feed-fps">30 FPS · 720p</div>
+                  </div>
+                </div>
+
+                <!-- Core Metrics Grid -->
+                <div class="monitor-metrics-grid">
+                  <div class="metric-card">
+                    <span class="m-label">Driver Status:</span>
+                    <span class="m-value status-safe" id="monitor-driver-status">SAFE</span>
+                    <span class="m-sub">Gaze: Centered & Alert</span>
+                  </div>
+
+                  <div class="metric-card">
+                    <span class="m-label">Drowsiness Score:</span>
+                    <div class="drowsiness-score-display">
+                      <span class="m-value score-val" id="monitor-score-val">18%</span>
+                      <span class="score-level-badge badge-normal">LOW RISK</span>
+                    </div>
+                    <div class="meter-bar">
+                      <div class="meter-fill" id="monitor-meter-fill" style="width: 18%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="metric-card">
+                    <span class="m-label">Camera:</span>
+                    <span class="m-value" id="monitor-camera-status">
+                      <i data-lucide="video" class="inline-icon"></i> Connected
+                    </span>
+                    <span class="m-sub">Optical Sensor Latency: 12ms</span>
+                  </div>
+
+                  <div class="metric-card">
+                    <span class="m-label">Monitoring:</span>
+                    <span class="m-value" id="monitor-monitoring-status">
+                      <i data-lucide="activity" class="inline-icon"></i> Real-time
+                    </span>
+                    <span class="m-sub">AI Vision Engine: Running</span>
+                  </div>
+                </div>
+
+                <!-- Interactive Preview State Switcher (To demo Safe vs Warning for SIH Judges) -->
+                <div class="monitor-demo-controls">
+                  <span class="demo-ctrl-title">Interactive Simulator Mode:</span>
+                  <div class="demo-btn-group">
+                    <button class="demo-toggle-btn active" id="btn-state-safe" onclick="switchMonitorState('safe')">
+                      <span class="dot-sm green"></span> Normal / Safe (18%)
+                    </button>
+                    <button class="demo-toggle-btn" id="btn-state-warn" onclick="switchMonitorState('fatigue')">
+                      <span class="dot-sm red"></span> Fatigue Detected (82%)
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Footer Assurance -->
+                <div class="monitor-footer-note">
+                  <i data-lucide="shield"></i>
+                  <span>End-to-end telemetry encrypted. No video stored on servers.</span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS (4 STEPS) -->
+    <section class="section how-it-works-section" id="how-it-works">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-kicker">Simple & Seamless</span>
+          <h2 class="section-heading">How WideEYE Works</h2>
+          <p class="section-subheading">
+            From pickup to drop-off, intelligent safety works silently in the background without complicating your ride.
+          </p>
+        </div>
+
+        <div class="steps-container">
+          <div class="steps-flow-line" aria-hidden="true"></div>
+
+          <div class="steps-grid">
+            <!-- STEP 01 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-number">01</span>
+                <div class="step-icon-wrap">
+                  <i data-lucide="map-pin"></i>
+                </div>
+              </div>
+              <h3 class="step-title">Book Your Ride</h3>
+              <p class="step-desc">
+                Choose your destination and ride type. WideEYE safety features are automatically activated for every trip.
+              </p>
+              <div class="step-tag">Instant Booking</div>
+            </div>
+
+            <!-- STEP 02 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-number">02</span>
+                <div class="step-icon-wrap">
+                  <i data-lucide="car"></i>
+                </div>
+              </div>
+              <h3 class="step-title">Start the Journey</h3>
+              <p class="step-desc">
+                Your driver and trip details appear in the app. Camera sensor connects securely before departure.
+              </p>
+              <div class="step-tag">Verified Trip</div>
+            </div>
+
+            <!-- STEP 03 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-number">03</span>
+                <div class="step-icon-wrap">
+                  <i data-lucide="eye"></i>
+                </div>
+              </div>
+              <h3 class="step-title">WideEYE Monitors</h3>
+              <p class="step-desc">
+                Camera-based technology continuously monitors subtle signs of driver fatigue and micro-sleeps in real time.
+              </p>
+              <div class="step-tag">Active Vision AI</div>
+            </div>
+
+            <!-- STEP 04 -->
+            <div class="step-card">
+              <div class="step-header">
+                <span class="step-number">04</span>
+                <div class="step-icon-wrap">
+                  <i data-lucide="shield-alert"></i>
+                </div>
+              </div>
+              <h3 class="step-title">Stay Safe</h3>
+              <p class="step-desc">
+                Intelligent warnings and emergency assistance can activate immediately when risk becomes critical.
+              </p>
+              <div class="step-tag">Automated Triage</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFITS SECTION (4 AUDIENCE CARDS) -->
+    <section class="section benefits-section" id="benefits">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-kicker">Reassurance For Everyone</span>
+          <h2 class="section-heading">Built for safer journeys.</h2>
+          <p class="section-subheading">
+            Tailored protection designed to support drivers, passengers, families, and fleet operators.
+          </p>
+        </div>
+
+        <div class="benefits-grid">
+          <!-- CARD 1: FOR DRIVERS -->
+          <div class="card benefit-card">
+            <div class="benefit-icon-header">
+              <div class="benefit-icon-box">
+                <i data-lucide="user-check"></i>
+              </div>
+              <span class="audience-badge">For Drivers</span>
+            </div>
+            <h3 class="benefit-title">Proactive Fatigue Support</h3>
+            <p class="benefit-desc">
+              Early fatigue warnings help drivers stay alert during long journeys and night driving, preventing exhaustion before it becomes dangerous.
+            </p>
+            <div class="benefit-perk">
+              <i data-lucide="check"></i>
+              <span>Rest break suggestions & alert prompts</span>
+            </div>
+          </div>
+
+          <!-- CARD 2: FOR PASSENGERS -->
+          <div class="card benefit-card">
+            <div class="benefit-icon-header">
+              <div class="benefit-icon-box">
+                <i data-lucide="users"></i>
+              </div>
+              <span class="audience-badge">For Passengers</span>
+            </div>
+            <h3 class="benefit-title">Uncompromising Peace of Mind</h3>
+            <p class="benefit-desc">
+              Know that driver safety is being monitored throughout your journey with live transparency and built-in emergency escalation.
+            </p>
+            <div class="benefit-perk">
+              <i data-lucide="check"></i>
+              <span>Live trip safety status in passenger app</span>
+            </div>
+          </div>
+
+          <!-- CARD 3: FOR FAMILIES -->
+          <div class="card benefit-card">
+            <div class="benefit-icon-header">
+              <div class="benefit-icon-box">
+                <i data-lucide="heart-handshake"></i>
+              </div>
+              <span class="audience-badge">For Families</span>
+            </div>
+            <h3 class="benefit-title">Continuous Reassurance</h3>
+            <p class="benefit-desc">
+              Emergency assistance provides additional reassurance when something goes wrong, keeping loved ones connected during night transit.
+            </p>
+            <div class="benefit-perk">
+              <i data-lucide="check"></i>
+              <span>Automated SOS dispatch & family alerts</span>
+            </div>
+          </div>
+
+          <!-- CARD 4: FOR FLEET OPERATORS -->
+          <div class="card benefit-card">
+            <div class="benefit-icon-header">
+              <div class="benefit-icon-box">
+                <i data-lucide="truck"></i>
+              </div>
+              <span class="audience-badge">For Fleet Operators</span>
+            </div>
+            <h3 class="benefit-title">Scalable Fleet Protection</h3>
+            <p class="benefit-desc">
+              A scalable safety layer designed to help reduce accident-related risks, insurance liabilities, and vehicle downtime costs.
+            </p>
+            <div class="benefit-perk">
+              <i data-lucide="check"></i>
+              <span>Zero specialized hardware overhead</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY WIDEEYE SECTION (4 PILLARS) -->
+    <section class="section why-section" id="why-wideeye">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-kicker">Core Advantages</span>
+          <h2 class="section-heading">Why WideEYE?</h2>
+          <p class="section-subheading">
+            Modern vision computing allows unprecedented safety without the baggage of proprietary hardware.
+          </p>
+        </div>
+
+        <div class="why-grid">
+          <!-- PILLAR 01 -->
+          <div class="why-card">
+            <div class="why-num">01</div>
+            <h3 class="why-title">Camera-Based</h3>
+            <p class="why-desc">No specialized hardware required. Works on standard smartphones and integrated dash cameras.</p>
+            <div class="why-divider"></div>
+            <span class="why-subtext">Low barrier to adoption</span>
+          </div>
+
+          <!-- PILLAR 02 -->
+          <div class="why-card">
+            <div class="why-num">02</div>
+            <h3 class="why-title">Real-Time</h3>
+            <p class="why-desc">Safety monitoring happens during the journey with millisecond edge processing and zero latency delay.</p>
+            <div class="why-divider"></div>
+            <span class="why-subtext">Instant detection cycle</span>
+          </div>
+
+          <!-- PILLAR 03 -->
+          <div class="why-card">
+            <div class="why-num">03</div>
+            <h3 class="why-title">Accessible</h3>
+            <p class="why-desc">Designed around devices with a camera, making enterprise-grade safety accessible to everyday rides.</p>
+            <div class="why-divider"></div>
+            <span class="why-subtext">Universal platform compatibility</span>
+          </div>
+
+          <!-- PILLAR 04 -->
+          <div class="why-card">
+            <div class="why-num">04</div>
+            <h3 class="why-title">Actionable</h3>
+            <p class="why-desc">Detection can lead to progressive alerts, driver interventions, and automated emergency assistance.</p>
+            <div class="why-divider"></div>
+            <span class="why-subtext">Beyond passive analytics</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA SECTION -->
+    <section class="section final-cta-section">
+      <div class="container">
+        <div class="final-cta-box text-center">
+          <div class="final-kicker">Next-Gen Mobility Safety</div>
+          <h2 class="final-heading">Ready for a safer ride?</h2>
+          <p class="final-subtext">
+            Experience mobility with intelligent safety built in. Designed for drivers, trusted by riders.
+          </p>
+          <div class="final-btn-group">
+            <a href="book.html" class="btn btn-primary btn-lg">
+              <span>Book a Safe Ride</span>
+              <i data-lucide="arrow-right" class="btn-icon"></i>
+            </a>
+            <a href="#safety-preview" class="btn btn-secondary btn-lg">
+              <span>Learn More About Safety</span>
+              <i data-lucide="shield" class="btn-icon"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer-container">
+      <div class="footer-top">
+        <div class="footer-brand-col">
+          <div class="brand-logo">
+            <div class="logo-mark">
+              <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
+                <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="14" cy="14" r="4.2" fill="#DFFF00" class="logo-pupil-yellow"/>
+                <circle cx="15.5" cy="12.5" r="1.2" fill="#050505"/>
+              </svg>
+            </div>
+            <span class="brand-name">WideEYE</span>
+          </div>
+          <p class="footer-tagline">"Ride Safe. Arrive Safe."</p>
+          <p class="footer-mission">
+            WideEYE is pioneering camera-based driver fatigue monitoring and real-time intervention to eliminate sleep-deprivation accidents in shared mobility.
+          </p>
+        </div>
+
+        <div class="footer-links-grid">
+          <div class="footer-link-col">
+            <h4 class="footer-col-title">Navigation</h4>
+            <ul class="footer-links">
+              <li><a href="#hero">Home</a></li>
+              <li><a href="#how-it-works">How It Works</a></li>
+              <li><a href="#safety-preview">Safety</a></li>
+              <li><a href="#benefits">Benefits</a></li>
+              <li><a href="#why-wideeye">Why WideEYE</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-link-col">
+            <h4 class="footer-col-title">Product</h4>
+            <ul class="footer-links">
+              <li><a href="book.html">Ride Booking</a></li>
+              <li><a href="#safety-preview">Driver Safety</a></li>
+              <li><a href="#safety-preview">Emergency SOS</a></li>
+              <li><a href="#benefits">Passenger Safety</a></li>
+              <li><a href="#why-wideeye">Vision AI Engine</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-link-col">
+            <h4 class="footer-col-title">Hackathon Info</h4>
+            <ul class="footer-links">
+              <li><a href="javascript:void(0)">Smart India Hackathon 2026</a></li>
+              <li><a href="javascript:void(0)">Phase 1: Visual Prototype</a></li>
+              <li><a href="javascript:void(0)">Phase 2: OpenCV & MediaPipe</a></li>
+              <li><a href="javascript:void(0)">Phase 3: SOS Dispatch</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="copyright-text">
+          &copy; 2026 WideEYE. Smart mobility. Intelligent safety.
+        </p>
+        <div class="footer-legal-links">
+          <span>Prototype Demo Only · All Rights Reserved</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- INTERACTIVE BOOKING PREVIEW MODAL (PHASE 1 VISUAL EXPERIENCE) -->
+  <div class="modal-backdrop" id="booking-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-logo">
+            <svg viewBox="0 0 28 28" fill="none" class="modal-logo-icon">
+              <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="currentColor" stroke-width="2.4"/>
+              <circle cx="14" cy="14" r="4.2" fill="currentColor"/>
+            </svg>
+            <span class="brand-name">WideEYE</span>
+          </div>
+          <span class="modal-sub">Book a Safe Journey</span>
+        </div>
+        <button class="modal-close-btn" id="close-booking-modal" aria-label="Close booking modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Safety Assurance Banner -->
+        <div class="modal-safety-pill">
+          <i data-lucide="shield-check"></i>
+          <span>WideEYE Real-Time AI Safety is enabled on all rides</span>
+        </div>
+
+        <!-- Location Inputs -->
+        <div class="booking-inputs">
+          <div class="input-group">
+            <div class="input-icon"><i data-lucide="circle-dot"></i></div>
+            <div class="input-field-wrap">
+              <label for="pickup-input">Pickup Location</label>
+              <input type="text" id="pickup-input" value="Cyber City, Gurugram" placeholder="Enter pickup address">
+            </div>
+          </div>
+          <div class="input-divider-line"></div>
+          <div class="input-group">
+            <div class="input-icon"><i data-lucide="map-pin"></i></div>
+            <div class="input-field-wrap">
+              <label for="drop-input">Destination</label>
+              <input type="text" id="drop-input" value="IGI Airport Terminal 3, New Delhi" placeholder="Where to?">
+            </div>
+          </div>
+        </div>
+
+        <!-- Ride Tier Selection -->
+        <div class="ride-tier-selector">
+          <div class="tier-label">Choose Ride Category:</div>
+          <div class="tier-options">
+            
+            <div class="tier-card active" onclick="selectRideTier(this, 'WideEYE Sedan', '₹480')">
+              <div class="tier-icon"><i data-lucide="car"></i></div>
+              <div class="tier-info">
+                <div class="tier-title">WideEYE Sedan</div>
+                <div class="tier-meta">4 seats · 3 mins away</div>
+                <div class="tier-badge">AI Safety Guard</div>
+              </div>
+              <div class="tier-price">₹480</div>
+            </div>
+
+            <div class="tier-card" onclick="selectRideTier(this, 'WideEYE Premier', '₹680')">
+              <div class="tier-icon"><i data-lucide="sparkles"></i></div>
+              <div class="tier-info">
+                <div class="tier-title">WideEYE Premier</div>
+                <div class="tier-meta">Top rated drivers · 5 mins away</div>
+                <div class="tier-badge">Dual-Sensor AI</div>
+              </div>
+              <div class="tier-price">₹680</div>
+            </div>
+
+            <div class="tier-card" onclick="selectRideTier(this, 'WideEYE Auto', '₹220')">
+              <div class="tier-icon"><i data-lucide="zap"></i></div>
+              <div class="tier-info">
+                <div class="tier-title">WideEYE Auto</div>
+                <div class="tier-meta">Eco commute · 2 mins away</div>
+                <div class="tier-badge">Standard AI Guard</div>
+              </div>
+              <div class="tier-price">₹220</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Trip Summary -->
+        <div class="trip-summary-box">
+          <div class="sum-row">
+            <span>Estimated Distance:</span>
+            <strong>18.4 km</strong>
+          </div>
+          <div class="sum-row">
+            <span>Safety Coverage:</span>
+            <strong class="text-safe">100% Active AI Vision</strong>
+          </div>
+        </div>
+
+        <a href="book.html" class="btn btn-primary btn-full modal-confirm-btn" id="confirm-booking-btn">
+          <span>Open Full Booking System</span>
+          <i data-lucide="arrow-right"></i>
+        </a>
+
+        <p class="modal-footnote">
+          *Phase 2 Live Interactive Mobility System Available.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKING CONFIRMATION TOAST NOTIFICATION -->
+  <div class="toast-notification" id="toast-notify">
+    <div class="toast-icon"><i data-lucide="check-circle-2"></i></div>
+    <div class="toast-text">
+      <strong>Trip Simulated Successfully!</strong>
+      <p>Driver assigned · WideEYE Safety Monitor Connected.</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

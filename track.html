@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Ride Tracking — WideEYE | Intelligent Passenger & Driver Safety</title>
+  <meta name="description" content="Live trip tracking and real-time safety monitoring for your WideEYE journey.">
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23050505' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3.2' fill='%23DFFF00'/></svg>">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="tracking-page-body">
+
+  <!-- Tracking Top Header -->
+  <header class="tracking-nav-header">
+    <div class="container-fluid tracking-header-inner">
+      <div class="tracking-nav-left">
+        <a href="book.html" class="back-link">
+          <i data-lucide="arrow-left"></i>
+          <span>Back to Booking</span>
+        </a>
+        <div class="nav-divider"></div>
+        <a href="index.html" class="brand-logo">
+          <div class="logo-mark">
+            <svg viewBox="0 0 28 28" fill="none" class="logo-icon">
+              <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="14" cy="14" r="4.2" fill="#DFFF00" class="logo-pupil-yellow"/>
+              <circle cx="15.5" cy="12.5" r="1.2" fill="#050505"/>
+            </svg>
+          </div>
+          <span class="brand-name">WideEYE</span>
+        </a>
+      </div>
+
+      <div class="tracking-nav-center">
+        <div class="track-tab-nav">
+          <a href="track.html" class="track-tab active"><i data-lucide="map"></i><span>LIVE RIDE</span></a>
+          <a href="monitor.html" class="track-tab"><i data-lucide="eye"></i><span>SAFETY MONITOR</span></a>
+        </div>
+      </div>
+
+      <div class="tracking-nav-right">
+        <div class="gps-status-pill">
+          <span class="gps-dot"></span>
+          <span>Live GPS Telemetry</span>
+        </div>
+        <a href="monitor.html" class="safety-indicator-live" id="header-safety-badge">
+          <span class="pulse-lemon-dot"></span>
+          <span>WIDEEYE SAFETY ● ACTIVE</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN TRACKING LAYOUT (65% MAP / 35% SIDEBAR ON DESKTOP) -->
+  <main class="tracking-layout-wrapper">
+    
+    <!-- LEFT/CENTER: LARGE LIVE MAP VIEWPORT -->
+    <section class="tracking-map-panel" id="tracking-map">
+      <div class="map-viewport-container">
+        <div class="map-canvas-layer" id="tracking-canvas">
+          
+          <svg class="map-vector-svg" viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="track-grid-pattern" width="80" height="80" patternUnits="userSpaceOnUse">
+                <path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(0,0,0,0.03)" stroke-width="1"/>
+              </pattern>
+              <filter id="track-road-shadow" x="-5%" y="-5%" width="110%" height="110%">
+                <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.1"/>
+              </filter>
+            </defs>
+
+            <!-- Map Background Fill (White/Light Gray) -->
+            <rect width="1000" height="800" fill="#F4F4F4"/>
+            <rect width="1000" height="800" fill="url(#track-grid-pattern)"/>
+
+            <!-- Urban Blocks -->
+            <rect x="80" y="60" width="220" height="140" rx="8" fill="#EAEAEA"/>
+            <rect x="340" y="40" width="260" height="180" rx="8" fill="#E6E6E6"/>
+            <rect x="640" y="80" width="280" height="150" rx="8" fill="#EAEAEA"/>
+            <rect x="100" y="260" width="180" height="240" rx="8" fill="#E4E4E4"/>
+            <rect x="660" y="280" width="260" height="200" rx="8" fill="#EAEAEA"/>
+            <rect x="120" y="560" width="240" height="180" rx="8" fill="#E6E6E6"/>
+            <rect x="420" y="580" width="280" height="160" rx="8" fill="#E8E8E8"/>
+            <rect x="740" y="530" width="200" height="210" rx="8" fill="#E4E4E4"/>
+
+            <!-- Roads (Light Gray) -->
+            <!-- Main Highway 1 -->
+            <path d="M -50 220 L 1050 220" stroke="#050505" stroke-width="34" filter="url(#track-road-shadow)"/>
+            <path d="M -50 220 L 1050 220" stroke="#1A1A1A" stroke-width="30"/>
+            <path d="M -50 220 L 1050 220" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="16 12"/>
+
+            <!-- Main Express Expressway -->
+            <path d="M 320 -50 L 320 850" stroke="#050505" stroke-width="34" filter="url(#track-road-shadow)"/>
+            <path d="M 320 -50 L 320 850" stroke="#1A1A1A" stroke-width="30"/>
+            <path d="M 320 -50 L 320 850" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="16 12"/>
+
+            <!-- Secondary Ring Road -->
+            <path d="M -50 520 L 1050 520" stroke="#050505" stroke-width="26" filter="url(#track-road-shadow)"/>
+            <path d="M -50 520 L 1050 520" stroke="#1A1A1A" stroke-width="22"/>
+
+            <path d="M 620 -50 L 620 850" stroke="#050505" stroke-width="26" filter="url(#track-road-shadow)"/>
+            <path d="M 620 -50 L 620 850" stroke="#1A1A1A" stroke-width="22"/>
+
+            <!-- Diagonal Avenue -->
+            <path d="M 80 750 Q 320 400, 750 180 T 1050 100" stroke="#050505" stroke-width="30" filter="url(#track-road-shadow)"/>
+            <path d="M 80 750 Q 320 400, 750 180 T 1050 100" stroke="#1A1A1A" stroke-width="26"/>
+
+            <!-- Main Route (Black Background Path) -->
+            <path d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="#050505" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+            
+            <!-- Active Progress Route (Lemon Yellow Polyline) -->
+            <path id="active-progress-path" d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="#DFFF00" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="600" stroke-dashoffset="600"/>
+            <path d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="8 12" stroke-linecap="round" class="animated-route-dots"/>
+
+            <!-- Road Labels -->
+            <text x="140" y="210" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700" fill="#AAAAAA" letter-spacing="1">CYBER CITY EXPRESSWAY</text>
+            <text x="335" y="120" font-family="'Space Grotesk', sans-serif" font-size="10" font-weight="700" fill="#888888" letter-spacing="0.5" transform="rotate(90 335 120)">MG ROAD ARTERIAL</text>
+            <text x="490" y="510" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700" fill="#AAAAAA" letter-spacing="1">GOLF COURSE EXTENSION</text>
+            <text x="760" y="195" font-family="'Space Grotesk', sans-serif" font-size="12" font-weight="800" fill="#050505">SECTOR 29 · CITY CENTRE</text>
+          </svg>
+
+          <!-- MAP PINS & LIVE DRIVER MARKER -->
+          
+          <!-- PICKUP PIN (Lemon Yellow Pin) -->
+          <div class="map-pin-marker pickup-pin" style="top: 57.5%; left: 24%;">
+            <div class="pin-pulse-ring"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-tooltip">
+              <span class="pin-tag">PICKUP</span>
+              <span class="pin-addr">Current Location</span>
+            </div>
+          </div>
+
+          <!-- DESTINATION PIN (Black Pin) -->
+          <div class="map-pin-marker destination-pin" style="top: 27.5%; left: 78%;">
+            <div class="dest-pin-body">
+              <i data-lucide="map-pin"></i>
+            </div>
+            <div class="pin-tooltip dest-tt">
+              <span class="pin-tag">DESTINATION</span>
+              <span class="pin-addr">City Centre</span>
+            </div>
+          </div>
+
+          <!-- LIVE MOVING DRIVER MARKER (Black Circle + Lemon Yellow Vehicle Icon) -->
+          <div class="driver-live-marker" id="live-driver-marker" style="top: 48%; left: 34%;">
+            <div class="live-marker-pulse"></div>
+            <div class="live-marker-icon">
+              <i data-lucide="car"></i>
+            </div>
+            <div class="driver-floating-map-tag" id="driver-map-floating-tag">
+              <span class="tag-title">Rahul Kumar</span>
+              <span class="tag-sub" id="driver-map-sub-text">3 min away</span>
+            </div>
+          </div>
+
+          <!-- FLOATING MAP STATUS CARD (Top Left) -->
+          <div class="map-floating-status-card" id="map-status-card">
+            <div class="status-card-header">
+              <span class="status-indicator-dot"></span>
+              <span class="status-card-badge">LIVE LOCATION</span>
+            </div>
+            <h3 class="status-card-heading" id="map-status-heading">Driver is 3 min away</h3>
+            <p class="status-card-desc" id="map-status-desc">Rahul Kumar is heading to your pickup location.</p>
+          </div>
+
+          <!-- MAP ZOOM / HUD CONTROLS -->
+          <div class="map-hud-bottom-right">
+            <div class="map-zoom-controls">
+              <button class="btn-map-control" onclick="simulateTrackingZoom(1)" title="Zoom In"><i data-lucide="plus"></i></button>
+              <button class="btn-map-control" onclick="simulateTrackingZoom(-1)" title="Zoom Out"><i data-lucide="minus"></i></button>
+              <button class="btn-map-control" onclick="recenterToDriver()" title="Focus on Driver"><i data-lucide="locate"></i></button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT/SIDEBAR: DRIVER PROFILE, TRIP PROGRESS, ACTIONS & SAFETY -->
+    <section class="tracking-sidebar-panel" id="tracking-sidebar">
+      
+      <!-- 1. DYNAMIC RIDE STATUS HEADER -->
+      <div class="tracking-status-header">
+        <span class="tracking-kicker" id="tracking-kicker">Ride Confirmed</span>
+        <h1 class="tracking-main-status" id="tracking-main-status">Your driver is on the way</h1>
+        <p class="tracking-sub-status" id="tracking-sub-status">Track your ride in real time.</p>
+      </div>
+
+      <!-- 2. VISUAL TRIP PROGRESS STEPPER -->
+      <div class="trip-progress-container">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progress-bar-fill" style="width: 25%;"></div>
+        </div>
+        <div class="progress-steps-labels">
+          <span class="prog-step active" id="prog-step-1">Driver coming</span>
+          <span class="prog-step" id="prog-step-2">Driver arrived</span>
+          <span class="prog-step" id="prog-step-3">Trip in progress</span>
+          <span class="prog-step" id="prog-step-4">Destination</span>
+        </div>
+      </div>
+
+      <!-- 3. ETA HERO CARD (Large Lemon Yellow 3 min) -->
+      <div class="eta-hero-card">
+        <div class="eta-val-group">
+          <span class="eta-hero-number" id="eta-hero-number">3 min</span>
+          <span class="eta-hero-label" id="eta-hero-label">Driver arriving soon</span>
+        </div>
+        <div class="eta-dist-tag" id="eta-dist-tag">
+          <i data-lucide="navigation"></i>
+          <span id="eta-dist-text">1.2 km away</span>
+        </div>
+      </div>
+
+      <!-- 4. DRIVER PROFILE CARD -->
+      <div class="driver-profile-card">
+        <div class="driver-profile-top">
+          <div class="driver-avatar-box">
+            <div class="driver-initials-avatar">
+              <span>RK</span>
+            </div>
+            <span class="driver-status-dot"></span>
+          </div>
+
+          <div class="driver-main-info">
+            <div class="driver-name-title-row">
+              <h2 class="driver-name-text">Rahul Kumar</h2>
+              <div class="driver-verified-badge">
+                <i data-lucide="shield-check"></i>
+                <span>Verified Driver ✓</span>
+              </div>
+            </div>
+
+            <div class="driver-meta-chips">
+              <span class="rating-chip"><i data-lucide="star"></i> 4.8</span>
+              <span class="meta-dot">·</span>
+              <span class="trips-chip">1,240+ trips</span>
+              <span class="meta-dot">·</span>
+              <span class="exp-chip">4+ yrs exp</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- VEHICLE INFORMATION SECTION -->
+        <div class="vehicle-info-strip">
+          <div class="veh-strip-left">
+            <div class="veh-icon-box">
+              <i data-lucide="car"></i>
+            </div>
+            <div class="veh-strip-details">
+              <span class="veh-strip-name">AUTO · White Auto</span>
+              <span class="veh-strip-plate">UP32 AB 1234</span>
+            </div>
+          </div>
+          <span class="veh-strip-badge">AC Comfort</span>
+        </div>
+
+        <!-- ACTION BUTTONS: CALL, MESSAGE, SHARE, SAFETY -->
+        <div class="driver-quick-actions-grid">
+          <button class="btn-action-tile" id="btn-call-driver" onclick="openCallModal()">
+            <div class="action-tile-icon"><i data-lucide="phone"></i></div>
+            <span>Call Driver</span>
+          </button>
+
+          <button class="btn-action-tile" id="btn-chat-driver" onclick="openChatDrawer()">
+            <div class="action-tile-icon"><i data-lucide="message-square"></i></div>
+            <span>Message</span>
+          </button>
+
+          <button class="btn-action-tile" id="btn-share-trip" onclick="openShareModal()">
+            <div class="action-tile-icon"><i data-lucide="share-2"></i></div>
+            <span>Share Trip</span>
+          </button>
+
+          <button class="btn-action-tile tile-safety" id="btn-safety-quick" onclick="openSafetyModal()">
+            <div class="action-tile-icon"><i data-lucide="shield"></i></div>
+            <span>Safety</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 5. ACTIVE TRIP SAFETY & MONITOR CONTROLS -->
+      <div class="active-trip-safety-card">
+        <div class="safety-console-header-strip">
+          <div class="console-left">
+            <svg viewBox="0 0 28 28" fill="none" class="safety-logo-mini">
+              <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#FFFFFF" stroke-width="2.4"/>
+              <circle cx="14" cy="14" r="4" fill="#DFFF00"/>
+            </svg>
+            <span class="ps-brand-title">WIDEEYE ACTIVE PROTECTION</span>
+          </div>
+          <span class="ps-status-pill-lemon">
+            <span class="pulse-lemon-dot"></span> LIVE MONITORING
+          </span>
+        </div>
+
+        <p class="safety-console-desc">
+          Optical sensor and real-time facial landmark fatigue telemetry are active throughout this trip.
+        </p>
+
+        <!-- CTA BUTTONS: AI SAFETY MONITOR & COMPLETE TRIP -->
+        <div class="trip-control-action-row">
+          <a href="monitor.html" class="btn btn-primary btn-full" style="font-size: 0.92rem; padding: 13px 18px;">
+            <i data-lucide="video"></i>
+            <span>Open AI Driver Safety Monitor</span>
+          </a>
+          <a href="dashboard.html" class="btn btn-secondary btn-full" style="font-size: 0.88rem; padding: 11px 18px; margin-top: 8px;">
+            <i data-lucide="check-circle-2"></i>
+            <span>Simulate Trip Completion ✓</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 6. COLLAPSIBLE TRIP DETAILS -->
+      <div class="trip-details-card">
+        <div class="trip-details-header" onclick="toggleTripDetails()">
+          <span class="details-title">Trip Details</span>
+          <i data-lucide="chevron-down" id="trip-details-chevron"></i>
+        </div>
+
+        <div class="trip-details-body" id="trip-details-body">
+          <div class="detail-row">
+            <span class="detail-lbl">Pickup</span>
+            <span class="detail-val">Current Location (Cyber City)</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-lbl">Destination</span>
+            <span class="detail-val">City Centre (Sector 29)</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-lbl">Distance</span>
+            <span class="detail-val">8.4 km</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-lbl">Estimated Trip</span>
+            <span class="detail-val">24 min</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-lbl">Fare</span>
+            <span class="detail-val fare-tag">₹96 (Cash)</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-lbl">Booking ID</span>
+            <span class="detail-val mono">WE-24081</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. DEMO STAGE JUMP CONTROLS (FOR SIH JUDGES) -->
+      <div class="demo-stage-controller">
+        <span class="stage-ctrl-label">SIH Judge Demo Simulation Jumper:</span>
+        <div class="stage-btns-row">
+          <button class="stage-btn active" id="stage-btn-1" onclick="jumpToRideState(1)">1: Driver En Route</button>
+          <button class="stage-btn" id="stage-btn-3" onclick="jumpToRideState(3)">2: Driver Arrived</button>
+          <button class="stage-btn" id="stage-btn-4" onclick="jumpToRideState(4)">3: Trip In Progress</button>
+          <button class="stage-btn" id="stage-btn-7" onclick="jumpToRideState(7)">4: Reached Destination</button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       MODALS & DRAWERS
+       ========================================================================= -->
+
+  <!-- 1. CALL DRIVER MODAL -->
+  <div class="modal-backdrop" id="call-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="brand-name" style="font-size: 1.1rem;">Call Rahul Kumar</span>
+        </div>
+        <button class="modal-close-btn" onclick="closeCallModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body text-center" style="padding: 28px 24px;">
+        <div class="call-avatar-wrap">
+          <div class="call-avatar-icon"><i data-lucide="phone-call"></i></div>
+        </div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px;">Call Driver Rahul Kumar?</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+          Vehicle: White Auto (UP32 AB 1234) · Masked Private Number
+        </p>
+        <div class="modal-btn-row">
+          <button class="btn btn-secondary" style="flex: 1;" onclick="closeCallModal()">Cancel</button>
+          <button class="btn btn-primary" style="flex: 1;" onclick="executeCallSimulation()">
+            <i data-lucide="phone"></i>
+            <span>Call (+91 98765-XXXXX)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. CHAT WITH DRIVER DRAWER -->
+  <div class="chat-drawer-backdrop" id="chat-drawer" aria-hidden="true">
+    <div class="chat-drawer-content">
+      <div class="chat-drawer-header">
+        <div class="chat-driver-status">
+          <div class="chat-avatar-mini">RK</div>
+          <div>
+            <div class="chat-name">Rahul Kumar</div>
+            <div class="chat-status-text">● Online · Auto (UP32 AB 1234)</div>
+          </div>
+        </div>
+        <button class="chat-close-btn" onclick="closeChatDrawer()"><i data-lucide="x"></i></button>
+      </div>
+
+      <div class="chat-messages-container" id="chat-messages-list">
+        <div class="chat-bubble driver-bubble">
+          <p>Hello! I am on my way to your pickup location at Cyber City.</p>
+          <span class="chat-time">Just now</span>
+        </div>
+        <div class="chat-bubble user-bubble">
+          <p>Where are you?</p>
+          <span class="chat-time">1 min ago</span>
+        </div>
+        <div class="chat-bubble driver-bubble">
+          <p>I'm 2 minutes away, taking the main avenue.</p>
+          <span class="chat-time">1 min ago</span>
+        </div>
+        <div class="chat-bubble user-bubble">
+          <p>Okay, I'll wait here near Gate 2.</p>
+          <span class="chat-time">Just now</span>
+        </div>
+      </div>
+
+      <div class="chat-input-bar">
+        <input type="text" id="chat-input-text" placeholder="Type a message..." autocomplete="off">
+        <button class="btn btn-primary chat-send-btn" id="btn-send-chat" onclick="sendUserChatMessage()">
+          <i data-lucide="send"></i>
+          <span>Send</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. SHARE TRIP MODAL -->
+  <div class="modal-backdrop" id="share-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="brand-name" style="font-size: 1.1rem;">Share your ride</span>
+        </div>
+        <button class="modal-close-btn" onclick="closeShareModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body" style="padding: 24px;">
+        <div class="share-summary-box">
+          <div class="share-row"><span>Driver:</span> <strong>Rahul Kumar (★ 4.8)</strong></div>
+          <div class="share-row"><span>Vehicle:</span> <strong>UP32 AB 1234 (White Auto)</strong></div>
+          <div class="share-row"><span>Destination:</span> <strong>City Centre (Sector 29)</strong></div>
+          <div class="share-row"><span>ETA:</span> <strong style="color: #050505; background: #DFFF00; padding: 1px 6px; border-radius: 4px;">18 min</strong></div>
+          <div class="share-row"><span>Trip Status:</span> <strong style="color: #10B981;">● Live Tracking</strong></div>
+        </div>
+
+        <div class="share-link-input-group">
+          <input type="text" readonly value="https://wideeye.app/track/WE-24081?auth=live" class="share-link-input" id="share-link-val">
+          <button class="btn btn-dark" onclick="copyTripLink()"><i data-lucide="copy"></i> Copy Link</button>
+        </div>
+
+        <button class="btn btn-primary btn-full" style="margin-top: 14px;" onclick="executeShareTrip()">
+          <i data-lucide="share-2"></i>
+          <span>Share via WhatsApp / SMS</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. SAFETY QUICK ACTION MODAL -->
+  <div class="modal-backdrop" id="safety-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-header" style="background: #050505; color: #FFFFFF;">
+        <div class="modal-title-group">
+          <span class="brand-name" style="color: #DFFF00;">WideEYE Safety Console</span>
+        </div>
+        <button class="modal-close-btn" style="background: #222; color: #FFF;" onclick="closeSafetyModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body" style="background: #0B0B0B; color: #FFFFFF; padding: 24px;">
+        <div class="safety-status-big-pill">
+          <span class="pulse-lemon-dot"></span>
+          <span>WideEYE Safety · Active & Monitoring</span>
+        </div>
+
+        <div class="safety-actions-list">
+          <div class="safety-action-row">
+            <div class="s-act-icon"><i data-lucide="eye"></i></div>
+            <div class="s-act-info">
+              <strong>Driver Monitoring</strong>
+              <p>Active optical sensor watching for driver fatigue & micro-sleeps.</p>
+            </div>
+            <span class="s-tag-active">Active</span>
+          </div>
+
+          <div class="safety-action-row" onclick="closeSafetyModal(); openShareModal();">
+            <div class="s-act-icon"><i data-lucide="share-2"></i></div>
+            <div class="s-act-info">
+              <strong>Share Trip</strong>
+              <p>Share live GPS route with family and trusted contacts.</p>
+            </div>
+            <span class="s-tag-avail">Available</span>
+          </div>
+
+          <div class="safety-action-row" onclick="closeSafetyModal(); openManualSosModal();">
+            <div class="s-act-icon" style="color: #EF4444;"><i data-lucide="alert-octagon"></i></div>
+            <div class="s-act-info">
+              <strong>Emergency SOS</strong>
+              <p>Instant escalation to emergency response center & location dispatch.</p>
+            </div>
+            <span class="s-tag-sos">SOS Ready</span>
+          </div>
+        </div>
+
+        <button class="btn btn-secondary btn-full" style="color: #FFFFFF; border-color: rgba(255,255,255,0.2); margin-top: 16px;" onclick="closeSafetyModal()">Close Console</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING MANUAL SOS BUTTON (PHASE 6) -->
+  <button class="floating-sos-action-btn" id="floating-sos-btn" onclick="openManualSosModal()" title="Emergency SOS">
+    <div class="pulse-red-ring"></div>
+    <i data-lucide="alert-octagon"></i>
+    <span>SOS</span>
+  </button>
+
+  <!-- MANUAL SOS CONFIRMATION MODAL -->
+  <div class="modal-backdrop" id="manual-sos-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-header" style="background: #050505; color: #FFFFFF; border-bottom: 1px solid rgba(239, 68, 68, 0.4);">
+        <div class="modal-title-group">
+          <span class="brand-name" style="font-size: 1.15rem; color: #EF4444;">🚨 Activate Emergency SOS?</span>
+        </div>
+        <button class="modal-close-btn" onclick="closeManualSosModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body text-center" style="padding: 24px;">
+        <div class="manual-sos-icon-box"><i data-lucide="shield-alert"></i></div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 8px;">Trigger Emergency Assistance?</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px; line-height: 1.5;">
+          This will open the <strong>WideEYE Emergency Center</strong>, initiate a 5-second countdown, share your live GPS location with emergency contact Priya Sharma, and dispatch triage telemetry.
+        </p>
+        <div class="modal-btn-row">
+          <button class="btn btn-secondary" style="flex: 1;" onclick="closeManualSosModal()">Cancel</button>
+          <button class="btn btn-danger" style="flex: 1; padding: 12px 18px;" onclick="confirmManualSosActivation()">
+            <i data-lucide="alert-octagon"></i>
+            <span>Activate SOS</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. PHASE 8 TRIP COMPLETED MODAL (AUTOMATIC ON ARRIVAL) -->
+  <div class="modal-backdrop" id="trip-completed-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog completion-modal-dialog">
+      <div class="modal-body text-center" style="padding: 32px 28px;">
+        <div class="completion-anim-circle">
+          <div class="completion-pulse-ring"></div>
+          <i data-lucide="check-circle-2" class="completion-check-icon"></i>
+        </div>
+
+        <div class="trip-completed-status-tag">COMPLETED</div>
+        <h2 class="completion-title">Trip Completed ✓</h2>
+        <p class="completion-subtitle">Your ride has ended safely at <strong>City Centre</strong>.</p>
+
+        <div class="completion-summary-preview-card">
+          <div class="c-preview-row">
+            <span>Destination:</span>
+            <strong>City Centre Mall (Sector 29)</strong>
+          </div>
+          <div class="c-preview-row">
+            <span>Trip Status:</span>
+            <strong class="lemon">COMPLETED</strong>
+          </div>
+          <div class="c-preview-row">
+            <span>Total Distance & Time:</span>
+            <strong>8.4 km · 24 min</strong>
+          </div>
+          <div class="c-preview-row">
+            <span>Overall Safety:</span>
+            <strong style="color: #10B981;">🟢 SAFE (100%)</strong>
+          </div>
+        </div>
+
+        <div class="completion-action-buttons">
+          <a href="dashboard.html" class="btn btn-primary btn-full" style="padding: 14px 20px; font-size: 1rem; font-weight: 800;">
+            <i data-lucide="bar-chart-2"></i>
+            <span>View Safety Summary</span>
+          </a>
+          <a href="index.html" class="btn btn-secondary btn-full" style="padding: 12px 20px; margin-top: 10px;">
+            <i data-lucide="home"></i>
+            <span>Back to Home</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast-notification" id="toast-notify">
+    <div class="toast-icon"><i data-lucide="check-circle-2"></i></div>
+    <div class="toast-text">
+      <strong>Notification</strong>
+      <p>Action completed successfully.</p>
+    </div>
+  </div>
+
+  <script src="tracking.js"></script>
+  <script>
+    function openManualSosModal() {
+      const modal = document.getElementById('manual-sos-modal');
+      if (modal) modal.classList.add('active');
+    }
+    function closeManualSosModal() {
+      const modal = document.getElementById('manual-sos-modal');
+      if (modal) modal.classList.remove('active');
+    }
+    function confirmManualSosActivation() {
+      window.location.href = 'sos.html?auto=1';
+    }
+  </script>
+</body>
+</html>

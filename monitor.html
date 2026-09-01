@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WideEYE AI Driver Safety Monitor & Smart Alert System — Real-Time Drowsiness Intervention</title>
+  <meta name="description" content="In-browser AI Driver Safety Monitor and Smart Alert Response System with real-time fatigue escalation, synthesized dual-tone audio alerts, driver intervention challenges, and SOS triage.">
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23050505' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3.2' fill='%23DFFF00'/></svg>">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- MediaPipe FaceMesh & Camera Utils -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="monitor-page-body alert-level-safe">
+
+  <!-- Top Safety Header (Black + Lemon Yellow) -->
+  <header class="monitor-nav-header">
+    <div class="container-fluid monitor-header-inner">
+      <div class="monitor-nav-left">
+        <a href="track.html" class="back-link">
+          <i data-lucide="arrow-left"></i>
+          <span>Back to Live Ride</span>
+        </a>
+        <div class="nav-divider"></div>
+        <a href="index.html" class="brand-logo">
+          <div class="logo-mark">
+            <svg viewBox="0 0 28 28" fill="none" class="logo-icon">
+              <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="14" cy="14" r="4.2" fill="#DFFF00" class="logo-pupil-yellow"/>
+              <circle cx="15.5" cy="12.5" r="1.2" fill="#050505"/>
+            </svg>
+          </div>
+          <span class="brand-name">WideEYE</span>
+        </a>
+      </div>
+
+      <div class="monitor-nav-center">
+        <div class="top-live-monitor-status">
+          <span class="pulse-lemon-dot" id="top-status-dot"></span>
+          <span id="top-status-text">WIDEEYE SAFETY MONITOR · ACTIVE</span>
+        </div>
+        <span class="sim-mode-tag hidden" id="sim-mode-badge">SIMULATION MODE</span>
+      </div>
+
+      <div class="monitor-nav-right">
+        <div class="session-timer-pill">
+          <i data-lucide="clock"></i>
+          <span id="session-timer-text">00:00:00</span>
+        </div>
+
+        <button class="btn-sound-toggle" id="btn-sound-toggle" onclick="window.safetyMonitor.toggleSound()" title="Toggle Audio Alerts">
+          <i data-lucide="volume-2" id="sound-icon"></i>
+          <span id="sound-label">Sound On</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- WARNING / ALERT NOTIFICATION BANNER (PHASE 5 SMART ALERT BANNER) -->
+  <div class="warning-alert-banner hidden" id="warning-banner">
+    <div class="warning-banner-inner">
+      <div class="warning-icon-msg">
+        <i data-lucide="alert-triangle" class="warn-icon"></i>
+        <div class="warning-text-group">
+          <strong id="warning-banner-text">⚠ Signs of fatigue detected · Please stay alert.</strong>
+          <span class="warning-action-sub" id="warning-action-hint">Recommended: Please stay focused on the road.</span>
+        </div>
+      </div>
+      <div class="warning-actions-bar">
+        <button class="btn-im-alert-small" id="warning-imalert-btn" onclick="window.safetyMonitor.alertManager.handleImAlertClick()">
+          <i data-lucide="check"></i>
+          <span>I'm Alert</span>
+        </button>
+        <button class="btn-sos-critical" id="warning-sos-btn" onclick="window.safetyMonitor.alertManager.startSosCountdown()">
+          <i data-lucide="shield-alert"></i>
+          <span>ACTIVATE SOS</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN MONITOR CONTAINER -->
+  <main class="monitor-layout-wrapper">
+    
+    <!-- LEFT: LIVE WEBCAM & FACIAL MESH CANVAS -->
+    <section class="monitor-video-section">
+      <div class="video-feed-card">
+        
+        <!-- Camera Permission & Start Screen -->
+        <div class="camera-permission-screen" id="camera-permission-overlay">
+          <div class="perm-content-box">
+            <div class="perm-eye-icon">
+              <i data-lucide="video"></i>
+            </div>
+            <h1 class="perm-heading">Activate Driver Monitoring</h1>
+            <p class="perm-desc">
+              WideEYE uses your camera to detect signs of driver fatigue in real time. Processing happens 100% locally on your device for absolute privacy.
+            </p>
+
+            <div class="perm-features-list">
+              <div class="perm-feat-item"><i data-lucide="check"></i> <span>Eye Aspect Ratio (EAR) tracking</span></div>
+              <div class="perm-feat-item"><i data-lucide="check"></i> <span>Blink & prolonged eye-closure detection</span></div>
+              <div class="perm-feat-item"><i data-lucide="check"></i> <span>Mouth Aspect Ratio (MAR) & yawn analysis</span></div>
+              <div class="perm-feat-item"><i data-lucide="check"></i> <span>Head pose orientation estimation</span></div>
+            </div>
+
+            <div class="perm-actions-row">
+              <button class="btn btn-primary btn-lg" id="btn-enable-cam" onclick="window.safetyMonitor.startLiveCamera()">
+                <i data-lucide="camera"></i>
+                <span>Enable Camera</span>
+              </button>
+              <button class="btn btn-secondary" id="btn-continue-demo" onclick="window.safetyMonitor.startSimulationMode()">
+                <span>Continue Demo Mode</span>
+              </button>
+            </div>
+            
+            <p class="perm-privacy-footnote">
+              <i data-lucide="lock"></i>
+              <span>Camera feed is processed locally and never uploaded or saved.</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- 4-Second Adaptive Calibration Overlay -->
+        <div class="calibration-overlay hidden" id="calibration-overlay">
+          <div class="calib-box">
+            <div class="calib-spinner-ring"></div>
+            <h2 class="calib-heading">Calibrating Driver...</h2>
+            <p class="calib-desc">Look straight ahead and keep your eyes open naturally.</p>
+            
+            <div class="calib-progress-track">
+              <div class="calib-progress-bar" id="calib-progress-fill" style="width: 0%;"></div>
+            </div>
+            <span class="calib-time-sub" id="calib-countdown-text">4s remaining</span>
+          </div>
+        </div>
+
+        <!-- Live Camera & Canvas Layer -->
+        <div class="video-canvas-container" id="active-monitor-view">
+          <video id="driver-webcam" playsinline muted autoplay class="webcam-video"></video>
+          <canvas id="face-canvas" width="640" height="480" class="face-mesh-canvas"></canvas>
+
+          <!-- Top Video HUD Badges -->
+          <div class="video-hud-top">
+            <div class="hud-pill lemon">
+              <span class="pulse-lemon-dot"></span>
+              <span>LIVE DRIVER MONITORING</span>
+            </div>
+            <div class="hud-pill dark">
+              <i data-lucide="shield-check"></i>
+              <span>CONFIDENCE: <strong id="metric-confidence">94%</strong></span>
+            </div>
+          </div>
+
+          <!-- Active Camera Alert Overlay Badge (SAFE / WARNING / HIGH RISK / CRITICAL) -->
+          <div class="camera-alert-overlay" id="camera-alert-overlay">
+            <span class="cam-alert-pill safe" id="camera-alert-badge">
+              <span class="pulse-green-dot"></span>
+              <span>● SAFE</span>
+            </span>
+          </div>
+
+          <!-- Bottom Video HUD Indicators -->
+          <div class="video-hud-bottom">
+            <div class="hud-chip">
+              <span>FACE:</span>
+              <strong id="metric-face-status">ONE FACE DETECTED</strong>
+            </div>
+            <div class="hud-chip">
+              <span>EYE CLOSURE:</span>
+              <strong id="metric-closure-sec">0.0s</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PRIVACY NOTE FOOTER -->
+      <div class="privacy-notice-box">
+        <i data-lucide="shield-check"></i>
+        <span><strong>Local Edge Processing:</strong> Your camera feed is processed in real time in your browser memory. WideEYE provides assistive safety alerts and does not record or store facial images.</span>
+      </div>
+    </section>
+
+    <!-- RIGHT: RISK METER, DETAILED TELEMETRY, PASSENGER CARD & CONTROLS -->
+    <section class="monitor-telemetry-section">
+      
+      <!-- 1. MAIN CIRCULAR RISK SCORE CARD -->
+      <div class="risk-score-card">
+        <div class="risk-score-header">
+          <span class="risk-card-kicker">WIDEEYE RISK SCORE</span>
+          <span class="risk-badge-tag safe" id="risk-level-value">SAFE</span>
+        </div>
+
+        <div class="risk-meter-wrapper">
+          <svg class="risk-meter-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="45" fill="none" stroke="#222222" stroke-width="9"/>
+            <circle id="risk-meter-circle" cx="60" cy="60" r="45" fill="none" stroke="#10B981" stroke-width="9" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="232" transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="risk-meter-center">
+            <span class="risk-number-large" id="risk-score-value">18%</span>
+            <span class="risk-sub-label">DROWSINESS</span>
+          </div>
+        </div>
+
+        <p class="risk-explanation-text" id="risk-desc-text">Driver appears alert and attentive.</p>
+        
+        <!-- Risk Level Reference Scale -->
+        <div class="risk-scale-legend">
+          <span class="leg-item safe">0–30% SAFE</span>
+          <span class="leg-item warning">31–60% WARN</span>
+          <span class="leg-item high-risk">61–90% HIGH</span>
+          <span class="leg-item critical">91–100% CRIT</span>
+        </div>
+      </div>
+
+      <!-- 2. PASSENGER-FACING ALERT CARD PREVIEW (PHASE 5) -->
+      <div class="passenger-alert-card hidden" id="passenger-alert-box">
+        <div class="pass-alert-head">
+          <i data-lucide="shield-alert" class="pass-icon"></i>
+          <div>
+            <strong>Driver Safety Alert</strong>
+            <p>WideEYE detected a critical fatigue event.</p>
+          </div>
+        </div>
+        <div class="pass-alert-details">
+          <div class="pass-row"><span>Driver:</span> <strong>Rahul Kumar (Auto)</strong></div>
+          <div class="pass-row"><span>Vehicle:</span> <strong>UP32 AB 1234</strong></div>
+          <div class="pass-row"><span>Trip:</span> <strong>City Centre</strong></div>
+          <div class="pass-row"><span>Risk Score:</span> <strong class="pass-risk-val" id="passenger-alert-score">94% (Critical)</strong></div>
+        </div>
+        <div class="pass-alert-btns">
+          <button class="btn btn-secondary btn-sm" onclick="alert('Viewing live telemetry...')">View Safety Status</button>
+          <button class="btn btn-danger btn-sm" onclick="window.safetyMonitor.alertManager.startSosCountdown()">Emergency Help</button>
+        </div>
+      </div>
+
+      <!-- 3. REAL-TIME METRICS DASHBOARD (EAR, MAR, Blinks, Yawns, Head Pose) -->
+      <div class="metrics-grid-card">
+        <h3 class="metrics-card-title">Live Biometric Telemetry</h3>
+
+        <div class="telemetry-metrics-grid">
+          
+          <div class="metric-cell">
+            <span class="m-lbl">Average EAR</span>
+            <span class="m-val highlight" id="metric-avg-ear">0.305</span>
+            <span class="m-sub">L: <span id="metric-left-ear">0.31</span> | R: <span id="metric-right-ear">0.30</span></span>
+          </div>
+
+          <div class="metric-cell">
+            <span class="m-lbl">Mouth MAR</span>
+            <span class="m-val" id="metric-mar">0.18</span>
+            <span class="m-sub">Yawn Threshold: > 0.40</span>
+          </div>
+
+          <div class="metric-cell">
+            <span class="m-lbl">Blink Count</span>
+            <span class="m-val" id="metric-blinks">0</span>
+            <span class="m-sub">Temporal analysis</span>
+          </div>
+
+          <div class="metric-cell">
+            <span class="m-lbl">Yawn Count</span>
+            <span class="m-val" id="metric-yawns">0</span>
+            <span class="m-sub">Sustained MAR count</span>
+          </div>
+
+          <div class="metric-cell span-2">
+            <span class="m-lbl">Head Position</span>
+            <span class="m-val pose-val" id="metric-head-pose">STABLE</span>
+            <span class="m-sub">Yaw & Pitch 3D vector orientation</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 4. DRIVER PROFILE SUMMARY CARD -->
+      <div class="monitor-driver-summary">
+        <div class="driver-avatar-mini">RK</div>
+        <div class="driver-summary-info">
+          <div class="driver-name-row">
+            <strong>Rahul Kumar</strong>
+            <span class="verified-tag">✓ Verified</span>
+          </div>
+          <span class="driver-veh-sub">Auto (UP32 AB 1234) · Trip ID: WE-24081</span>
+        </div>
+      </div>
+
+      <!-- 5. SIH JUDGE DEMO CONTROLLER (PHASE 5 & 6 ALERT & SOS PRESETS) -->
+      <div class="demo-controller-card">
+        <div class="demo-ctrl-head">
+          <span class="demo-ctrl-title">SIH Demo Alert & SOS Controller:</span>
+          <span class="demo-ctrl-hint">Test full escalation, intervention & emergency triage</span>
+        </div>
+        <div class="demo-preset-grid">
+          <button class="btn-preset preset-safe" onclick="window.safetyMonitor.setPresetRisk('SAFE')">
+            <span>SAFE (18%)</span>
+          </button>
+          <button class="btn-preset preset-warning" onclick="window.safetyMonitor.setPresetRisk('WARNING')">
+            <span>WARNING (48%)</span>
+          </button>
+          <button class="btn-preset preset-high" onclick="window.safetyMonitor.setPresetRisk('HIGH_RISK')">
+            <span>HIGH RISK (78%)</span>
+          </button>
+          <button class="btn-preset preset-crit" onclick="window.safetyMonitor.setPresetRisk('CRITICAL')">
+            <span>CRITICAL (96%)</span>
+          </button>
+        </div>
+        <button class="btn btn-danger btn-full btn-sm" style="margin-top: 10px; font-weight: 800; font-family: var(--font-mono); letter-spacing: 0.04em;" onclick="window.location.href='sos.html?auto=1&score=96'">
+          <i data-lucide="shield-alert"></i>
+          <span>🚨 TRIGGER SOS EMERGENCY CENTER DEMO</span>
+        </button>
+      </div>
+
+      <!-- 6. ALERT EVENT TIMELINE LOG -->
+      <div class="event-timeline-card">
+        <div class="timeline-header">
+          <span class="timeline-title">Alert & Event History</span>
+          <span class="timeline-live-tag">● Live Log</span>
+        </div>
+        <ul class="timeline-events-list" id="events-timeline-list">
+          <li class="timeline-event-item">
+            <span class="event-time">--:--:--</span>
+            <span class="event-tag">STANDBY</span>
+            <span class="event-text">Awaiting driver monitoring start...</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 7. MONITORING CONTROLS -->
+      <div class="monitor-action-controls">
+        <button class="btn btn-secondary btn-full" onclick="window.safetyMonitor.stopMonitoring()">
+          <i data-lucide="square"></i>
+          <span>Stop Monitoring</span>
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       PHASE 5 MODALS: CRITICAL ALERT, I'M ALERT & SOS COUNTDOWN
+       ========================================================================= -->
+
+  <!-- 1. CRITICAL ALERT MODAL (LEVEL 4) -->
+  <div class="modal-backdrop" id="critical-alert-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog critical-alert-dialog">
+      <div class="critical-modal-header">
+        <div class="crit-head-icon"><i data-lucide="alert-octagon"></i></div>
+        <h2 class="crit-title">🚨 CRITICAL DROWSINESS DETECTED</h2>
+      </div>
+      <div class="modal-body text-center" style="padding: 24px;">
+        <p class="crit-desc-main">
+          Immediate attention required. Driver may be unable to continue safely.
+        </p>
+
+        <div class="crit-telemetry-box">
+          <div class="crit-telemetry-row"><span>Driver:</span> <strong id="critical-driver-val">Rahul Kumar</strong></div>
+          <div class="crit-telemetry-row"><span>Vehicle:</span> <strong id="critical-veh-val">White Auto (UP32 AB 1234)</strong></div>
+          <div class="crit-telemetry-row"><span>Drowsiness Score:</span> <strong class="crit-risk-highlight" id="critical-score-val">96%</strong></div>
+        </div>
+
+        <div class="crit-actions-row">
+          <button class="btn btn-secondary btn-lg" style="flex: 1; border-color: rgba(255,255,255,0.3); color: #FFFFFF;" onclick="window.safetyMonitor.alertManager.handleImAlertClick()">
+            <i data-lucide="check"></i>
+            <span>I'm Alert</span>
+          </button>
+          <button class="btn btn-danger btn-lg" style="flex: 1;" onclick="window.safetyMonitor.alertManager.startSosCountdown()">
+            <i data-lucide="shield-alert"></i>
+            <span>ACTIVATE SOS</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. "I'M ALERT" CONFIRMATION CHALLENGE DIALOG -->
+  <div class="modal-backdrop" id="imalert-confirm-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-header" style="background: #050505; color: #FFFFFF;">
+        <div class="modal-title-group">
+          <span class="brand-name" style="font-size: 1.1rem; color: #DFFF00;">Driver Alert Verification</span>
+        </div>
+      </div>
+      <div class="modal-body text-center" style="padding: 24px;">
+        <div class="imalert-icon-box"><i data-lucide="user-check"></i></div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px;">Are you sure you're alert?</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">
+          WideEYE will silence the active critical alert and continue live optical monitoring. Biometric scores will naturally adapt as alertness is verified.
+        </p>
+        <div class="modal-btn-row">
+          <button class="btn btn-primary" style="flex: 1;" onclick="window.safetyMonitor.alertManager.confirmDriverIsAlert()">
+            <span>Continue Monitoring</span>
+          </button>
+          <button class="btn btn-secondary" style="flex: 1;" onclick="window.safetyMonitor.alertManager.startSosCountdown()">
+            <span>Activate SOS</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. SOS 5-SECOND COUNTDOWN MODAL -->
+  <div class="modal-backdrop" id="sos-countdown-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog sos-countdown-dialog">
+      <div class="sos-countdown-body text-center">
+        <h2 class="sos-head-title">🚨 Emergency assistance will activate in</h2>
+        
+        <div class="sos-countdown-ring-wrap">
+          <svg class="sos-ring-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
+            <circle id="sos-countdown-circle" cx="60" cy="60" r="45" fill="none" stroke="#EF4444" stroke-width="8" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+          </svg>
+          <div class="sos-countdown-number" id="sos-countdown-number">5</div>
+        </div>
+
+        <p class="sos-countdown-desc">
+          Automated GPS triage dispatch to Emergency Services (112) and passenger emergency contacts.
+        </p>
+
+        <button class="btn btn-secondary btn-full btn-lg" style="color: #FFFFFF; border-color: rgba(255,255,255,0.4);" onclick="window.safetyMonitor.alertManager.cancelSosCountdown()">
+          <i data-lucide="x"></i>
+          <span>CANCEL ASSISTANCE</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. SOS ACTIVATED EMERGENCY SCREEN -->
+  <div class="modal-backdrop" id="sos-activated-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog sos-activated-dialog">
+      <div class="sos-act-header">
+        <div class="sos-act-icon"><i data-lucide="shield-alert"></i></div>
+        <h2>🚨 EMERGENCY SOS ACTIVATED</h2>
+      </div>
+      <div class="modal-body" style="padding: 24px;">
+        <p style="color: #E2E8F0; font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px;">
+          WideEYE has detected a critical driver safety event and dispatched emergency triage telemetry to Central Emergency Response (112) & passenger trusted contacts.
+        </p>
+        <div class="sos-dispatch-box">
+          <div class="dispatch-row"><span>Driver:</span> <strong>Rahul Kumar (UP32 AB 1234)</strong></div>
+          <div class="dispatch-row"><span>Current Trip:</span> <strong>City Centre (Cyber City Route)</strong></div>
+          <div class="dispatch-row"><span>GPS Coordinates:</span> <strong>28.4986° N, 77.0878° E</strong></div>
+          <div class="dispatch-row"><span>Fatigue Risk Index:</span> <strong style="color: #EF4444;">96% (CRITICAL)</strong></div>
+          <div class="dispatch-row"><span>Status:</span> <strong style="color: #10B981;">● Triage Dispatch Transmitted</strong></div>
+        </div>
+        <button class="btn btn-secondary btn-full" style="color: #FFFFFF; border-color: rgba(255,255,255,0.3); margin-top: 16px;" onclick="window.safetyMonitor.alertManager.closeSosActivatedModal()">
+          <span>Close Emergency Console</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="safety-monitor.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) window.lucide.createIcons();
+      window.safetyMonitor = new WideEyeSafetyMonitor();
+    });
+  </script>
+</body>
+</html>
