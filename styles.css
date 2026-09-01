@@ -3999,7 +3999,7 @@ button {
 
 .live-marker-icon svg {
   width: 20px;
-  height: 20px;
+  SIH height: 20px;
 }
 
 .live-marker-pulse {
@@ -8533,4 +8533,4 @@ button {
     }
   }
 
-  }
+}
