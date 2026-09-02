@@ -400,7 +400,39 @@
        PHASE 5 MODALS: CRITICAL ALERT, I'M ALERT & SOS COUNTDOWN
        ========================================================================= -->
 
-  <!-- 0. FACE NOT DETECTED CALIBRATION MODAL -->
+  <!-- 0A. CAMERA PERMISSION REQUIRED MODAL -->
+  <div class="modal-backdrop" id="camera-permission-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog face-lost-dialog">
+      <div class="face-lost-header">
+        <div class="face-lost-icon-box" style="background: #EF4444;">
+          <i data-lucide="video-off"></i>
+        </div>
+        <h2 class="face-lost-title">CAMERA ACCESS REQUIRED</h2>
+      </div>
+      <div class="face-lost-body">
+        <p class="face-lost-msg">WideEYE needs camera access to perform real-time driver safety monitoring.</p>
+        <div class="face-lost-guidelines">
+          <p class="fl-guide-title">Please:</p>
+          <ul class="fl-checklist">
+            <li>• Allow camera permissions in your browser</li>
+            <li>• Ensure your webcam is connected and not in use by another app</li>
+            <li>• Camera analysis is processed 100% locally on your device</li>
+          </ul>
+        </div>
+      </div>
+      <div class="face-lost-actions">
+        <button class="btn btn-mustard-modal btn-full" onclick="window.safetyMonitor.retryLiveCamera()">
+          <i data-lucide="rotate-ccw"></i>
+          <span>TRY AGAIN</span>
+        </button>
+        <button class="btn btn-dark-secondary btn-full" onclick="window.safetyMonitor.startSimulationMode()">
+          <span>USE SIMULATION MODE</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 0B. FACE NOT DETECTED CALIBRATION / MONITORING MODAL -->
   <div class="modal-backdrop" id="face-not-detected-modal" aria-hidden="true" role="dialog">
     <div class="modal-dialog face-lost-dialog">
       <div class="face-lost-header">
@@ -410,23 +442,24 @@
         <h2 class="face-lost-title">FACE NOT DETECTED</h2>
       </div>
       <div class="face-lost-body">
-        <p class="face-lost-msg">We couldn't detect your face clearly.</p>
+        <p class="face-lost-msg">Please position your face clearly in front of the camera so WideEYE can perform real-time facial analysis.</p>
         <div class="face-lost-guidelines">
           <p class="fl-guide-title">Please:</p>
           <ul class="fl-checklist">
-            <li>• Sit directly in front of the camera</li>
-            <li>• Keep your face inside the frame</li>
-            <li>• Make sure lighting is sufficient</li>
+            <li>• Face the camera directly</li>
+            <li>• Keep your face well lit</li>
+            <li>• Keep your eyes visible</li>
+            <li>• Move closer if necessary</li>
           </ul>
         </div>
       </div>
       <div class="face-lost-actions">
         <button class="btn btn-mustard-modal btn-full" onclick="window.safetyMonitor.retryCalibration()">
           <i data-lucide="rotate-ccw"></i>
-          <span>Try Again</span>
+          <span>TRY AGAIN</span>
         </button>
         <button class="btn btn-dark-secondary btn-full" onclick="window.safetyMonitor.startSimulationMode()">
-          <span>Use Simulation Mode</span>
+          <span>USE SIMULATION MODE</span>
         </button>
       </div>
     </div>

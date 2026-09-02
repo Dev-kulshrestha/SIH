@@ -115,6 +115,7 @@ class WideEyeSafetyMonitor {
       calibCountdown: document.getElementById('calib-countdown-text'),
       calibSamplesText: document.getElementById('calib-samples-text'),
       faceNotDetectedModal: document.getElementById('face-not-detected-modal'),
+      cameraPermissionModal: document.getElementById('camera-permission-modal'),
       calibSpinner: document.getElementById('calib-spinner'),
 
       // Video HUD & Monitor View
@@ -181,12 +182,16 @@ class WideEyeSafetyMonitor {
   async startLiveCamera() {
     this.isSimulation = false;
     if (this.dom.simModeBadge) this.dom.simModeBadge.classList.add('hidden');
-    if (this.dom.hudLiveText) this.dom.hudLiveText.textContent = '● AI MONITORING ACTIVE';
+    if (this.dom.hudLiveText) this.dom.hudLiveText.textContent = '● CAMERA ACTIVE';
     if (this.dom.graphDataBadge) {
       this.dom.graphDataBadge.textContent = 'LIVE TELEMETRY';
       this.dom.graphDataBadge.style.color = '#10B981';
       this.dom.graphDataBadge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
     }
+
+    // Dismiss any open error modals
+    if (this.dom.cameraPermissionModal) this.dom.cameraPermissionModal.classList.remove('active', 'show');
+    if (this.dom.faceNotDetectedModal) this.dom.faceNotDetectedModal.classList.remove('active', 'show');
 
     // Set Loading State
     if (this.dom.permMainHeading) this.dom.permMainHeading.textContent = 'Starting camera...';
@@ -201,8 +206,8 @@ class WideEyeSafetyMonitor {
       const constraints = {
         video: {
           facingMode: 'user',
-          width: { ideal: 640 },
-          height: { ideal: 480 }
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
         },
         audio: false
       };
@@ -210,14 +215,28 @@ class WideEyeSafetyMonitor {
       this.stream = await navigator.mediaDevices.getUserMedia(constraints);
       if (this.videoElement) {
         this.videoElement.srcObject = this.stream;
-        await this.videoElement.play();
+        try {
+          await this.videoElement.play();
+        } catch (e) {
+          console.warn('Video play notice:', e);
+        }
       }
 
-      this.alertManager.logAlertEvent('INFO', 0, 'Camera active · MediaPipe Face Landmarker running locally');
-      if (this.dom.permissionOverlay) this.dom.permissionOverlay.classList.add('hidden');
-      if (this.dom.activeMonitorView) this.dom.activeMonitorView.classList.remove('hidden');
+      // Hide start screen immediately and display live camera
+      if (this.dom.permissionOverlay) {
+        this.dom.permissionOverlay.classList.add('hidden');
+        this.dom.permissionOverlay.style.display = 'none';
+      }
+      if (this.dom.activeMonitorView) {
+        this.dom.activeMonitorView.classList.remove('hidden');
+        this.dom.activeMonitorView.style.display = 'block';
+      }
 
-      // Initialize MediaPipe FaceMesh & Start Calibration
+      this.syncCanvasResolution();
+      this.alertManager.logAlertEvent('INFO', 0, 'Camera active · Live webcam feed connected');
+
+      // Start render loop and Face Landmarker calibration
+      this.startRenderLoop();
       this.initMediaPipe();
       this.startCalibration();
 
@@ -229,7 +248,26 @@ class WideEyeSafetyMonitor {
     }
   }
 
+  syncCanvasResolution() {
+    if (this.videoElement && this.canvasElement) {
+      const w = this.videoElement.videoWidth || this.videoElement.clientWidth || 640;
+      const h = this.videoElement.videoHeight || this.videoElement.clientHeight || 480;
+      if (w > 0 && h > 0) {
+        if (this.canvasElement.width !== w) this.canvasElement.width = w;
+        if (this.canvasElement.height !== h) this.canvasElement.height = h;
+      }
+    }
+  }
+
+  retryLiveCamera() {
+    if (this.dom.cameraPermissionModal) this.dom.cameraPermissionModal.classList.remove('active', 'show');
+    this.startLiveCamera();
+  }
+
   renderCameraErrorState(errMsg) {
+    if (this.dom.cameraPermissionModal) {
+      this.dom.cameraPermissionModal.classList.add('active');
+    }
     if (this.dom.permMainHeading) this.dom.permMainHeading.textContent = 'Camera access required';
     if (this.dom.permMainDesc) {
       this.dom.permMainDesc.textContent = 'WideEYE was unable to connect to your webcam. Please allow camera permissions in your browser or launch Simulation Mode.';
@@ -251,27 +289,41 @@ class WideEyeSafetyMonitor {
       `;
       if (window.lucide) window.lucide.createIcons();
     }
-    if (this.dom.permissionOverlay) this.dom.permissionOverlay.classList.remove('hidden');
-    if (this.dom.activeMonitorView) this.dom.activeMonitorView.classList.add('hidden');
+    if (this.dom.permissionOverlay) {
+      this.dom.permissionOverlay.classList.remove('hidden');
+      this.dom.permissionOverlay.style.display = 'flex';
+    }
+    if (this.dom.activeMonitorView) {
+      this.dom.activeMonitorView.classList.add('hidden');
+      this.dom.activeMonitorView.style.display = 'none';
+    }
   }
 
   startSimulationMode() {
     this.isSimulation = true;
     this.mode = 'simulation';
 
+    if (this.dom.cameraPermissionModal) this.dom.cameraPermissionModal.classList.remove('active', 'show');
     if (this.dom.faceNotDetectedModal) this.dom.faceNotDetectedModal.classList.remove('active', 'show');
     if (this.dom.simModeBadge) this.dom.simModeBadge.classList.remove('hidden');
-    if (this.dom.hudLiveText) this.dom.hudLiveText.textContent = 'SIMULATION MODE';
+    if (this.dom.hudLiveText) this.dom.hudLiveText.textContent = '● SIMULATION MODE';
     if (this.dom.graphDataBadge) {
       this.dom.graphDataBadge.textContent = 'DEMO DATA';
       this.dom.graphDataBadge.style.color = '#D4A017';
       this.dom.graphDataBadge.style.borderColor = 'rgba(212, 160, 23, 0.4)';
     }
-    if (this.dom.permissionOverlay) this.dom.permissionOverlay.classList.add('hidden');
-    if (this.dom.activeMonitorView) this.dom.activeMonitorView.classList.remove('hidden');
+    if (this.dom.permissionOverlay) {
+      this.dom.permissionOverlay.classList.add('hidden');
+      this.dom.permissionOverlay.style.display = 'none';
+    }
+    if (this.dom.activeMonitorView) {
+      this.dom.activeMonitorView.classList.remove('hidden');
+      this.dom.activeMonitorView.style.display = 'block';
+    }
 
     this.alertManager.logAlertEvent('INFO', 0, 'Simulation Mode activated (SIH Demo Fallback)');
     this.updateMonitoringControlButtons();
+    this.startRenderLoop();
     this.startCalibration();
   }
 
@@ -283,6 +335,9 @@ class WideEyeSafetyMonitor {
     }
     if (this.videoElement) {
       this.videoElement.srcObject = null;
+    }
+    if (this.canvasCtx && this.canvasElement) {
+      this.canvasCtx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
     }
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
@@ -297,10 +352,20 @@ class WideEyeSafetyMonitor {
       this.graphRenderInterval = null;
     }
     this.alertManager.resetAlertState();
-    if (this.dom.permissionOverlay) this.dom.permissionOverlay.classList.remove('hidden');
-    if (this.dom.activeMonitorView) this.dom.activeMonitorView.classList.add('hidden');
-    if (this.dom.calibrationOverlay) this.dom.calibrationOverlay.classList.add('hidden');
+    if (this.dom.permissionOverlay) {
+      this.dom.permissionOverlay.classList.remove('hidden');
+      this.dom.permissionOverlay.style.display = 'flex';
+    }
+    if (this.dom.activeMonitorView) {
+      this.dom.activeMonitorView.classList.add('hidden');
+      this.dom.activeMonitorView.style.display = 'none';
+    }
+    if (this.dom.calibrationOverlay) {
+      this.dom.calibrationOverlay.classList.add('hidden');
+      this.dom.calibrationOverlay.style.display = 'none';
+    }
     if (this.dom.faceNotDetectedModal) this.dom.faceNotDetectedModal.classList.remove('active', 'show');
+    if (this.dom.cameraPermissionModal) this.dom.cameraPermissionModal.classList.remove('active', 'show');
     this.alertManager.logAlertEvent('INFO', 0, 'AI Monitoring stopped');
     this.updateMonitoringControlButtons();
   }
@@ -373,18 +438,21 @@ class WideEyeSafetyMonitor {
     if (window.lucide) window.lucide.createIcons();
   }
 
-  // 3. ADAPTIVE CALIBRATION SEQUENCE (COLLECTS 75 VALID REAL FRAMES)
+  // 3. ADAPTIVE CALIBRATION SEQUENCE (COLLECTS 80 VALID REAL FACE FRAMES ~ 5 SECONDS)
   startCalibration() {
     this.mode = 'calibrating';
     this.calibrationSamples = [];
     this.calibrationMissedFrames = 0;
     this.isCalibrated = false;
 
-    if (this.dom.calibrationOverlay) this.dom.calibrationOverlay.classList.remove('hidden');
+    if (this.dom.calibrationOverlay) {
+      this.dom.calibrationOverlay.style.display = 'flex';
+      this.dom.calibrationOverlay.classList.remove('hidden');
+    }
     if (this.dom.faceNotDetectedModal) this.dom.faceNotDetectedModal.classList.remove('active', 'show');
     if (this.dom.calibProgressFill) this.dom.calibProgressFill.style.width = '0%';
     if (this.dom.calibCountdown) this.dom.calibCountdown.textContent = '5s remaining';
-    if (this.dom.calibSamplesText) this.dom.calibSamplesText.textContent = 'Look straight ahead and keep eyes open naturally';
+    if (this.dom.calibSamplesText) this.dom.calibSamplesText.textContent = 'Waiting for face...';
 
     this.alertManager.logAlertEvent('CALIBRATION', 0, 'Starting 5s adaptive driver calibration · Waiting for real face');
 
@@ -393,7 +461,6 @@ class WideEyeSafetyMonitor {
 
   onCalibrationFaceLost() {
     if (this.mode === 'calibrating') {
-      this.mode = 'paused';
       if (this.dom.faceNotDetectedModal) this.dom.faceNotDetectedModal.classList.add('active');
       this.alertManager.logAlertEvent('WARNING', 0, 'Calibration paused: Face not clearly detected');
     }
@@ -434,9 +501,17 @@ class WideEyeSafetyMonitor {
       this.dom.calibSamplesText.textContent = `✓ Personalized baseline established: EAR ${this.baselineEAR.toFixed(2)} · MAR ${this.baselineMAR.toFixed(2)}`;
     }
 
+    // Smooth transition from calibration to live camera view (300-500ms)
     setTimeout(() => {
-      if (this.dom.calibrationOverlay) this.dom.calibrationOverlay.classList.add('hidden');
-    }, 500);
+      if (this.dom.calibrationOverlay) {
+        this.dom.calibrationOverlay.classList.add('hidden');
+        setTimeout(() => {
+          if (this.dom.calibrationOverlay && this.dom.calibrationOverlay.classList.contains('hidden')) {
+            this.dom.calibrationOverlay.style.display = 'none';
+          }
+        }, 400);
+      }
+    }, 350);
 
     this.startSessionTimer();
     this.addRiskEvent('CALIBRATION');
@@ -468,7 +543,7 @@ class WideEyeSafetyMonitor {
       });
 
       this.faceMesh.setOptions({
-        maxNumFaces: 1,
+        maxNumFaces: 2,
         refineLandmarks: true,
         minDetectionConfidence: 0.5,
         minTrackingConfidence: 0.5
@@ -500,6 +575,8 @@ class WideEyeSafetyMonitor {
     this.isProcessingFrame = false;
     if (!this.canvasCtx || !this.canvasElement) return;
 
+    this.syncCanvasResolution();
+
     const ctx = this.canvasCtx;
     const canvas = this.canvasElement;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -513,7 +590,10 @@ class WideEyeSafetyMonitor {
 
       if (this.mode === 'calibrating') {
         this.calibrationMissedFrames++;
-        if (this.calibrationMissedFrames >= 15) { // ~0.8s without face
+        if (this.dom.calibSamplesText) {
+          this.dom.calibSamplesText.textContent = 'Waiting for face...';
+        }
+        if (this.calibrationMissedFrames >= 120) { // ~4-5s without face
           this.onCalibrationFaceLost();
         }
       }
@@ -525,9 +605,18 @@ class WideEyeSafetyMonitor {
     // B. MULTIPLE FACES DETECTED
     if (results.multiFaceLandmarks.length > 1) {
       this.metrics.faceStatus = 'MULTIPLE FACES DETECTED';
-      this.metrics.confidence = 45;
+      this.metrics.confidence = 40;
       this.metrics.eyesStatus = '--';
       this.metrics.mouthStatus = '--';
+
+      // Draw subtle notice on canvas
+      ctx.save();
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.85)';
+      ctx.font = 'bold 14px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('⚠ MULTIPLE FACES DETECTED · Ensure only driver is in frame', canvas.width / 2, 40);
+      ctx.restore();
+
       this.updateUI();
       return;
     }
@@ -536,10 +625,8 @@ class WideEyeSafetyMonitor {
     this.calibrationMissedFrames = 0;
     this.lastFaceDetectedTime = performance.now();
     this.metrics.faceStatus = '✓ FACE DETECTED';
-    this.metrics.confidence = 94;
 
     const landmarks = results.multiFaceLandmarks[0];
-    this.drawFacialLandmarks(ctx, canvas, landmarks);
 
     // 1. Calculate Real EAR for Left and Right Eyes
     const leftEAR = this.calculateEyeAspect(
@@ -555,17 +642,19 @@ class WideEyeSafetyMonitor {
     const avgEAR = (leftEAR + rightEAR) / 2.0;
 
     // Glasses & Eye Visibility Verification
+    let isLimitedVisibility = false;
     if (leftEAR < 0.08 && rightEAR < 0.08) {
       this.metrics.eyesStatus = 'LIMITED EYE VISIBILITY';
+      isLimitedVisibility = true;
     } else {
-      this.metrics.eyesStatus = 'DETECTED ✓';
+      this.metrics.eyesStatus = 'ACTIVE';
     }
 
     // 2. Calculate Real MAR
     const mar = this.calculateMouthAspect(
       landmarks[61], landmarks[291], landmarks[13], landmarks[14]
     );
-    this.metrics.mouthStatus = 'DETECTED ✓';
+    this.metrics.mouthStatus = mar > 0.38 ? 'YAWN DETECTED' : 'NORMAL';
 
     // 3. Calculate 3D Head Pose Vectors
     const nose = landmarks[1];
@@ -574,7 +663,7 @@ class WideEyeSafetyMonitor {
     const leftCheek = landmarks[234];
     const rightCheek = landmarks[454];
 
-    let headPose = 'STABLE';
+    let headPose = 'CENTER';
     const yawDiff = (nose.x - leftCheek.x) - (rightCheek.x - nose.x);
     const pitchRatio = (nose.y - forehead.y) / Math.max(0.01, chin.y - forehead.y);
     const rollAngle = Math.atan2(landmarks[263].y - landmarks[33].y, landmarks[263].x - landmarks[33].x);
@@ -589,7 +678,16 @@ class WideEyeSafetyMonitor {
       headPose = 'HEAD TILT';
     }
 
-    // 4. If in Calibration Mode, accumulate valid face samples
+    // 4. Dynamic Face Tracking Confidence Calculation
+    let dynamicConfidence = 95;
+    if (isLimitedVisibility) dynamicConfidence -= 14;
+    if (headPose !== 'CENTER') dynamicConfidence -= 8;
+    this.metrics.confidence = Math.max(65, Math.min(98, dynamicConfidence));
+
+    // Draw real facial landmarks over the user's face
+    this.drawFacialLandmarks(ctx, canvas, landmarks);
+
+    // 5. If in Calibration Mode, accumulate valid face samples
     if (this.mode === 'calibrating') {
       this.calibrationSamples.push({ leftEAR, rightEAR, avgEAR, mar, pitchRatio, yawDiff, rollAngle, headPose });
       const progress = Math.min(1, this.calibrationSamples.length / this.TARGET_CALIBRATION_FRAMES);
@@ -618,7 +716,7 @@ class WideEyeSafetyMonitor {
       return;
     }
 
-    // 5. If in Active Monitoring, process signals
+    // 6. If in Active Monitoring, process signals
     if (this.mode === 'monitoring') {
       this.processSignals(leftEAR, rightEAR, mar, headPose);
     }
@@ -626,36 +724,127 @@ class WideEyeSafetyMonitor {
 
   drawFacialLandmarks(ctx, canvas, landmarks) {
     ctx.save();
-    ctx.strokeStyle = 'rgba(212, 160, 23, 0.45)';
+
+    // 1. Calculate Face Bounding Box for Corner Brackets
+    let minX = 1, maxX = 0, minY = 1, maxY = 0;
+    landmarks.forEach(pt => {
+      if (pt.x < minX) minX = pt.x;
+      if (pt.x > maxX) maxX = pt.x;
+      if (pt.y < minY) minY = pt.y;
+      if (pt.y > maxY) maxY = pt.y;
+    });
+
+    const padX = (maxX - minX) * 0.08;
+    const padY = (maxY - minY) * 0.08;
+    const bx = Math.max(4, (minX - padX) * canvas.width);
+    const by = Math.max(4, (minY - padY) * canvas.height);
+    const bw = Math.min(canvas.width - bx - 4, (maxX - minX + padX * 2) * canvas.width);
+    const bh = Math.min(canvas.height - by - 4, (maxY - minY + padY * 2) * canvas.height);
+
+    // Draw Subtle Futuristic Corner Brackets
+    const cornerLen = Math.min(24, bw * 0.18, bh * 0.18);
+    ctx.strokeStyle = '#D4A017';
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = 'round';
+
+    // Top-Left Corner
+    ctx.beginPath();
+    ctx.moveTo(bx, by + cornerLen);
+    ctx.lineTo(bx, by);
+    ctx.lineTo(bx + cornerLen, by);
+    ctx.stroke();
+
+    // Top-Right Corner
+    ctx.beginPath();
+    ctx.moveTo(bx + bw - cornerLen, by);
+    ctx.lineTo(bx + bw, by);
+    ctx.lineTo(bx + bw, by + cornerLen);
+    ctx.stroke();
+
+    // Bottom-Left Corner
+    ctx.beginPath();
+    ctx.moveTo(bx, by + bh - cornerLen);
+    ctx.lineTo(bx, by + bh);
+    ctx.lineTo(bx + cornerLen, by + bh);
+    ctx.stroke();
+
+    // Bottom-Right Corner
+    ctx.beginPath();
+    ctx.moveTo(bx + bw - cornerLen, by + bh);
+    ctx.lineTo(bx + bw, by + bh);
+    ctx.lineTo(bx + bw, by + bh - cornerLen);
+    ctx.stroke();
+
+    // Corner Tag Pill [ ● FACE LOCKED ]
+    ctx.fillStyle = 'rgba(5, 5, 5, 0.85)';
+    ctx.strokeStyle = 'rgba(212, 160, 23, 0.7)';
+    ctx.lineWidth = 1;
+    const tagW = 140;
+    const tagH = 20;
+    ctx.beginPath();
+    ctx.roundRect(bx, Math.max(4, by - tagH - 4), tagW, tagH, 4);
+    ctx.fill();
+    ctx.stroke();
+
     ctx.fillStyle = '#D4A017';
-    ctx.lineWidth = 1.3;
+    ctx.font = 'bold 9px "Space Grotesk", monospace';
+    ctx.fillText('● LIVE AI DETECTION', bx + 8, Math.max(4, by - tagH - 4) + 14);
 
-    const leftEyeIdx = [33, 160, 158, 133, 153, 144, 33];
-    const rightEyeIdx = [362, 385, 387, 263, 373, 380, 362];
-    const mouthIdx = [61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291];
+    // 2. Draw Real MediaPipe Facial Landmark Contours
+    ctx.strokeStyle = 'rgba(212, 160, 23, 0.55)';
+    ctx.fillStyle = '#D4A017';
+    ctx.lineWidth = 1.4;
 
-    const drawContour = (indices) => {
+    const leftEyeIdx = [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246, 33];
+    const rightEyeIdx = [362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384, 398, 362];
+    const leftEyebrowIdx = [70, 63, 105, 66, 107, 55, 65, 52, 53, 46];
+    const rightEyebrowIdx = [336, 296, 334, 293, 300, 285, 295, 282, 283, 276];
+    const noseIdx = [168, 6, 197, 195, 5, 4, 1, 2, 98, 327];
+    const lipsOuterIdx = [61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146, 61];
+    const lipsInnerIdx = [78, 191, 80, 81, 82, 13, 312, 311, 310, 415, 308, 324, 318, 402, 317, 14, 87, 178, 88, 95, 78];
+    const faceOvalIdx = [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377, 152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109, 10];
+
+    const drawContour = (indices, close = false, strokeColor = null) => {
+      if (strokeColor) ctx.strokeStyle = strokeColor;
       ctx.beginPath();
       indices.forEach((idx, i) => {
         const pt = landmarks[idx];
+        if (!pt) return;
         const x = pt.x * canvas.width;
         const y = pt.y * canvas.height;
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
+      if (close) ctx.closePath();
       ctx.stroke();
     };
 
-    drawContour(leftEyeIdx);
-    drawContour(rightEyeIdx);
-    drawContour(mouthIdx);
+    // Draw Face Oval (Subtle contour)
+    drawContour(faceOvalIdx, true, 'rgba(212, 160, 23, 0.35)');
 
-    // Iris center points & Nose tip
-    [468, 473, 1].forEach(idx => {
+    // Draw Eyes & Eyebrows (Prominent Mustard)
+    drawContour(leftEyeIdx, true, 'rgba(212, 160, 23, 0.85)');
+    drawContour(rightEyeIdx, true, 'rgba(212, 160, 23, 0.85)');
+    drawContour(leftEyebrowIdx, false, 'rgba(212, 160, 23, 0.6)');
+    drawContour(rightEyebrowIdx, false, 'rgba(212, 160, 23, 0.6)');
+
+    // Draw Nose Ridge
+    drawContour(noseIdx, false, 'rgba(212, 160, 23, 0.5)');
+
+    // Draw Lips
+    drawContour(lipsOuterIdx, true, 'rgba(212, 160, 23, 0.7)');
+    drawContour(lipsInnerIdx, true, 'rgba(212, 160, 23, 0.5)');
+
+    // 3. Draw Key Feature Highlight Nodes (Irises, Nose Tip, Lip Corners)
+    const keyNodeIndices = [468, 473, 1, 33, 133, 362, 263, 61, 291];
+    keyNodeIndices.forEach(idx => {
       if (landmarks[idx]) {
         const pt = landmarks[idx];
+        const x = pt.x * canvas.width;
+        const y = pt.y * canvas.height;
         ctx.beginPath();
-        ctx.arc(pt.x * canvas.width, pt.y * canvas.height, 2.5, 0, 2 * Math.PI);
+        ctx.arc(x, y, idx === 468 || idx === 473 ? 3.2 : 2.0, 0, 2 * Math.PI);
+        ctx.fillStyle = idx === 468 || idx === 473 ? '#FDE047' : '#D4A017';
         ctx.fill();
       }
     });
