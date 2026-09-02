@@ -1,7 +1,7 @@
 /**
  * WideEYE — Phase 4 & Phase 5: Real-Time AI Driver Safety Monitor
  * & Smart Alert & Response System 🚨
- * Brand: BLACK + LEMON YELLOW (#DFFF00) + WHITE (#FFFFFF)
+ * Brand: BLACK + LEMON YELLOW (#D4A017) + WHITE (#FFFFFF)
  */
 
 // ALERT CONFIGURATION CONSTANTS (Centralized & Configurable)
@@ -114,6 +114,8 @@ class WideEyeSafetyMonitor {
       calibProgressFill: document.getElementById('calib-progress-fill'),
       calibCountdown: document.getElementById('calib-countdown-text')
     };
+
+    this.updateMonitoringControlButtons();
   }
 
   toggleSound() {
@@ -163,6 +165,7 @@ class WideEyeSafetyMonitor {
       this.initMediaPipe();
       this.startCalibration();
 
+      this.updateMonitoringControlButtons();
     } catch (err) {
       console.warn('Camera access unavailable or denied:', err);
       this.alertManager.logAlertEvent('WARNING', 0, 'Camera unavailable: ' + err.message);
@@ -188,6 +191,7 @@ class WideEyeSafetyMonitor {
     if (this.dom.activeMonitorView) this.dom.activeMonitorView.classList.remove('hidden');
 
     this.alertManager.logAlertEvent('INFO', 0, 'Simulation Mode activated (Camera fallback)');
+    this.updateMonitoringControlButtons();
     this.startCalibration();
   }
 
@@ -209,6 +213,75 @@ class WideEyeSafetyMonitor {
     if (this.dom.permissionOverlay) this.dom.permissionOverlay.classList.remove('hidden');
     if (this.dom.activeMonitorView) this.dom.activeMonitorView.classList.add('hidden');
     this.alertManager.logAlertEvent('INFO', 0, 'Monitoring stopped');
+    this.updateMonitoringControlButtons();
+  }
+
+  handleMonitoringToggle() {
+    if (this.mode === 'idle') {
+      this.startLiveCamera();
+    } else {
+      this.stopMonitoring();
+    }
+  }
+
+  updateMonitoringControlButtons() {
+    const isMonitoring = this.mode === 'monitoring' || this.mode === 'simulation' || this.mode === 'calibrating';
+    
+    // 1. Top Navbar Toggle Button
+    const topBtn = document.getElementById('btn-toggle-monitoring');
+    const topText = document.getElementById('toggle-monitor-text');
+    const topIcon = document.getElementById('toggle-monitor-icon');
+    if (topBtn && topText) {
+      if (isMonitoring) {
+        topBtn.classList.remove('stopped');
+        topText.textContent = 'Stop Monitoring';
+        if (topIcon) topIcon.setAttribute('data-lucide', 'square');
+      } else {
+        topBtn.classList.add('stopped');
+        topText.textContent = 'Start Monitoring';
+        if (topIcon) topIcon.setAttribute('data-lucide', 'play');
+      }
+    }
+
+    // 2. HUD Button on Video
+    const hudBtn = document.getElementById('hud-stop-monitor-btn');
+    if (hudBtn) {
+      if (isMonitoring) {
+        hudBtn.style.display = 'inline-flex';
+        hudBtn.innerHTML = '<i data-lucide="square"></i><span>Stop Monitoring</span>';
+      } else {
+        hudBtn.style.display = 'inline-flex';
+        hudBtn.innerHTML = '<i data-lucide="play"></i><span>Start Monitoring</span>';
+      }
+    }
+
+    // 3. Sidebar Card Button
+    const cardBtn = document.getElementById('btn-stop-card');
+    const cardText = document.getElementById('card-toggle-text');
+    const cardIcon = document.getElementById('card-toggle-icon');
+    if (cardBtn && cardText) {
+      if (isMonitoring) {
+        cardBtn.classList.remove('stopped');
+        cardText.textContent = 'Stop Monitoring';
+        if (cardIcon) cardIcon.setAttribute('data-lucide', 'square');
+      } else {
+        cardBtn.classList.add('stopped');
+        cardText.textContent = 'Start Monitoring';
+        if (cardIcon) cardIcon.setAttribute('data-lucide', 'play');
+      }
+    }
+
+    // 4. Top status text & indicator
+    if (this.dom.statusText) {
+      this.dom.statusText.textContent = isMonitoring
+        ? (this.isSimulation ? 'WIDEEYE SAFETY MONITOR · SIMULATION ACTIVE' : 'WIDEEYE SAFETY MONITOR · ACTIVE')
+        : 'WIDEEYE SAFETY MONITOR · STANDBY';
+    }
+    if (this.dom.statusDot) {
+      this.dom.statusDot.className = isMonitoring ? 'pulse-lemon-dot' : 'pulse-gray-dot';
+    }
+
+    if (window.lucide) window.lucide.createIcons();
   }
 
   // 3. ADAPTIVE CALIBRATION SEQUENCE
@@ -368,8 +441,8 @@ class WideEyeSafetyMonitor {
 
   drawLemonLandmarks(ctx, canvas, landmarks) {
     ctx.save();
-    ctx.strokeStyle = 'rgba(223, 255, 0, 0.45)';
-    ctx.fillStyle = '#DFFF00';
+    ctx.strokeStyle = 'rgba(212, 160, 23, 0.45)';
+    ctx.fillStyle = '#D4A017';
     ctx.lineWidth = 1.2;
 
     const leftEyeIdx = [33, 160, 158, 133, 153, 144, 33];
@@ -564,8 +637,8 @@ class WideEyeSafetyMonitor {
   drawSimulatedFace(ctx, canvas) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
-    ctx.strokeStyle = 'rgba(223, 255, 0, 0.4)';
-    ctx.fillStyle = '#DFFF00';
+    ctx.strokeStyle = 'rgba(212, 160, 23, 0.4)';
+    ctx.fillStyle = '#D4A017';
     ctx.lineWidth = 1.5;
 
     const cx = canvas.width / 2;
@@ -685,6 +758,7 @@ class AlertManager {
       sosCountdownModal: document.getElementById('sos-countdown-modal'),
       sosCountdownNum: document.getElementById('sos-countdown-number'),
       sosProgressCircle: document.getElementById('sos-countdown-circle'),
+      sosCountdownSecText: document.getElementById('sos-countdown-sec-text'),
 
       // SOS Activated Screen
       sosActivatedModal: document.getElementById('sos-activated-modal'),
@@ -914,6 +988,88 @@ class AlertManager {
     osc.stop(ctx.currentTime + 0.55);
   }
 
+  // Realistic Synthesized Web Audio Siren Pulse
+  playEmergencySirenPulse(secondsRemaining) {
+    if (!this.audioEnabled) return;
+    this.resumeAudioContext();
+    if (!this.audioContext) return;
+
+    try {
+      const ctx = this.audioContext;
+      const now = ctx.currentTime;
+
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc1.type = 'sawtooth';
+      osc2.type = 'sine';
+
+      const baseFreq = secondsRemaining === 1 ? 880 : (640 + (5 - secondsRemaining) * 45);
+      const peakFreq = secondsRemaining === 1 ? 1300 : baseFreq + 360;
+      const duration = secondsRemaining === 1 ? 0.42 : 0.32;
+
+      osc1.frequency.setValueAtTime(baseFreq, now);
+      osc1.frequency.linearRampToValueAtTime(peakFreq, now + (duration * 0.45));
+      osc1.frequency.linearRampToValueAtTime(baseFreq, now + duration);
+
+      osc2.frequency.setValueAtTime(baseFreq * 0.5, now);
+      osc2.frequency.linearRampToValueAtTime(peakFreq * 0.5, now + (duration * 0.45));
+      osc2.frequency.linearRampToValueAtTime(baseFreq * 0.5, now + duration);
+
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.22, now + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + duration);
+      osc2.stop(now + duration);
+    } catch (e) {
+      console.warn('Audio notice:', e);
+    }
+  }
+
+  playFinalSosActivatedSiren() {
+    if (!this.audioEnabled) return;
+    this.resumeAudioContext();
+    if (!this.audioContext) return;
+
+    try {
+      const ctx = this.audioContext;
+      const now = ctx.currentTime;
+
+      [0, 0.35].forEach((offset, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+
+        const startT = now + offset;
+        const dur = 0.32;
+
+        osc.frequency.setValueAtTime(800 + idx * 120, startT);
+        osc.frequency.linearRampToValueAtTime(1400 + idx * 120, startT + (dur * 0.5));
+        osc.frequency.linearRampToValueAtTime(800 + idx * 120, startT + dur);
+
+        gain.gain.setValueAtTime(0.001, startT);
+        gain.gain.linearRampToValueAtTime(0.25, startT + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, startT + dur);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(startT);
+        osc.stop(startT + dur);
+      });
+    } catch (e) {
+      console.warn('Audio notice:', e);
+    }
+  }
+
   stopAudio() {
     if (this.audioOscillator) {
       try { this.audioOscillator.stop(); } catch(e) {}
@@ -959,10 +1115,20 @@ class AlertManager {
       this.dom.sosCountdownModal.classList.add('active');
       if (this.dom.sosCountdownNum) {
         this.dom.sosCountdownNum.textContent = '5';
+        this.dom.sosCountdownNum.style.animation = 'none';
+        void this.dom.sosCountdownNum.offsetWidth;
+        this.dom.sosCountdownNum.style.animation = 'sos-num-tick 0.35s ease-out';
+      }
+      if (this.dom.sosCountdownSecText) {
+        this.dom.sosCountdownSecText.textContent = '5 seconds';
+      }
+      if (this.dom.sosProgressCircle) {
+        this.dom.sosProgressCircle.style.strokeDashoffset = '0';
       }
     }
 
     this.logAlertEvent('SOS_COUNTDOWN', Math.round(this.monitor.metrics.smoothedRiskScore), 'Emergency assistance countdown started (5s)...');
+    this.playEmergencySirenPulse(5);
 
     if (this.sosCountdownInterval) clearInterval(this.sosCountdownInterval);
 
@@ -971,14 +1137,25 @@ class AlertManager {
 
       if (this.dom.sosCountdownNum) {
         this.dom.sosCountdownNum.textContent = String(this.sosCountdownSeconds);
+        this.dom.sosCountdownNum.style.animation = 'none';
+        void this.dom.sosCountdownNum.offsetWidth;
+        this.dom.sosCountdownNum.style.animation = 'sos-num-tick 0.35s ease-out';
+      }
+
+      if (this.dom.sosCountdownSecText) {
+        this.dom.sosCountdownSecText.textContent = `${this.sosCountdownSeconds} second${this.sosCountdownSeconds === 1 ? '' : 's'}`;
       }
 
       if (this.dom.sosProgressCircle) {
-        const offset = 283 - (283 * ((5 - this.sosCountdownSeconds) / 5));
+        const circumference = 402.12;
+        const progress = this.sosCountdownSeconds / 5;
+        const offset = circumference * (1 - progress);
         this.dom.sosProgressCircle.style.strokeDashoffset = offset;
       }
 
-      this.playWarningTone(); // Beep on countdown
+      if (this.sosCountdownSeconds > 0) {
+        this.playEmergencySirenPulse(this.sosCountdownSeconds);
+      }
 
       if (this.sosCountdownSeconds <= 0) {
         clearInterval(this.sosCountdownInterval);
@@ -1003,6 +1180,7 @@ class AlertManager {
     if (this.dom.sosActivatedModal) {
       this.dom.sosActivatedModal.classList.add('active');
     }
+    this.playFinalSosActivatedSiren();
     this.logAlertEvent('SOS_ACTIVATED', Math.round(this.monitor.metrics.smoothedRiskScore), '🚨 EMERGENCY SOS ACTIVATED · Triage dispatch signal transmitted.');
   }
 

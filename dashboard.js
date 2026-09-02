@@ -1,6 +1,6 @@
 /**
  * WideEYE — Phase 8 Post-Ride Dashboard & Safety History System
- * Brand: BLACK (#050505, #0B0B0B) + LEMON YELLOW (#DFFF00) + WHITE (#FFFFFF)
+ * Brand: BLACK (#050505, #0B0B0B) + LEMON YELLOW (#D4A017) + WHITE (#FFFFFF)
  */
 
 class WideEyeSafetyDashboard {
@@ -32,7 +32,7 @@ class WideEyeSafetyDashboard {
       destination: "City Centre Mall (Sector 29)",
       distanceKm: 8.4,
       durationMin: 24,
-      fare: 96,
+      fare: "96.00",
       rideType: "Auto",
       paymentMethod: "Cash / UPI",
       overallStatus: "SAFE",
@@ -70,14 +70,12 @@ class WideEyeSafetyDashboard {
         { minute: 24, time: "11:06", risk: 31, label: "Safe arrival at Sector 29 gate" }
       ],
       eventTimeline: [
-        { time: "10:42:10", title: "Trip started", desc: "Pickup at Cyber City Gate 2. Driver identity verified.", risk: 12, type: "safe" },
-        { time: "10:44:20", title: "Monitoring activated", desc: "Optical sensor calibrated baseline EAR: 0.32, MAR: 0.18.", risk: 15, type: "safe" },
-        { time: "10:48:12", title: "Normal blink detected", desc: "Driver blink pattern within healthy 18 blinks/min range.", risk: 18, type: "safe" },
-        { time: "10:51:30", title: "Possible yawn detected", desc: "Mouth opening MAR elevated to 0.52. Sensor flagged attention.", risk: 28, type: "warning" },
-        { time: "10:55:08", title: "Visual warning triggered", desc: "Blink interval exceeded threshold. Yellow safety HUD flashed.", risk: 35, type: "warning" },
-        { time: "10:55:22", title: "Audio alert triggered", desc: "Short 880Hz audio chime sounded. Driver resumed focus in 1.8s.", risk: 42, type: "warning" },
-        { time: "11:03:14", title: "Risk returned to SAFE", desc: "Driver gaze centered, EAR normalized to 0.30.", risk: 22, type: "safe" },
-        { time: "11:06:31", title: "Trip completed", desc: "Arrived at City Centre Mall. Telemetry archived securely.", risk: 16, type: "safe" }
+        { time: "10:42", title: "Trip started", desc: "DLF Cyber City", risk: 12, type: "safe" },
+        { time: "10:43", title: "Driver verified", desc: "Rahul Kumar", risk: 14, type: "safe" },
+        { time: "10:45", title: "WideEYE monitoring activated", desc: "Driver safety monitoring started", risk: 16, type: "safe" },
+        { time: "10:51", title: "Normal driving detected", desc: "Driver remained attentive", risk: 18, type: "safe" },
+        { time: "10:55", title: "Warning triggered", desc: "Drowsiness risk increased", risk: 42, type: "warning" },
+        { time: "10:56", title: "Risk stabilized", desc: "Trip progressing normally", risk: 24, type: "safe" }
       ]
     };
   }
@@ -213,8 +211,9 @@ class WideEyeSafetyDashboard {
 
     const circleProgress = document.getElementById('score-circle-fill');
     if (circleProgress) {
-      // 2 * PI * r = 2 * PI * 40 ≈ 251.2
-      const circumference = 251.2;
+      // 2 * PI * r = 2 * PI * 48 ≈ 301.59
+      const circumference = 301.59;
+      circleProgress.style.strokeDasharray = circumference;
       const offset = circumference - (this.safetyScore / 100) * circumference;
       circleProgress.style.strokeDashoffset = offset;
     }
@@ -222,40 +221,16 @@ class WideEyeSafetyDashboard {
 
   // 4. OVERALL SAFETY CARD (DYNAMIC NARRATIVE)
   renderOverallSafetyCard() {
-    const statusWordEl = document.getElementById('overall-status-word');
     const narrativeEl = document.getElementById('overall-safety-narrative');
     
-    let statusText = "SAFE";
-    let narrative = "";
+    let narrative = "No critical safety events were recorded during this trip. Driver attentiveness remained consistently high.";
 
     if (this.tripData.criticalCount > 0) {
-      statusText = "CRITICAL";
       narrative = "WideEYE detected critical fatigue risks requiring active emergency mitigation.";
-      if (statusWordEl) {
-        statusWordEl.className = "overall-status-pill critical";
-        statusWordEl.innerHTML = `🔴 ${statusText}`;
-      }
     } else if (this.tripData.highRiskCount > 0 || this.tripData.maxRisk > 60) {
-      statusText = "HIGH RISK";
       narrative = "Driver experienced elevated fatigue intervals. High-risk prompts were triggered.";
-      if (statusWordEl) {
-        statusWordEl.className = "overall-status-pill high-risk";
-        statusWordEl.innerHTML = `🟠 ${statusText}`;
-      }
     } else if (this.tripData.warningsCount > 0) {
-      statusText = "SAFE";
-      narrative = `Driver remained within a safe risk range during most of the trip. ${this.tripData.warningsCount} minor fatigue alerts were triggered and resolved within 1.8 seconds.`;
-      if (statusWordEl) {
-        statusWordEl.className = "overall-status-pill safe";
-        statusWordEl.innerHTML = `🟢 ${statusText}`;
-      }
-    } else {
-      statusText = "SAFE";
-      narrative = "Driver maintained optimal attentiveness with 0 fatigue warnings and 100% route adherence.";
-      if (statusWordEl) {
-        statusWordEl.className = "overall-status-pill safe";
-        statusWordEl.innerHTML = `🟢 ${statusText}`;
-      }
+      narrative = `No critical safety events were recorded during this trip. ${this.tripData.warningsCount} minor fatigue alerts were triggered and resolved within 1.8 seconds.`;
     }
 
     if (narrativeEl) narrativeEl.textContent = narrative;
@@ -265,8 +240,8 @@ class WideEyeSafetyDashboard {
     if (maxR) maxR.textContent = `${this.tripData.maxRisk}%`;
     const avgR = document.getElementById('drowsy-avg-val');
     if (avgR) avgR.textContent = `${this.tripData.averageRisk}%`;
-    const minR = document.getElementById('drowsy-min-val');
-    if (minR) minR.textContent = `${this.tripData.minRisk}%`;
+    const dMaxRisk = document.getElementById('driver-max-risk');
+    if (dMaxRisk) dMaxRisk.textContent = `${this.tripData.maxRisk}%`;
   }
 
   // 5. INTERACTIVE RISK TREND GRAPH & TOOLTIPS
@@ -279,11 +254,10 @@ class WideEyeSafetyDashboard {
 
     const tooltip = document.getElementById('chart-tooltip');
 
-    // SVG coordinates width: 680, height: 200, padding left/right 50
     const startX = 60;
     const endX = 640;
-    const chartHeight = 160;
-    const topY = 25;
+    const chartHeight = 155;
+    const topY = 30;
     const bottomY = topY + chartHeight;
 
     const maxTime = 24; // minutes
@@ -332,25 +306,25 @@ class WideEyeSafetyDashboard {
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('cx', c.x);
         circle.setAttribute('cy', c.y);
-        circle.setAttribute('r', isWarn ? '6' : '4.5');
-        circle.setAttribute('fill', isWarn ? '#EF4444' : '#DFFF00');
+        circle.setAttribute('r', isWarn ? '6' : '5');
+        circle.setAttribute('fill', isWarn ? '#EF4444' : '#D4A017');
         circle.setAttribute('stroke', '#050505');
         circle.setAttribute('stroke-width', '2');
         circle.style.cursor = 'pointer';
-        circle.style.transition = 'transform 0.15s ease';
+        circle.style.transition = 'transform 0.15s ease, r 0.15s ease';
 
         circle.addEventListener('mouseenter', (e) => {
           circle.setAttribute('r', '8');
           if (tooltip) {
             tooltip.style.display = 'block';
-            tooltip.style.left = `${c.x - 30}px`;
+            tooltip.style.left = `${c.x - 35}px`;
             tooltip.style.top = `${c.y - 45}px`;
-            tooltip.innerHTML = `<strong>${c.minute} min (${c.time})</strong><br>Risk: <span style="color:${isWarn ? '#EF4444' : '#DFFF00'}">${c.risk}%</span>`;
+            tooltip.innerHTML = `<strong>${c.minute} min (${c.time})</strong><br>Risk: <span style="font-weight:800;color:${isWarn ? '#EF4444' : '#050505'}">${c.risk}%</span>`;
           }
         });
 
         circle.addEventListener('mouseleave', () => {
-          circle.setAttribute('r', isWarn ? '6' : '4.5');
+          circle.setAttribute('r', isWarn ? '6' : '5');
           if (tooltip) tooltip.style.display = 'none';
         });
 
@@ -373,22 +347,18 @@ class WideEyeSafetyDashboard {
       const isCrit = ev.type === 'critical';
 
       const dotClass = isCrit ? 'critical' : (isWarn ? 'warning' : 'safe');
-      const icon = isCrit ? '🚨' : (isWarn ? '⚠' : '✓');
 
       const item = document.createElement('div');
-      item.className = `dt-event-row ${isLast ? 'last' : ''}`;
+      item.className = `vt-event-item ${isLast ? 'last' : ''}`;
       item.innerHTML = `
-        <div class="dt-time">${ev.time}</div>
-        <div class="dt-node-col">
-          <span class="dt-dot ${dotClass}">${icon}</span>
-          ${!isLast ? '<span class="dt-line"></span>' : ''}
+        <div class="vt-time-col">${ev.time}</div>
+        <div class="vt-track-col">
+          <span class="vt-dot ${dotClass}"></span>
+          ${!isLast ? '<span class="vt-line"></span>' : ''}
         </div>
-        <div class="dt-content">
-          <div class="dt-title-row">
-            <h4>${ev.title}</h4>
-            <span class="dt-risk-badge ${dotClass}">Risk: ${ev.risk}%</span>
-          </div>
-          <p>${ev.desc}</p>
+        <div class="vt-info-col">
+          <h4 class="vt-title">${ev.title}</h4>
+          <p class="vt-desc">${ev.desc}</p>
         </div>
       `;
       listEl.appendChild(item);

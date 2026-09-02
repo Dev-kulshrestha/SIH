@@ -1,6 +1,6 @@
 /**
  * WideEYE — Phase 2 Ride Booking System Script
- * Brand Design: BLACK + LEMON YELLOW (#DFFF00) + WHITE (#FFFFFF)
+ * Brand Design: BLACK + LEMON YELLOW (#D4A017) + WHITE (#FFFFFF)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -81,6 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const activeDriverMarker = document.getElementById('active-driver-marker');
   const driverMapTag = document.getElementById('driver-map-tag');
   const confirmedEtaCountdown = document.getElementById('confirmed-eta-countdown');
+
+  // Check if redirected from a cancelled ride
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('cancelled') === '1') {
+    setTimeout(() => {
+      showBookingToast("Ride cancelled successfully.");
+      // Clean query string
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }, 400);
+  }
 
   // 2. Location Input & Suggestions Handlers
   function showSuggestions(targetInput) {
@@ -214,14 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2500);
   }
 
-  // Cancel Matching
-  if (btnCancelMatching) {
-    btnCancelMatching.addEventListener('click', () => {
-      if (matchingTimeout) clearTimeout(matchingTimeout);
-      resetToSelectionState();
-    });
-  }
-
   function resetToSelectionState() {
     if (stateMatching) stateMatching.classList.add('hidden');
     if (stateConfirmed) stateConfirmed.classList.add('hidden');
@@ -294,10 +296,59 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 300);
   }
 
-  window.cancelBookedRide = function() {
-    if (confirm('Are you sure you want to cancel this ride?')) {
-      resetToSelectionState();
+  // Toast Notification Helper
+  function showBookingToast(message) {
+    const toast = document.getElementById('booking-toast');
+    const toastText = document.getElementById('booking-toast-text');
+    if (!toast) return;
+
+    if (toastText && message) toastText.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3500);
+  }
+
+  // Cancel Matching (Searching State)
+  window.cancelSearchingForDriver = function() {
+    if (matchingTimeout) clearTimeout(matchingTimeout);
+    resetToSelectionState();
+    showBookingToast("Search cancelled.");
+  };
+
+  if (btnCancelMatching) {
+    btnCancelMatching.addEventListener('click', () => {
+      window.cancelSearchingForDriver();
+    });
+  }
+
+  // Cancel Ride Modal Handlers (Matched / Confirmed State)
+  window.promptCancelRide = function() {
+    const modal = document.getElementById('cancel-ride-modal');
+    if (modal) {
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      if (window.lucide) window.lucide.createIcons();
     }
+  };
+
+  window.closeCancelRideModal = function() {
+    const modal = document.getElementById('cancel-ride-modal');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+  };
+
+  window.confirmCancelRide = function() {
+    window.closeCancelRideModal();
+    if (matchingTimeout) clearTimeout(matchingTimeout);
+    resetToSelectionState();
+    showBookingToast("Ride cancelled successfully.");
+  };
+
+  window.cancelBookedRide = function() {
+    window.promptCancelRide();
   };
 
   window.simulateLiveRideView = function() {

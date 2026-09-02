@@ -33,7 +33,7 @@
           <div class="logo-mark">
             <svg viewBox="0 0 28 28" fill="none" class="logo-icon">
               <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="14" cy="14" r="4.2" fill="#DFFF00" class="logo-pupil-yellow"/>
+              <circle cx="14" cy="14" r="4.2" fill="#D4A017" class="logo-pupil-yellow"/>
               <circle cx="15.5" cy="12.5" r="1.2" fill="#050505"/>
             </svg>
           </div>
@@ -130,24 +130,34 @@
         </p>
       </div>
 
-      <!-- 4. EMERGENCY ACTION BUTTONS -->
-      <div class="emergency-actions-grid">
-        <button class="btn btn-emergency-primary" onclick="window.emergencyCenter.callEmergencyContact()">
-          <i data-lucide="phone-call"></i>
-          <span>Call Emergency Contact</span>
-        </button>
-        <button class="btn btn-secondary" onclick="window.emergencyCenter.shareLiveLocation()">
-          <i data-lucide="share-2"></i>
-          <span>Share Location</span>
-        </button>
-        <a href="track.html" class="btn btn-secondary">
-          <i data-lucide="navigation"></i>
-          <span>View Live Ride</span>
-        </a>
-        <button class="btn btn-dark-resolve" onclick="window.emergencyCenter.promptResolveEmergency()">
-          <i data-lucide="check-circle-2"></i>
-          <span>Resolve Emergency</span>
-        </button>
+      <!-- 4. EMERGENCY ACTION BUTTONS (2x2 GRID) -->
+      <div class="emergency-actions-section">
+        <h3 class="emergency-actions-heading">Emergency Actions</h3>
+        <div class="emergency-actions-grid">
+          <!-- 1. Call Emergency Contact (Red) -->
+          <button class="btn-sos-action btn-sos-call" id="btn-sos-call" onclick="window.emergencyCenter.callEmergencyContact()" aria-label="Call Emergency Contact">
+            <i data-lucide="phone-call"></i>
+            <span>Call Emergency Contact</span>
+          </button>
+
+          <!-- 2. Share Location -->
+          <button class="btn-sos-action btn-sos-share" id="btn-sos-share" onclick="window.emergencyCenter.shareLiveLocation()" aria-label="Share Location">
+            <i data-lucide="share-2" id="share-loc-icon"></i>
+            <span id="share-loc-text">Share Location</span>
+          </button>
+
+          <!-- 3. View Live Ride -->
+          <a href="track.html?from=sos" class="btn-sos-action btn-sos-view-ride" id="btn-sos-view-ride" aria-label="View Live Ride">
+            <i data-lucide="navigation"></i>
+            <span>View Live Ride</span>
+          </a>
+
+          <!-- 4. Resolve Emergency -->
+          <button class="btn-sos-action btn-sos-resolve" id="btn-sos-resolve" onclick="window.emergencyCenter.promptResolveEmergency()" aria-label="Resolve Emergency">
+            <i data-lucide="check-circle-2"></i>
+            <span>Resolve Emergency</span>
+          </button>
+        </div>
       </div>
 
     </section>
@@ -257,21 +267,35 @@
   <div class="modal-backdrop" id="sos-countdown-modal" aria-hidden="true" role="dialog">
     <div class="modal-dialog sos-countdown-dialog">
       <div class="sos-countdown-body text-center">
-        <h2 class="sos-head-title">🚨 Emergency assistance will activate in</h2>
+        <!-- Emergency Kicker & Header -->
+        <div class="sos-header-block">
+          <div class="sos-emergency-badge">
+            <span class="sos-blink-dot"></span>
+            <span>🚨 EMERGENCY</span>
+          </div>
+          <h2 class="sos-main-title">SOS ACTIVATION</h2>
+          <p class="sos-header-sub">Emergency alert will be sent automatically.</p>
+        </div>
         
+        <!-- Center Progress Ring & Large White Number -->
         <div class="sos-countdown-ring-wrap">
-          <svg class="sos-ring-svg" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
-            <circle id="sos-countdown-circle" cx="60" cy="60" r="45" fill="none" stroke="#EF4444" stroke-width="8" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+          <svg class="sos-ring-svg" viewBox="0 0 160 160">
+            <!-- Background Dark Gray Ring -->
+            <circle cx="80" cy="80" r="64" fill="none" stroke="#262626" stroke-width="10"/>
+            <!-- Emergency Red Progress Ring -->
+            <circle id="sos-countdown-circle" cx="80" cy="80" r="64" fill="none" stroke="#DC2626" stroke-width="10" stroke-linecap="round" stroke-dasharray="402.12" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
           </svg>
           <div class="sos-countdown-number" id="sos-countdown-number">5</div>
         </div>
 
-        <p class="sos-countdown-desc">
-          Automated GPS location and driver emergency triage dispatch will be transmitted to emergency contacts.
-        </p>
+        <!-- Dynamic Countdown Status Text -->
+        <div class="sos-countdown-status-box">
+          <span class="sos-status-label">SOS ACTIVATING IN</span>
+          <span class="sos-status-seconds" id="sos-countdown-sec-text">5 seconds</span>
+        </div>
 
-        <button class="btn btn-secondary btn-full btn-lg" style="color: #FFFFFF; border-color: rgba(255,255,255,0.4);" onclick="window.emergencyCenter.cancelSOS()">
+        <!-- Cancel SOS Action Button -->
+        <button class="btn-sos-cancel-white" onclick="window.emergencyCenter.cancelSOS()">
           <i data-lucide="x"></i>
           <span>CANCEL SOS</span>
         </button>

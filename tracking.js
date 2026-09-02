@@ -1,6 +1,6 @@
 /**
  * WideEYE — Phase 3 Driver Profile + Live Ride Tracking Script
- * Brand: BLACK + LEMON YELLOW (#DFFF00) + WHITE (#FFFFFF)
+ * Brand: BLACK + LEMON YELLOW (#D4A017) + WHITE (#FFFFFF)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -134,6 +134,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const safetyModal = document.getElementById('safety-modal');
   const chatDrawer = document.getElementById('chat-drawer');
   const toastNotify = document.getElementById('toast-notify');
+  const emergencyBanner = document.getElementById('track-emergency-banner');
+
+  // Check if viewing live ride from SOS Emergency Center
+  if (emergencyBanner) {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('from') === 'sos' || urlParams.get('sos') === '1') {
+      emergencyBanner.classList.remove('hidden');
+    }
+  }
 
   // 3. APPLY RIDE STATE FUNCTION
   function applyRideState(stateNum) {
@@ -182,6 +191,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.stage-btn').forEach(btn => btn.classList.remove('active'));
     const activeBtn = document.getElementById(`stage-btn-${stateNum}`);
     if (activeBtn) activeBtn.classList.add('active');
+
+    // Hide Cancel Ride button if trip is completed (State 7)
+    const btnCancelActiveRide = document.getElementById('btn-cancel-active-ride');
+    if (btnCancelActiveRide) {
+      if (stateNum === 7) {
+        btnCancelActiveRide.style.display = 'none';
+      } else {
+        btnCancelActiveRide.style.display = 'inline-flex';
+      }
+    }
 
     // Special state styling
     if (stateNum === 7) {
@@ -339,6 +358,31 @@ document.addEventListener('DOMContentLoaded', () => {
       safetyModal.classList.remove('active');
       safetyModal.setAttribute('aria-hidden', 'true');
     }
+  };
+
+  // CANCEL RIDE MODAL HANDLERS
+  window.promptCancelRide = function() {
+    const modal = document.getElementById('cancel-ride-modal');
+    if (modal) {
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      if (window.lucide) window.lucide.createIcons();
+    }
+  };
+
+  window.closeCancelRideModal = function() {
+    const modal = document.getElementById('cancel-ride-modal');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+  };
+
+  window.confirmCancelRide = function() {
+    window.closeCancelRideModal();
+    if (autoSimInterval) clearInterval(autoSimInterval);
+    // Redirect back to booking page with cancelled notice
+    window.location.href = 'book.html?cancelled=1';
   };
 
   // 9. COLLAPSIBLE TRIP DETAILS

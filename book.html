@@ -6,7 +6,7 @@
   <title>Book a Safe Ride — WideEYE | Intelligent Passenger & Driver Safety</title>
   <meta name="description" content="Book a safe ride with WideEYE. Real-time driver safety monitoring, transparent fares, and instant driver matching.">
   
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23050505' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3.2' fill='%23DFFF00'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23050505' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3.2' fill='%23D4A017'/></svg>">
 
   <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@
           <div class="logo-mark">
             <svg viewBox="0 0 28 28" fill="none" class="logo-icon">
               <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="14" cy="14" r="4.2" fill="#DFFF00" class="logo-pupil-yellow"/>
+              <circle cx="14" cy="14" r="4.2" fill="#D4A017" class="logo-pupil-yellow"/>
               <circle cx="15.5" cy="12.5" r="1.2" fill="#050505"/>
             </svg>
           </div>
@@ -340,7 +340,7 @@
             <div class="safety-brand-group">
               <svg viewBox="0 0 28 28" fill="none" class="safety-card-eye">
                 <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#FFFFFF" stroke-width="2.4"/>
-                <circle cx="14" cy="14" r="4" fill="#DFFF00"/>
+                <circle cx="14" cy="14" r="4" fill="#D4A017"/>
               </svg>
               <span class="safety-preview-brand">WIDEEYE SAFETY</span>
             </div>
@@ -426,7 +426,8 @@
             </div>
           </div>
 
-          <button class="btn btn-secondary btn-full" id="btn-cancel-matching" style="margin-top: 24px; color: #FFFFFF; border-color: rgba(255,255,255,0.3);">
+          <button class="btn-cancel-ride-pill" id="btn-cancel-matching" style="margin-top: 24px;" onclick="window.cancelSearchingForDriver()">
+            <i data-lucide="x"></i>
             <span>Cancel Search</span>
           </button>
 
@@ -532,13 +533,14 @@
             </div>
           </div>
 
-          <!-- Actions: Lemon Yellow Primary + Black Outline Secondary -->
-          <div class="confirmed-actions-grid">
-            <a href="track.html" class="btn btn-primary btn-full" id="btn-view-live-ride">
+          <!-- Actions: View Live Ride + Cancel Ride -->
+          <div class="confirmed-actions-grid" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+            <a href="track.html" class="btn btn-primary btn-full" id="btn-view-live-ride" style="padding: 14px 20px; font-weight: 800;">
               <i data-lucide="navigation"></i>
               <span>View Live Ride</span>
             </a>
-            <button class="btn btn-secondary btn-full" id="btn-cancel-ride" onclick="cancelBookedRide()">
+            <button class="btn-cancel-ride-pill" id="btn-cancel-ride" onclick="window.promptCancelRide()">
+              <i data-lucide="x"></i>
               <span>Cancel Ride</span>
             </button>
           </div>
@@ -605,9 +607,9 @@
             <!-- LEMON YELLOW TRIP ROUTE LINE -->
             <g id="map-route-group">
               <!-- Route Glow -->
-              <path id="route-path-glow" d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="rgba(223, 255, 0, 0.4)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+              <path id="route-path-glow" d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="rgba(212, 160, 23, 0.4)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
               <!-- Core Lemon Yellow Route Line -->
-              <path id="route-path-line" d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="#DFFF00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+              <path id="route-path-line" d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="#D4A017" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
               <!-- Animated Direction Dots -->
               <path d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="#050505" stroke-width="2.5" stroke-dasharray="8 12" stroke-linecap="round" class="animated-route-dots"/>
             </g>
@@ -702,7 +704,7 @@
               <span class="live-dot-lemon"></span>
               <span>● LIVE LOCATION</span>
             </div>
-            <div class="map-hud-badge" style="background: #050505; color: #DFFF00; border-color: rgba(223,255,0,0.4);">
+            <div class="map-hud-badge" style="background: #050505; color: #D4A017; border-color: rgba(212, 160, 23,0.4);">
               <i data-lucide="users" style="width: 13px; height: 13px; margin-right: 4px;"></i>
               <span>12 drivers nearby</span>
             </div>
@@ -725,6 +727,41 @@
     </section>
 
   </main>
+
+  <!-- CANCEL RIDE CONFIRMATION MODAL -->
+  <div class="modal-backdrop" id="cancel-ride-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog" style="max-width: 420px;">
+      <div class="modal-header" style="background: #0A0A0A; color: #FFFFFF; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+        <div class="modal-title-group">
+          <span class="brand-name" style="font-size: 1.15rem; color: #DC2626;">🚨 Cancel this ride?</span>
+        </div>
+        <button class="modal-close-btn" onclick="window.closeCancelRideModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body text-center" style="padding: 26px 24px; background: #FFFFFF; color: #0A0A0A;">
+        <div class="cancel-modal-icon-box">
+          <i data-lucide="alert-triangle"></i>
+        </div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 8px; color: #0A0A0A;">Cancel this ride?</h3>
+        <p style="color: #666666; font-size: 0.88rem; margin-bottom: 24px; line-height: 1.5;">
+          Are you sure you want to cancel your current ride? Your matched driver will be released and the trip will be cancelled.
+        </p>
+        <div class="modal-btn-row" style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" style="flex: 1; border-color: #E5E5E5; color: #0A0A0A;" onclick="window.closeCancelRideModal()">
+            <span>Keep Ride</span>
+          </button>
+          <button class="btn btn-danger" style="flex: 1; background: #DC2626; color: #FFFFFF; border-color: #DC2626; font-weight: 800;" onclick="window.confirmCancelRide()">
+            <span>Cancel Ride</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKING TOAST NOTIFICATION -->
+  <div class="booking-toast-notify success" id="booking-toast">
+    <i data-lucide="check-circle-2"></i>
+    <span id="booking-toast-text">Ride cancelled successfully.</span>
+  </div>
 
   <script src="booking.js"></script>
 </body>

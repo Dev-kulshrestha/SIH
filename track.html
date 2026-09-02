@@ -6,7 +6,7 @@
   <title>Live Ride Tracking — WideEYE | Intelligent Passenger & Driver Safety</title>
   <meta name="description" content="Live trip tracking and real-time safety monitoring for your WideEYE journey.">
   
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23050505' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3.2' fill='%23DFFF00'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23050505' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3.2' fill='%23D4A017'/></svg>">
 
   <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@
           <div class="logo-mark">
             <svg viewBox="0 0 28 28" fill="none" class="logo-icon">
               <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="14" cy="14" r="4.2" fill="#DFFF00" class="logo-pupil-yellow"/>
+              <circle cx="14" cy="14" r="4.2" fill="#D4A017" class="logo-pupil-yellow"/>
               <circle cx="15.5" cy="12.5" r="1.2" fill="#050505"/>
             </svg>
           </div>
@@ -60,6 +60,21 @@
       </div>
     </div>
   </header>
+
+  <!-- EMERGENCY SOS ACTIVE RETURN BANNER (when visiting from SOS) -->
+  <div class="track-emergency-return-banner hidden" id="track-emergency-banner">
+    <div class="terb-inner">
+      <div class="terb-left">
+        <span class="pulse-red-dot"></span>
+        <strong style="color: #FFFFFF; font-size: 0.95rem;">🚨 EMERGENCY SOS ACTIVE</strong>
+        <span class="terb-sub">Trip telemetry & driver risk dispatched · GPS tracking active</span>
+      </div>
+      <a href="sos.html?score=96" class="btn-return-sos">
+        <i data-lucide="shield-alert"></i>
+        <span>Back to Emergency Console</span>
+      </a>
+    </div>
+  </div>
 
   <!-- MAIN TRACKING LAYOUT (65% MAP / 35% SIDEBAR ON DESKTOP) -->
   <main class="tracking-layout-wrapper">
@@ -119,7 +134,7 @@
             <path d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="#050505" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
             
             <!-- Active Progress Route (Lemon Yellow Polyline) -->
-            <path id="active-progress-path" d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="#DFFF00" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="600" stroke-dashoffset="600"/>
+            <path id="active-progress-path" d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="#D4A017" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="600" stroke-dashoffset="600"/>
             <path d="M 240 460 Q 320 380, 480 340 T 780 220" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="8 12" stroke-linecap="round" class="animated-route-dots"/>
 
             <!-- Road Labels -->
@@ -289,36 +304,20 @@
         </div>
       </div>
 
-      <!-- 5. ACTIVE TRIP SAFETY & MONITOR CONTROLS -->
-      <div class="active-trip-safety-card">
-        <div class="safety-console-header-strip">
-          <div class="console-left">
-            <svg viewBox="0 0 28 28" fill="none" class="safety-logo-mini">
-              <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#FFFFFF" stroke-width="2.4"/>
-              <circle cx="14" cy="14" r="4" fill="#DFFF00"/>
-            </svg>
-            <span class="ps-brand-title">WIDEEYE ACTIVE PROTECTION</span>
-          </div>
-          <span class="ps-status-pill-lemon">
-            <span class="pulse-lemon-dot"></span> LIVE MONITORING
-          </span>
-        </div>
-
-        <p class="safety-console-desc">
-          Optical sensor and real-time facial landmark fatigue telemetry are active throughout this trip.
-        </p>
-
-        <!-- CTA BUTTONS: AI SAFETY MONITOR & COMPLETE TRIP -->
-        <div class="trip-control-action-row">
-          <a href="monitor.html" class="btn btn-primary btn-full" style="font-size: 0.92rem; padding: 13px 18px;">
-            <i data-lucide="video"></i>
-            <span>Open AI Driver Safety Monitor</span>
-          </a>
-          <a href="dashboard.html" class="btn btn-secondary btn-full" style="font-size: 0.88rem; padding: 11px 18px; margin-top: 8px;">
-            <i data-lucide="check-circle-2"></i>
-            <span>Simulate Trip Completion ✓</span>
-          </a>
-        </div>
+      <!-- 5. ACTIVE TRIP ACTIONS -->
+      <div class="trip-control-action-row" style="display: flex; flex-direction: column; gap: 8px;">
+        <a href="monitor.html" class="btn btn-primary btn-full" style="font-size: 0.92rem; padding: 13px 18px; font-weight: 800;">
+          <i data-lucide="video"></i>
+          <span>Open AI Driver Safety Monitor</span>
+        </a>
+        <a href="dashboard.html" class="btn btn-secondary btn-full" style="font-size: 0.88rem; padding: 11px 18px;">
+          <i data-lucide="check-circle-2"></i>
+          <span>Simulate Trip Completion ✓</span>
+        </a>
+        <button class="btn-cancel-ride-pill" id="btn-cancel-active-ride" onclick="promptCancelRide()" style="margin-top: 4px;">
+          <i data-lucide="x"></i>
+          <span>Cancel Ride</span>
+        </button>
       </div>
 
       <!-- 6. COLLAPSIBLE TRIP DETAILS -->
@@ -460,7 +459,7 @@
           <div class="share-row"><span>Driver:</span> <strong>Rahul Kumar (★ 4.8)</strong></div>
           <div class="share-row"><span>Vehicle:</span> <strong>UP32 AB 1234 (White Auto)</strong></div>
           <div class="share-row"><span>Destination:</span> <strong>City Centre (Sector 29)</strong></div>
-          <div class="share-row"><span>ETA:</span> <strong style="color: #050505; background: #DFFF00; padding: 1px 6px; border-radius: 4px;">18 min</strong></div>
+          <div class="share-row"><span>ETA:</span> <strong style="color: #050505; background: #D4A017; padding: 1px 6px; border-radius: 4px;">18 min</strong></div>
           <div class="share-row"><span>Trip Status:</span> <strong style="color: #10B981;">● Live Tracking</strong></div>
         </div>
 
@@ -482,7 +481,7 @@
     <div class="modal-dialog">
       <div class="modal-header" style="background: #050505; color: #FFFFFF;">
         <div class="modal-title-group">
-          <span class="brand-name" style="color: #DFFF00;">WideEYE Safety Console</span>
+          <span class="brand-name" style="color: #D4A017;">WideEYE Safety Console</span>
         </div>
         <button class="modal-close-btn" style="background: #222; color: #FFF;" onclick="closeSafetyModal()"><i data-lucide="x"></i></button>
       </div>
@@ -600,6 +599,35 @@
             <i data-lucide="home"></i>
             <span>Back to Home</span>
           </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CANCEL RIDE CONFIRMATION MODAL -->
+  <div class="modal-backdrop" id="cancel-ride-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog" style="max-width: 420px;">
+      <div class="modal-header" style="background: #0A0A0A; color: #FFFFFF; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+        <div class="modal-title-group">
+          <span class="brand-name" style="font-size: 1.15rem; color: #DC2626;">🚨 Cancel this ride?</span>
+        </div>
+        <button class="modal-close-btn" onclick="closeCancelRideModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body text-center" style="padding: 26px 24px; background: #FFFFFF; color: #0A0A0A;">
+        <div class="cancel-modal-icon-box">
+          <i data-lucide="alert-triangle"></i>
+        </div>
+        <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 8px; color: #0A0A0A;">Cancel this ride?</h3>
+        <p style="color: #666666; font-size: 0.88rem; margin-bottom: 24px; line-height: 1.5;">
+          Are you sure you want to cancel your current ride? Your ride tracking and safety session will be cancelled immediately.
+        </p>
+        <div class="modal-btn-row" style="display: flex; gap: 12px;">
+          <button class="btn btn-secondary" style="flex: 1; border-color: #E5E5E5; color: #0A0A0A;" onclick="closeCancelRideModal()">
+            <span>Keep Ride</span>
+          </button>
+          <button class="btn btn-danger" style="flex: 1; background: #DC2626; color: #FFFFFF; border-color: #DC2626; font-weight: 800;" onclick="confirmCancelRide()">
+            <span>Cancel Ride</span>
+          </button>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 /**
  * WideEYE — Phase 6: Emergency SOS & Response System 🆘
- * Brand: BLACK + LEMON YELLOW (#DFFF00) + WHITE (#FFFFFF)
+ * Brand: BLACK + LEMON YELLOW (#D4A017) + WHITE (#FFFFFF)
  * RED (#EF4444) used strictly for emergency state indicators
  */
 
@@ -53,6 +53,7 @@ class WideEyeEmergencyCenter {
       countdownModal: document.getElementById('sos-countdown-modal'),
       countdownNumber: document.getElementById('sos-countdown-number'),
       countdownCircle: document.getElementById('sos-countdown-circle'),
+      countdownSecText: document.getElementById('sos-countdown-sec-text'),
       
       // Active Emergency Container
       emergencyMainContent: document.getElementById('emergency-main-content'),
@@ -116,10 +117,19 @@ class WideEyeEmergencyCenter {
     }
     if (this.dom.countdownNumber) {
       this.dom.countdownNumber.textContent = '5';
+      this.dom.countdownNumber.style.animation = 'none';
+      void this.dom.countdownNumber.offsetWidth;
+      this.dom.countdownNumber.style.animation = 'sos-num-tick 0.35s ease-out';
+    }
+    if (this.dom.countdownSecText) {
+      this.dom.countdownSecText.textContent = '5 seconds';
+    }
+    if (this.dom.countdownCircle) {
+      this.dom.countdownCircle.style.strokeDashoffset = '0';
     }
 
     this.logTimeline('CRITICAL_DETECTED', `Critical drowsiness (${this.data.riskScore}%) detected · Emergency countdown initiated`);
-    this.playCountdownBeep();
+    this.playEmergencySirenPulse(5);
 
     if (this.countdownInterval) clearInterval(this.countdownInterval);
 
@@ -128,14 +138,25 @@ class WideEyeEmergencyCenter {
 
       if (this.dom.countdownNumber) {
         this.dom.countdownNumber.textContent = String(this.countdownSeconds);
+        this.dom.countdownNumber.style.animation = 'none';
+        void this.dom.countdownNumber.offsetWidth;
+        this.dom.countdownNumber.style.animation = 'sos-num-tick 0.35s ease-out';
+      }
+
+      if (this.dom.countdownSecText) {
+        this.dom.countdownSecText.textContent = `${this.countdownSeconds} second${this.countdownSeconds === 1 ? '' : 's'}`;
       }
 
       if (this.dom.countdownCircle) {
-        const offset = 283 - (283 * ((5 - this.countdownSeconds) / 5));
+        const circumference = 402.12;
+        const progress = this.countdownSeconds / 5;
+        const offset = circumference * (1 - progress);
         this.dom.countdownCircle.style.strokeDashoffset = offset;
       }
 
-      this.playCountdownBeep();
+      if (this.countdownSeconds > 0) {
+        this.playEmergencySirenPulse(this.countdownSeconds);
+      }
 
       if (this.countdownSeconds <= 0) {
         clearInterval(this.countdownInterval);
@@ -245,12 +266,12 @@ class WideEyeEmergencyCenter {
       ctx.stroke();
 
       // Lemon Yellow Active Route Vector
-      ctx.strokeStyle = '#DFFF00';
+      ctx.strokeStyle = '#D4A017';
       ctx.lineWidth = 4;
       ctx.stroke();
 
       // Pickup Marker (Lemon Yellow Dot)
-      ctx.fillStyle = '#DFFF00';
+      ctx.fillStyle = '#D4A017';
       ctx.beginPath();
       ctx.arc(120, 360, 8, 0, 2 * Math.PI);
       ctx.fill();
@@ -333,8 +354,8 @@ class WideEyeEmergencyCenter {
 
   // 4. EMERGENCY ACTIONS
   callEmergencyContact() {
-    this.showToast(`Connecting masked proxy call to ${this.data.contact.name}...`, 'info');
-    this.logTimeline('CALL_INITIATED', `Direct call initiated to emergency contact: ${this.data.contact.name} (${this.data.contact.phone})`);
+    this.showToast(`Calling emergency contact: ${this.data.contact.name}...`, 'info');
+    this.logTimeline('CALL_INITIATED', `Direct emergency call initiated to ${this.data.contact.name} (${this.data.contact.phone})`);
   }
 
   sendEmergencyUpdate() {
@@ -345,13 +366,23 @@ class WideEyeEmergencyCenter {
   shareLiveLocation() {
     const shareUrl = `https://wideeye.safety/live-sos?trip=${this.data.tripId}`;
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        this.showToast('Emergency tracking link copied to clipboard ✓', 'success');
-      });
-    } else {
-      this.showToast('Emergency tracking link copied: ' + shareUrl, 'info');
+      navigator.clipboard.writeText(shareUrl).catch(() => {});
     }
-    this.logTimeline('SHARE_LINK', 'Emergency location sharing link generated & copied');
+
+    // Update button UI
+    const shareBtn = document.getElementById('btn-sos-share');
+    const shareText = document.getElementById('share-loc-text');
+    const shareIcon = document.getElementById('share-loc-icon');
+
+    if (shareBtn) shareBtn.classList.add('shared');
+    if (shareText) shareText.textContent = 'Location Shared';
+    if (shareIcon) {
+      shareIcon.setAttribute('data-lucide', 'check');
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    this.showToast('Live location shared ✓', 'success');
+    this.logTimeline('LOCATION_SHARED', 'Live emergency tracking URL broadcast to contacts');
   }
 
   // 5. EMERGENCY RESOLUTION WORKFLOW
@@ -383,48 +414,91 @@ class WideEyeEmergencyCenter {
     }, 1500);
   }
 
-  // 6. SYNTHESIZED WEB AUDIO EMERGENCY ALARM
-  playCountdownBeep() {
-    if (!this.audioEnabled || !this.audioContext) return;
+  // 6. SYNTHESIZED WEB AUDIO EMERGENCY ALARM & REALISTIC SIREN
+  playEmergencySirenPulse(secondsRemaining) {
+    if (!this.audioEnabled) return;
     this.resumeAudio();
+    if (!this.audioContext) return;
 
-    const ctx = this.audioContext;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    try {
+      const ctx = this.audioContext;
+      const now = ctx.currentTime;
 
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(600, ctx.currentTime);
-    osc.frequency.setValueAtTime(800, ctx.currentTime + 0.1);
+      // Realistic dual-oscillator emergency warning siren
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
 
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+      osc1.type = 'sawtooth';
+      osc2.type = 'sine';
 
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.25);
+      // Urgency escalates: 5..2 pulse, 1 is sharper higher alert tone
+      const baseFreq = secondsRemaining === 1 ? 880 : (640 + (5 - secondsRemaining) * 45);
+      const peakFreq = secondsRemaining === 1 ? 1300 : baseFreq + 360;
+      const duration = secondsRemaining === 1 ? 0.42 : 0.32;
+
+      // Pitch sweep: Low -> High -> Low (Emergency vehicle siren modulation)
+      osc1.frequency.setValueAtTime(baseFreq, now);
+      osc1.frequency.linearRampToValueAtTime(peakFreq, now + (duration * 0.45));
+      osc1.frequency.linearRampToValueAtTime(baseFreq, now + duration);
+
+      osc2.frequency.setValueAtTime(baseFreq * 0.5, now);
+      osc2.frequency.linearRampToValueAtTime(peakFreq * 0.5, now + (duration * 0.45));
+      osc2.frequency.linearRampToValueAtTime(baseFreq * 0.5, now + duration);
+
+      // Volume envelope: smooth punchy attack, exponential release
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.22, now + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + duration);
+      osc2.stop(now + duration);
+    } catch (e) {
+      console.warn('Audio synthesis notice:', e);
+    }
   }
 
-  playEmergencySiren() {
-    if (!this.audioEnabled || !this.audioContext) return;
+  playFinalSosActivatedSiren() {
+    if (!this.audioEnabled) return;
     this.resumeAudio();
+    if (!this.audioContext) return;
 
-    const ctx = this.audioContext;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    try {
+      const ctx = this.audioContext;
+      const now = ctx.currentTime;
 
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(900, ctx.currentTime);
-    osc.frequency.linearRampToValueAtTime(1300, ctx.currentTime + 0.4);
-    osc.frequency.linearRampToValueAtTime(900, ctx.currentTime + 0.8);
+      // Stronger 2-stage emergency alert siren
+      [0, 0.35].forEach((offset, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
 
-    gain.gain.setValueAtTime(0.25, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.9);
+        const startT = now + offset;
+        const dur = 0.32;
 
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.9);
+        osc.frequency.setValueAtTime(800 + idx * 120, startT);
+        osc.frequency.linearRampToValueAtTime(1400 + idx * 120, startT + (dur * 0.5));
+        osc.frequency.linearRampToValueAtTime(800 + idx * 120, startT + dur);
+
+        gain.gain.setValueAtTime(0.001, startT);
+        gain.gain.linearRampToValueAtTime(0.25, startT + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.001, startT + dur);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(startT);
+        osc.stop(startT + dur);
+      });
+    } catch (e) {
+      console.warn('Audio notice:', e);
+    }
   }
 
   stopAudio() {

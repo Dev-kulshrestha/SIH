@@ -6,7 +6,7 @@
   <title>WideEYE Safety Summary — Post-Ride Dashboard & Analytics</title>
   <meta name="description" content="Official post-ride safety report, driver fatigue risk curve analytics, incident timeline, and trip history for WideEYE ride #WE-24081.">
   
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23050505' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3.2' fill='%23DFFF00'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23050505' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3.2' fill='%23D4A017'/></svg>">
 
   <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,380 +20,437 @@
 </head>
 <body class="dashboard-page-body">
 
-  <!-- TOP NAVIGATION BAR -->
+  <!-- 1. TOP HEADER / NAVBAR -->
   <header class="dash-navbar">
     <div class="dash-container dash-nav-inner">
       <div class="dash-nav-left">
-        <a href="index.html" class="brand-logo">
+        <a href="index.html" class="brand-logo" title="Back to Home">
           <div class="logo-mark">
             <svg viewBox="0 0 28 28" fill="none" class="logo-icon">
-              <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="14" cy="14" r="4.2" fill="#DFFF00" class="logo-pupil-yellow"/>
+              <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#050505" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="14" cy="14" r="4.2" fill="#D4A017" class="logo-pupil-yellow"/>
               <circle cx="15.5" cy="12.5" r="1.2" fill="#050505"/>
             </svg>
           </div>
           <span class="brand-name">WideEYE</span>
         </a>
-        <span class="dash-subtitle-tag">WIDEEYE SAFETY SUMMARY</span>
-        <span class="demo-data-pill">PROTOTYPE DEMO DATA</span>
+        <span class="dash-subtitle-tag">WIDEEYE SAFETY REPORT</span>
+        <span class="demo-data-pill">● DEMO DATA</span>
       </div>
 
       <div class="dash-nav-right">
-        <button class="btn btn-secondary btn-sm" onclick="window.safetyDashboard.openShareModal()">
+        <button class="btn btn-dash-white" onclick="window.safetyDashboard.openShareModal()" title="Share Summary">
           <i data-lucide="share-2"></i>
           <span>Share Summary</span>
         </button>
-        <button class="btn btn-secondary btn-sm" onclick="window.print()">
+        <button class="btn btn-dash-white" onclick="window.print()" title="Print or Save PDF">
           <i data-lucide="printer"></i>
           <span>Print / Save Report</span>
         </button>
-        <a href="book.html" class="btn btn-primary btn-sm">
-          <i data-lucide="plus"></i>
+        <a href="book.html" class="btn btn-dash-lemon" title="Book Next Ride">
+          <i data-lucide="arrow-right"></i>
           <span>Book Next Ride</span>
         </a>
       </div>
     </div>
   </header>
 
-  <!-- MAIN DASHBOARD CONTENT (1200PX CONTAINER) -->
+  <!-- 2. MAIN DASHBOARD CONTAINER (1200PX MAX-WIDTH) -->
   <main class="dash-container dash-main-content">
 
     <!-- 1. TOP STATUS HERO CARD: TRIP COMPLETED -->
     <section class="trip-completed-hero-card" id="hero-trip-summary">
       <div class="hero-left-col">
         <div class="trip-success-badge">
-          <span class="check-dot">✓</span>
+          <i data-lucide="check-circle-2"></i>
           <span>TRIP COMPLETED</span>
         </div>
-        <h1 class="hero-trip-title">Destination: City Centre</h1>
-        <p class="hero-trip-desc">Your ride has ended safely at <strong>City Centre Mall (Sector 29)</strong>.</p>
+        <h1 class="hero-trip-title">Trip Completed ✓</h1>
+        <p class="hero-trip-desc">Your ride has ended safely.</p>
         
-        <div class="hero-meta-chips-row">
-          <div class="meta-chip">
-            <span class="lbl">Trip ID</span>
-            <strong>#WE-24081</strong>
+        <div class="hero-arrival-badge">
+          <i data-lucide="map-pin"></i>
+          <span>Arrived at <strong>City Centre Mall (Sector 29)</strong></span>
+        </div>
+      </div>
+
+      <div class="hero-right-status-box">
+        <span class="status-label-small">SAFETY STATUS</span>
+        <div class="status-indicator-huge safe">
+          <span class="status-dot-pulse"></span>
+          <span>SAFE</span>
+        </div>
+        <span class="status-subtext">Zero Critical Events Detected</span>
+      </div>
+    </section>
+
+    <!-- 2. TWO-COLUMN: TRIP DETAILS CARD + DRIVER CARD -->
+    <section class="dash-2col-grid">
+      
+      <!-- TRIP DETAILS CARD -->
+      <div class="dash-card">
+        <div class="card-head-row">
+          <div class="card-title-group">
+            <div class="card-icon-bubble"><i data-lucide="receipt"></i></div>
+            <h2 class="card-main-title">Trip Details</h2>
           </div>
-          <div class="meta-chip">
-            <span class="lbl">Status</span>
-            <strong class="lemon">COMPLETED ✓</strong>
+          <span class="card-meta-tag">#WE-24081</span>
+        </div>
+
+        <div class="trip-details-2col-grid">
+          <div class="td-item">
+            <span class="td-lbl">TOTAL FARE</span>
+            <span class="td-val highlight-lemon" id="td-fare">₹96.00</span>
           </div>
-          <div class="meta-chip">
-            <span class="lbl">Total Fare</span>
-            <strong>₹96.00 (Cash / UPI)</strong>
+          <div class="td-item">
+            <span class="td-lbl">RIDE TYPE</span>
+            <span class="td-val" id="td-type">Auto</span>
           </div>
-          <div class="meta-chip">
-            <span class="lbl">Ride Type</span>
-            <strong>Auto (UP32 AB 1234)</strong>
+          <div class="td-item">
+            <span class="td-lbl">DISTANCE</span>
+            <span class="td-val" id="td-dist">8.4 km</span>
+          </div>
+          <div class="td-item">
+            <span class="td-lbl">DURATION</span>
+            <span class="td-val" id="td-dur">24 min</span>
+          </div>
+          <div class="td-item">
+            <span class="td-lbl">TRIP ID</span>
+            <span class="td-val mono" id="td-trip-id">#WE-24081</span>
+          </div>
+          <div class="td-item">
+            <span class="td-lbl">DESTINATION</span>
+            <span class="td-val" id="td-dest">City Centre</span>
+          </div>
+          <div class="td-item">
+            <span class="td-lbl">VEHICLE</span>
+            <span class="td-val mono" id="td-veh">UP32 AB 1234</span>
+          </div>
+          <div class="td-item">
+            <span class="td-lbl">PAYMENT</span>
+            <span class="td-val" id="td-payment">Cash / UPI</span>
           </div>
         </div>
       </div>
 
-      <div class="hero-right-driver-card">
-        <div class="driver-card-inner">
+      <!-- DRIVER CARD -->
+      <div class="dash-card">
+        <div class="card-head-row">
+          <div class="card-title-group">
+            <div class="card-icon-bubble"><i data-lucide="user-check"></i></div>
+            <h2 class="card-main-title">Your Driver</h2>
+          </div>
+          <span class="verified-pill"><i data-lucide="shield-check"></i> Verified</span>
+        </div>
+
+        <div class="driver-horizontal-card">
           <div class="driver-avatar-circle">RK</div>
-          <div class="driver-info-box">
-            <div class="driver-name-row">
-              <h3 id="driver-name-text">Rahul Kumar</h3>
+          <div class="driver-info-content">
+            <div class="driver-name-rating">
+              <h3 class="driver-name" id="driver-name-text">Rahul Kumar</h3>
               <span class="driver-star-badge" id="driver-star-text">★ 4.8</span>
             </div>
-            <span class="driver-veh-text" id="driver-veh-text">Auto · UP32 AB 1234</span>
-            <span class="verified-tag"><i data-lucide="shield-check"></i> Identity & Vehicle Verified</span>
+            <div class="driver-vehicle-row" id="driver-veh-text">
+              <i data-lucide="car"></i>
+              <span>Auto · UP32 AB 1234</span>
+            </div>
+            <div class="driver-verification-note">
+              <i data-lucide="check"></i>
+              <span>Identity & Vehicle Verified</span>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- 2. MAIN TRIP STATISTICS (LARGE METRICS GRID) -->
-    <section class="dash-metrics-grid">
-      
-      <!-- 1. TOTAL DISTANCE -->
-      <div class="dash-stat-card">
-        <div class="stat-top">
-          <span class="stat-lbl">TOTAL DISTANCE</span>
-          <div class="stat-icon-wrap"><i data-lucide="navigation"></i></div>
-        </div>
-        <div class="stat-value-big" id="stat-val-dist">8.4 <span class="unit">km</span></div>
-        <p class="stat-sub">Cyber City ➔ City Centre</p>
-      </div>
-
-      <!-- 2. TRIP DURATION -->
-      <div class="dash-stat-card">
-        <div class="stat-top">
-          <span class="stat-lbl">TRIP DURATION</span>
-          <div class="stat-icon-wrap"><i data-lucide="clock"></i></div>
-        </div>
-        <div class="stat-value-big" id="stat-val-dur">24 <span class="unit">min</span></div>
-        <p class="stat-sub">Total active driving time</p>
-      </div>
-
-      <!-- 3. MAX DROWSINESS (LEMON YELLOW PROMINENT) -->
-      <div class="dash-stat-card highlight-card">
-        <div class="stat-top">
-          <span class="stat-lbl">MAX DROWSINESS</span>
-          <div class="stat-icon-wrap warning"><i data-lucide="activity"></i></div>
-        </div>
-        <div class="stat-value-big lemon" id="stat-val-maxrisk">46<span class="unit">%</span></div>
-        <p class="stat-sub">Warning zone (31–60%)</p>
-      </div>
-
-      <!-- 4. WARNINGS -->
-      <div class="dash-stat-card">
-        <div class="stat-top">
-          <span class="stat-lbl">WARNINGS</span>
-          <div class="stat-icon-wrap warning"><i data-lucide="alert-triangle"></i></div>
-        </div>
-        <div class="stat-value-big" id="stat-val-warn">2</div>
-        <p class="stat-sub">Visual & audio nudges</p>
-      </div>
-
-      <!-- 5. HIGH-RISK EVENTS -->
-      <div class="dash-stat-card">
-        <div class="stat-top">
-          <span class="stat-lbl">HIGH-RISK EVENTS</span>
-          <div class="stat-icon-wrap"><i data-lucide="shield-alert"></i></div>
-        </div>
-        <div class="stat-value-big green" id="stat-val-high">0</div>
-        <p class="stat-sub">Zero prolonged fatigue</p>
-      </div>
-
-      <!-- 6. CRITICAL EVENTS -->
-      <div class="dash-stat-card">
-        <div class="stat-top">
-          <span class="stat-lbl">CRITICAL EVENTS</span>
-          <div class="stat-icon-wrap green"><i data-lucide="alert-octagon"></i></div>
-        </div>
-        <div class="stat-value-big green" id="stat-val-crit">0</div>
-        <p class="stat-sub">Zero emergency escalations</p>
       </div>
 
     </section>
 
-    <!-- 3. 2-COLUMN SECTION: OVERALL SAFETY CARD & PROTOTYPE SAFETY SCORE GAUGE -->
-    <section class="dash-2col-analysis-grid">
+    <!-- 3. MAIN ANALYTICS SECTION (4 STATISTICS CARDS) -->
+    <section class="dash-4col-stats-grid">
       
-      <!-- LEFT: OVERALL SAFETY STATUS CARD -->
-      <div class="dash-card overall-safety-main-card">
-        <div class="card-head-row">
-          <div>
-            <span class="card-kicker">SAFETY EVALUATION</span>
-            <h2 class="card-main-title">Overall Safety Status</h2>
-          </div>
-          <span class="overall-status-pill safe" id="overall-status-word">🟢 SAFE</span>
+      <!-- CARD 1: TOTAL DISTANCE -->
+      <div class="dash-stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-label">TOTAL DISTANCE</span>
+          <div class="stat-card-icon"><i data-lucide="navigation"></i></div>
         </div>
-
-        <p class="overall-narrative-text" id="overall-safety-narrative">
-          Driver remained within a safe risk range during most of the trip. 2 minor fatigue alerts were triggered and resolved within 1.8 seconds.
-        </p>
-
-        <!-- Drowsiness Quick Summary Grid -->
-        <div class="drowsiness-mini-summary-grid">
-          <div class="d-summary-box">
-            <span class="d-lbl">Maximum Risk</span>
-            <strong class="d-val lemon" id="drowsy-max-val">46%</strong>
-          </div>
-          <div class="d-summary-box">
-            <span class="d-lbl">Average Risk</span>
-            <strong class="d-val" id="drowsy-avg-val">24%</strong>
-          </div>
-          <div class="d-summary-box">
-            <span class="d-lbl">Minimum Risk</span>
-            <strong class="d-val" id="drowsy-min-val">8%</strong>
-          </div>
-          <div class="d-summary-box">
-            <span class="d-lbl">Critical Events</span>
-            <strong class="d-val green">0</strong>
-          </div>
-        </div>
-
-        <!-- RISK ZONES HORIZONTAL SCALE -->
-        <div class="risk-zones-scale-wrap">
-          <div class="rz-header">
-            <span class="rz-title">WideEYE Risk Zones</span>
-            <span class="rz-highlight-label">Maximum Reached: <strong class="lemon">46% (WARNING)</strong></span>
-          </div>
-          
-          <div class="rz-bar-container">
-            <div class="rz-segment safe" style="flex: 30;" title="Safe 0-30%">
-              <span>SAFE (0–30%)</span>
-            </div>
-            <div class="rz-segment warning active-max" style="flex: 30;" title="Warning 31-60%">
-              <span>WARNING (31–60%)</span>
-              <div class="rz-pointer-marker" style="left: 50%;">▲ 46%</div>
-            </div>
-            <div class="rz-segment high-risk" style="flex: 30;" title="High Risk 61-90%">
-              <span>HIGH RISK (61–90%)</span>
-            </div>
-            <div class="rz-segment critical" style="flex: 10;" title="Critical 91-100%">
-              <span>CRITICAL (91–100%)</span>
-            </div>
-          </div>
-        </div>
-
+        <div class="stat-card-number" id="stat-val-dist">8.4 <span class="stat-unit">km</span></div>
+        <div class="stat-card-sub">Cyber City → City Centre</div>
       </div>
 
-      <!-- RIGHT: SAFETY SCORE RADIAL GAUGE -->
+      <!-- CARD 2: TRIP DURATION -->
+      <div class="dash-stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-label">TRIP DURATION</span>
+          <div class="stat-card-icon"><i data-lucide="clock"></i></div>
+        </div>
+        <div class="stat-card-number" id="stat-val-dur">24 <span class="stat-unit">min</span></div>
+        <div class="stat-card-sub">Total active driving time</div>
+      </div>
+
+      <!-- CARD 3: MAX DROWSINESS -->
+      <div class="dash-stat-card highlight-lemon-card">
+        <div class="stat-card-header">
+          <span class="stat-card-label">MAX DROWSINESS</span>
+          <div class="stat-card-icon warning"><i data-lucide="activity"></i></div>
+        </div>
+        <div class="stat-card-number lemon-text" id="stat-val-maxrisk">46<span class="stat-unit">%</span></div>
+        <div class="stat-card-sub">Peak risk detected</div>
+      </div>
+
+      <!-- CARD 4: WARNINGS -->
+      <div class="dash-stat-card">
+        <div class="stat-card-header">
+          <span class="stat-card-label">WARNINGS</span>
+          <div class="stat-card-icon"><i data-lucide="alert-triangle"></i></div>
+        </div>
+        <div class="stat-card-number" id="stat-val-warn">2</div>
+        <div class="stat-card-sub">During this trip</div>
+      </div>
+
+    </section>
+
+    <!-- 4. TWO-COLUMN: SAFETY SCORE + RISK SUMMARY -->
+    <section class="dash-2col-grid">
+      
+      <!-- SAFETY SCORE CARD -->
       <div class="dash-card safety-score-card">
         <div class="card-head-row">
-          <div>
-            <span class="card-kicker">TRIP INDEX</span>
+          <div class="card-title-group">
+            <div class="card-icon-bubble"><i data-lucide="shield"></i></div>
             <h2 class="card-main-title">WideEYE Safety Score</h2>
           </div>
+          <span class="score-status-pill safe">SAFE</span>
         </div>
 
-        <div class="radial-gauge-container">
-          <div class="radial-svg-box">
-            <svg viewBox="0 0 100 100" class="radial-gauge-svg">
-              <!-- Background circle -->
-              <circle cx="50" cy="50" r="40" class="gauge-bg-circle"/>
-              <!-- Animated Progress Circle -->
-              <circle cx="50" cy="50" r="40" class="gauge-fill-circle" id="score-circle-fill"/>
+        <div class="radial-gauge-wrapper">
+          <div class="radial-gauge-box">
+            <svg viewBox="0 0 120 120" class="radial-gauge-svg">
+              <circle cx="60" cy="60" r="48" class="gauge-bg-circle"/>
+              <circle cx="60" cy="60" r="48" class="gauge-fill-circle" id="score-circle-fill"/>
             </svg>
-            <div class="gauge-center-content">
-              <span class="gauge-big-num" id="safety-score-number">92</span>
-              <span class="gauge-denom">/ 100</span>
+            <div class="gauge-inner-content">
+              <span class="gauge-number" id="safety-score-number">92</span>
+              <span class="gauge-max">/ 100</span>
             </div>
           </div>
-          <span class="score-status-badge">OPTIMAL PROTECTION</span>
+          <div class="gauge-text-side">
+            <h3 class="score-headline">Optimal Safety Performance</h3>
+            <p class="score-subheadline">Overall safety performance during this trip.</p>
+            <p class="score-disclaimer">Prototype safety indicator based on recorded ride events.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RISK SUMMARY CARD -->
+      <div class="dash-card">
+        <div class="card-head-row">
+          <div class="card-title-group">
+            <div class="card-icon-bubble"><i data-lucide="bar-chart-2"></i></div>
+            <h2 class="card-main-title">Drowsiness Risk Summary</h2>
+          </div>
         </div>
 
-        <p class="score-disclaimer-text">
-          Prototype safety indicator based on recorded ride events (baseline 100 with weighted deductions for warnings, elevated risk intervals, and critical incidents).
-        </p>
+        <!-- 4 Metrics Grid -->
+        <div class="risk-mini-stats-grid">
+          <div class="risk-mini-tile highlight">
+            <span class="rmt-lbl">Maximum Risk</span>
+            <span class="rmt-val lemon" id="drowsy-max-val">46%</span>
+          </div>
+          <div class="risk-mini-tile">
+            <span class="rmt-lbl">Average Risk</span>
+            <span class="rmt-val" id="drowsy-avg-val">24%</span>
+          </div>
+          <div class="risk-mini-tile">
+            <span class="rmt-lbl">Warnings</span>
+            <span class="rmt-val" id="stat-val-warn-2">2</span>
+          </div>
+          <div class="risk-mini-tile">
+            <span class="rmt-lbl">Critical</span>
+            <span class="rmt-val green" id="stat-val-crit">0</span>
+          </div>
+        </div>
+
+        <!-- Risk Level Bands Progress Bars -->
+        <div class="risk-bands-stack">
+          <div class="risk-band-row">
+            <div class="risk-band-label">
+              <span>SAFE</span>
+              <strong>0 — 30%</strong>
+            </div>
+            <div class="risk-band-track">
+              <div class="risk-band-bar safe" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <div class="risk-band-row active-highlight">
+            <div class="risk-band-label">
+              <span>WARNING <strong class="lemon-tag">▲ 46% Max Reached</strong></span>
+              <strong>31 — 60%</strong>
+            </div>
+            <div class="risk-band-track">
+              <div class="risk-band-bar warning" style="width: 50%;"></div>
+            </div>
+          </div>
+
+          <div class="risk-band-row">
+            <div class="risk-band-label">
+              <span>HIGH RISK</span>
+              <strong>61 — 90%</strong>
+            </div>
+            <div class="risk-band-track">
+              <div class="risk-band-bar high" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="risk-band-row">
+            <div class="risk-band-label">
+              <span>CRITICAL</span>
+              <strong>91 — 100%</strong>
+            </div>
+            <div class="risk-band-track">
+              <div class="risk-band-bar critical" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
     </section>
 
-    <!-- 4. RISK TREND GRAPH (DROWSINESS RISK VS TIME) -->
-    <section class="dash-card risk-trend-section">
+    <!-- 5. RISK GRAPH SECTION (FULL WIDTH) -->
+    <section class="dash-card risk-graph-card">
       <div class="card-head-row">
         <div>
-          <span class="card-kicker">CONTINUOUS TELEMETRY</span>
-          <h2 class="card-main-title">Drowsiness Risk vs Time</h2>
-          <p class="card-main-subtitle">Real-time facial landmark fatigue curve plotted across the 24-minute journey.</p>
+          <div class="card-title-group">
+            <div class="card-icon-bubble"><i data-lucide="trending-up"></i></div>
+            <div>
+              <h2 class="card-main-title">Drowsiness Risk During Trip</h2>
+              <p class="card-main-subtitle">Driver risk level over the course of the ride.</p>
+            </div>
+          </div>
         </div>
-        <div class="graph-legend">
-          <span class="leg-item"><span class="leg-dot safe"></span> Safe (0–30%)</span>
-          <span class="leg-item"><span class="leg-dot warn"></span> Warning (31–60%)</span>
+        <div class="graph-legend-group">
+          <span class="graph-leg-item"><span class="g-dot safe"></span> Safe (0–30%)</span>
+          <span class="graph-leg-item"><span class="g-dot warn"></span> Warning (31–60%)</span>
+          <span class="demo-pill-subtle">DEMO DATA</span>
         </div>
       </div>
 
       <!-- INTERACTIVE SVG LINE CHART -->
-      <div class="risk-chart-box-relative">
+      <div class="chart-container-box">
         <div class="chart-tooltip" id="chart-tooltip"></div>
-        <svg viewBox="0 0 700 220" class="risk-trend-svg" id="risk-trend-svg" preserveAspectRatio="none">
+        <svg viewBox="0 0 700 220" class="risk-chart-svg" id="risk-trend-svg" preserveAspectRatio="none">
           <!-- Horizontal Grid Lines -->
-          <line x1="60" y1="25" x2="640" y2="25" stroke="rgba(255,255,255,0.06)" stroke-dasharray="4"/>
-          <text x="50" y="29" fill="#555" font-size="10" text-anchor="end" font-family="monospace">100%</text>
+          <line x1="50" y1="30" x2="660" y2="30" stroke="#EAEAEA" stroke-dasharray="4"/>
+          <text x="42" y="34" fill="#999999" font-size="10" text-anchor="end" font-family="monospace">100%</text>
 
-          <line x1="60" y1="73" x2="640" y2="73" stroke="rgba(239, 68, 68, 0.25)" stroke-dasharray="4"/>
-          <text x="50" y="77" fill="#EF4444" font-size="10" text-anchor="end" font-family="monospace">60% (High)</text>
+          <line x1="50" y1="78" x2="660" y2="78" stroke="#FEE2E2" stroke-dasharray="4"/>
+          <text x="42" y="82" fill="#EF4444" font-size="10" text-anchor="end" font-family="monospace">60% (High)</text>
 
-          <line x1="60" y1="121" x2="640" y2="121" stroke="rgba(223, 255, 0, 0.25)" stroke-dasharray="4"/>
-          <text x="50" y="125" fill="#DFFF00" font-size="10" text-anchor="end" font-family="monospace">30% (Warn)</text>
+          <line x1="50" y1="126" x2="660" y2="126" stroke="#FEF08A" stroke-dasharray="4"/>
+          <text x="42" y="130" fill="#CA8A04" font-size="10" text-anchor="end" font-family="monospace">30% (Warn)</text>
 
-          <line x1="60" y1="185" x2="640" y2="185" stroke="rgba(255,255,255,0.08)"/>
-          <text x="50" y="189" fill="#555" font-size="10" text-anchor="end" font-family="monospace">0%</text>
+          <line x1="50" y1="185" x2="660" y2="185" stroke="#E5E5E5"/>
+          <text x="42" y="189" fill="#999999" font-size="10" text-anchor="end" font-family="monospace">0%</text>
 
           <!-- Gradient Area Fill -->
           <defs>
-            <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#DFFF00" stop-opacity="0.32"/>
-              <stop offset="60%" stop-color="#DFFF00" stop-opacity="0.08"/>
-              <stop offset="100%" stop-color="#DFFF00" stop-opacity="0"/>
+            <linearGradient id="curveGradLight" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#D4A017" stop-opacity="0.5"/>
+              <stop offset="70%" stop-color="#D4A017" stop-opacity="0.1"/>
+              <stop offset="100%" stop-color="#D4A017" stop-opacity="0"/>
             </linearGradient>
           </defs>
 
-          <!-- Dynamic paths populated by dashboard.js -->
-          <path id="risk-chart-area" fill="url(#curveGrad)"/>
-          <path id="risk-chart-line" fill="none" stroke="#DFFF00" stroke-width="3" stroke-linecap="round"/>
+          <!-- Dynamic Paths generated by dashboard.js -->
+          <path id="risk-chart-area" fill="url(#curveGradLight)"/>
+          <path id="risk-chart-line" fill="none" stroke="#050505" stroke-width="3.5" stroke-linecap="round"/>
 
-          <!-- Interactive data points group -->
+          <!-- Interactive Hover Dots -->
           <g id="risk-chart-dots"></g>
 
-          <!-- X-Axis Labels -->
-          <text x="60" y="210" fill="#777" font-size="11" font-family="monospace">0 min (10:42)</text>
-          <text x="180" y="210" fill="#777" font-size="11" font-family="monospace">5 min</text>
-          <text x="300" y="210" fill="#777" font-size="11" font-family="monospace">10 min</text>
-          <text x="420" y="210" fill="#777" font-size="11" font-family="monospace">15 min</text>
-          <text x="540" y="210" fill="#777" font-size="11" font-family="monospace">20 min</text>
-          <text x="640" y="210" fill="#777" font-size="11" font-family="monospace">24 min (11:06)</text>
+          <!-- X-Axis Timestamps -->
+          <text x="60" y="210" fill="#666" font-size="11" font-family="monospace">0 min (10:42)</text>
+          <text x="180" y="210" fill="#666" font-size="11" font-family="monospace">5 min</text>
+          <text x="300" y="210" fill="#666" font-size="11" font-family="monospace">10 min</text>
+          <text x="420" y="210" fill="#666" font-size="11" font-family="monospace">15 min</text>
+          <text x="540" y="210" fill="#666" font-size="11" font-family="monospace">20 min</text>
+          <text x="640" y="210" fill="#666" font-size="11" font-family="monospace">24 min (11:06)</text>
         </svg>
       </div>
 
-      <div class="graph-bottom-explanation">
-        <i data-lucide="info" style="color: var(--lemon-yellow); width: 18px; height: 18px; flex-shrink: 0;"></i>
-        <p>
-          Data points represent rolling EAR (Eye Aspect Ratio) & MAR (Mouth Aspect Ratio) sampling. The 2 brief warning spikes during minute 15 and 20 were corrected within 1.8s by audio alert prompts, keeping trip average risk at a safe <strong>24%</strong>.
-        </p>
+      <div class="chart-footer-note">
+        <i data-lucide="info"></i>
+        <span>Data points represent continuous facial landmark fatigue telemetry. Two momentary fatigue warnings at 15 min and 20 min were resolved promptly with audio nudges.</span>
       </div>
     </section>
 
-    <!-- 5. 2-COLUMN SECTION: SAFETY EVENT TIMELINE & ALERT SUMMARY -->
-    <section class="dash-2col-analysis-grid">
+    <!-- 6. TWO-COLUMN: SAFETY EVENT TIMELINE + ALERT SUMMARY -->
+    <section class="dash-2col-grid">
       
-      <!-- LEFT: SAFETY EVENT TIMELINE -->
-      <div class="dash-card event-timeline-card">
+      <!-- SAFETY EVENT TIMELINE -->
+      <div class="dash-card">
         <div class="card-head-row">
-          <div>
-            <span class="card-kicker">CHRONOLOGICAL LOG</span>
-            <h2 class="card-main-title">Safety Event Timeline</h2>
-            <p class="card-main-subtitle">Recorded safety actions and biometric detection milestones.</p>
+          <div class="card-title-group">
+            <div class="card-icon-bubble"><i data-lucide="clock"></i></div>
+            <div>
+              <h2 class="card-main-title">Safety Event Timeline</h2>
+              <p class="card-main-subtitle">Recorded safety actions and biometric detection milestones.</p>
+            </div>
           </div>
         </div>
 
-        <div class="dash-timeline-list" id="safety-event-timeline-list">
-          <!-- Dynamically generated by dashboard.js -->
+        <div class="timeline-vertical-list" id="safety-event-timeline-list">
+          <!-- Dynamically populated by dashboard.js -->
         </div>
       </div>
 
-      <!-- RIGHT: ALERT SUMMARY, CRITICAL SECTION & SOS HISTORY -->
-      <div class="dash-details-col-stack">
+      <!-- ALERT SUMMARY & CRITICAL STATUS -->
+      <div class="dash-col-stack">
         
-        <!-- ALERT SUMMARY -->
-        <div class="dash-card alert-summary-card">
+        <div class="dash-card">
           <div class="card-head-row">
-            <div>
-              <span class="card-kicker">SMART ALERTS</span>
+            <div class="card-title-group">
+              <div class="card-icon-bubble"><i data-lucide="bell"></i></div>
               <h2 class="card-main-title">Alert Summary</h2>
             </div>
           </div>
 
-          <div class="alerts-count-grid">
-            <div class="alert-count-tile">
-              <span class="ac-lbl">Visual Warnings</span>
-              <strong class="ac-val lemon" id="val-vis-warnings">2</strong>
+          <div class="alert-stats-4grid">
+            <div class="alert-stat-tile">
+              <span class="ast-lbl">Visual Warnings</span>
+              <strong class="ast-val" id="val-vis-warnings">2</strong>
             </div>
-            <div class="alert-count-tile">
-              <span class="ac-lbl">Audio Alerts</span>
-              <strong class="ac-val lemon" id="val-aud-alerts">1</strong>
+            <div class="alert-stat-tile">
+              <span class="ast-lbl">Audio Alerts</span>
+              <strong class="ast-val" id="val-aud-alerts">1</strong>
             </div>
-            <div class="alert-count-tile">
-              <span class="ac-lbl">High-Risk Alerts</span>
-              <strong class="ac-val green" id="val-high-alerts">0</strong>
+            <div class="alert-stat-tile">
+              <span class="ast-lbl">High-Risk Alerts</span>
+              <strong class="ast-val green" id="val-high-alerts">0</strong>
             </div>
-            <div class="alert-count-tile">
-              <span class="ac-lbl">Critical Alerts</span>
-              <strong class="ac-val green" id="val-crit-alerts">0</strong>
+            <div class="alert-stat-tile">
+              <span class="ast-lbl">Critical Alerts</span>
+              <strong class="ast-val green" id="val-crit-alerts">0</strong>
             </div>
-            <div class="alert-count-tile">
-              <span class="ac-lbl">SOS Events</span>
-              <strong class="ac-val green" id="val-sos-events">0</strong>
+          </div>
+
+          <!-- Calm Safe State Box -->
+          <div class="safe-event-banner" id="critical-events-card">
+            <div class="seb-icon"><i data-lucide="shield-check"></i></div>
+            <div class="seb-text">
+              <h4>✓ No Critical Events Detected</h4>
+              <p>WideEYE did not detect any severe or prolonged fatigue events during this ride. All indicators remained within safe parameters.</p>
             </div>
           </div>
         </div>
 
-        <!-- CRITICAL EVENT SECTION -->
-        <div class="dash-card" id="critical-events-card">
-          <!-- Populated by dashboard.js -->
-        </div>
-
-        <!-- SOS HISTORY -->
-        <div class="dash-card sos-history-card">
-          <div class="calm-safe-card-inner">
-            <div class="calm-icon-box"><i data-lucide="phone-off"></i></div>
-            <div class="calm-info">
-              <h3>✓ No Emergency Events</h3>
-              <p>Emergency SOS was on standby throughout the ride and was not triggered. Emergency contacts (Priya Sharma, Arjun Mehta) remained in standby status.</p>
+        <!-- SOS STANDBY CARD -->
+        <div class="dash-card sos-standby-card">
+          <div class="sos-standby-inner">
+            <div class="sos-icon-box"><i data-lucide="phone-call"></i></div>
+            <div class="sos-text-box">
+              <h4>24/7 Emergency SOS Standby</h4>
+              <p>Emergency dispatch and contact alerts (Priya Sharma, Arjun Mehta) remained on active standby throughout the trip.</p>
             </div>
           </div>
         </div>
@@ -402,165 +459,102 @@
 
     </section>
 
-    <!-- 6. 2-COLUMN SECTION: DRIVER SAFETY & PASSENGER SAFETY -->
-    <section class="dash-2col-analysis-grid">
+    <!-- 7. TWO-COLUMN: TRIP ROUTE + OVERALL SAFETY RESULT -->
+    <section class="dash-2col-grid">
       
-      <!-- DRIVER SAFETY -->
-      <div class="dash-card driver-safety-detail-card">
+      <!-- TRIP ROUTE CARD -->
+      <div class="dash-card">
         <div class="card-head-row">
-          <div>
-            <span class="card-kicker">DRIVER VERIFICATION</span>
-            <h2 class="card-main-title">Driver Safety</h2>
+          <div class="card-title-group">
+            <div class="card-icon-bubble"><i data-lucide="map"></i></div>
+            <h2 class="card-main-title">Trip Route</h2>
           </div>
-          <span class="status-chip completed">✓ VERIFIED</span>
+          <span class="route-dist-badge"><i data-lucide="navigation"></i> 8.4 km</span>
         </div>
 
-        <div class="driver-safety-info-grid">
-          <div class="ds-row"><span>Driver Name:</span> <strong>Rahul Kumar</strong></div>
-          <div class="ds-row"><span>Driver Rating:</span> <strong class="lemon">★ 4.8 / 5.0</strong></div>
-          <div class="ds-row"><span>Vehicle:</span> <strong>White Auto (UP32 AB 1234)</strong></div>
-          <div class="ds-row"><span>Monitoring Duration:</span> <strong id="driver-mon-dur">24 min</strong></div>
-          <div class="ds-row"><span>Maximum Risk:</span> <strong class="lemon" id="driver-max-risk">46%</strong></div>
-          <div class="ds-row"><span>Overall Driver Status:</span> <strong style="color:#10B981;">SAFE (No incidents)</strong></div>
+        <div class="route-visual-flow">
+          <div class="route-point">
+            <span class="route-dot origin"></span>
+            <div class="route-point-info">
+              <span class="rp-tag">PICKUP</span>
+              <h4 class="rp-name">DLF Cyber City</h4>
+              <span class="rp-time">10:42 AM · Sector 24, Gurugram</span>
+            </div>
+          </div>
+
+          <div class="route-connector-line">
+            <div class="route-vehicle-chip">
+              <i data-lucide="car"></i>
+              <span>8.4 km · 24 min</span>
+            </div>
+          </div>
+
+          <div class="route-point">
+            <span class="route-dot destination"></span>
+            <div class="route-point-info">
+              <span class="rp-tag">DESTINATION</span>
+              <h4 class="rp-name">City Centre Mall</h4>
+              <span class="rp-time">11:06 AM · Sector 29, Gurugram</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- PASSENGER SAFETY -->
-      <div class="dash-card passenger-safety-detail-card">
+      <!-- OVERALL SAFETY RESULT CARD -->
+      <div class="dash-card overall-safety-card">
         <div class="card-head-row">
-          <div>
-            <span class="card-kicker">PASSENGER PROTECTION</span>
-            <h2 class="card-main-title">Passenger Safety</h2>
+          <div class="card-title-group">
+            <div class="card-icon-bubble"><i data-lucide="shield-check"></i></div>
+            <h2 class="card-main-title">Overall Safety</h2>
           </div>
-          <span class="status-chip completed">✓ PROTECTED</span>
+          <span class="status-chip-green">🟢 SAFE</span>
         </div>
 
-        <div class="passenger-safety-info-grid">
-          <div class="ps-row"><span>Driver Verified:</span> <strong class="green">✓ Verified</strong></div>
-          <div class="ps-row"><span>Trip Monitored:</span> <strong class="green">✓ Active Optical Telemetry</strong></div>
-          <div class="ps-row"><span>WideEYE Safety:</span> <strong class="lemon">✓ Active during trip</strong></div>
-          <div class="ps-row"><span>Emergency Contacts:</span> <strong id="pass-contacts-count">2 (Priya Sharma, Arjun Mehta)</strong></div>
-          <div class="ps-row"><span>Live Trip Sharing:</span> <strong class="green">Enabled & Accessible</strong></div>
-          <div class="ps-row"><span>SOS Availability:</span> <strong class="green">Available 24/7</strong></div>
+        <p class="overall-safety-desc" id="overall-safety-narrative">
+          No critical safety events were recorded during this trip. Driver attentiveness remained consistently high.
+        </p>
+
+        <div class="overall-metrics-row">
+          <div class="om-stat">
+            <span class="om-lbl">Maximum Risk</span>
+            <strong class="om-val" id="driver-max-risk">46%</strong>
+          </div>
+          <div class="om-stat">
+            <span class="om-lbl">Warnings</span>
+            <strong class="om-val">2</strong>
+          </div>
+          <div class="om-stat">
+            <span class="om-lbl">Critical</span>
+            <strong class="om-val green">0</strong>
+          </div>
+        </div>
+
+        <div class="safety-verified-strip">
+          <i data-lucide="check-circle-2"></i>
+          <span>Official WideEYE Biometric & Telemetry Report Verified</span>
         </div>
       </div>
 
     </section>
 
-    <!-- 7. COLLAPSIBLE TRIP DETAILS & SAFETY HIGHLIGHTS -->
-    <section class="dash-card trip-details-accordion-card">
-      <div class="trip-details-accordion-header" id="trip-details-toggle-btn">
-        <div class="tda-title-wrap">
-          <i data-lucide="receipt" style="color: var(--lemon-yellow);"></i>
-          <h3 class="tda-heading">Trip Details & Route Information</h3>
-        </div>
-        <i data-lucide="chevron-down" class="accordion-chevron" id="td-chevron"></i>
-      </div>
-
-      <div class="trip-details-accordion-body" id="collapsible-trip-details-body">
-        <div class="trip-details-2col-grid">
-          <div class="td-col">
-            <div class="td-row"><span>Trip ID:</span> <strong id="td-trip-id">WE-24081</strong></div>
-            <div class="td-row"><span>Pickup:</span> <strong id="td-pickup">Current Location (Cyber City)</strong></div>
-            <div class="td-row"><span>Destination:</span> <strong id="td-dest">City Centre Mall (Sector 29)</strong></div>
-            <div class="td-row"><span>Total Distance:</span> <strong id="td-dist">8.4 km</strong></div>
-            <div class="td-row"><span>Total Duration:</span> <strong id="td-dur">24 min</strong></div>
-          </div>
-          <div class="td-col">
-            <div class="td-row"><span>Total Fare:</span> <strong class="lemon" id="td-fare">₹96.00</strong></div>
-            <div class="td-row"><span>Ride Type:</span> <strong id="td-type">Auto</strong></div>
-            <div class="td-row"><span>Driver:</span> <strong id="td-driver">Rahul Kumar</strong></div>
-            <div class="td-row"><span>Vehicle Number:</span> <strong id="td-veh">UP32 AB 1234</strong></div>
-            <div class="td-row"><span>Payment:</span> <strong id="td-payment">Cash / UPI</strong></div>
-          </div>
-        </div>
-
-        <div class="safety-highlights-section">
-          <h4 class="sh-title">Safety Highlights</h4>
-          <div class="safety-highlights-grid" id="safety-highlights-list">
-            <!-- Populated by dashboard.js -->
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 8. RIDE HISTORY SECTION (DASHBOARD OVERVIEW + SEARCH/FILTERS + PAST RIDES) -->
-    <section class="dash-card history-dashboard-card" id="ride-history-section">
-      <div class="card-head-row">
-        <div>
-          <span class="card-kicker">TRIP ARCHIVE</span>
-          <h2 class="card-main-title">WIDEEYE DASHBOARD & HISTORY</h2>
-          <p class="card-main-subtitle">Your rides. Your safety history.</p>
-        </div>
-      </div>
-
-      <!-- DASHBOARD OVERVIEW COUNTERS (DEMO VALUES) -->
-      <div class="overview-counters-grid">
-        <div class="oc-tile">
-          <span class="oc-lbl">Total Trips</span>
-          <strong class="oc-val">12</strong>
-        </div>
-        <div class="oc-tile">
-          <span class="oc-lbl">Safe Trips</span>
-          <strong class="oc-val green">10</strong>
-        </div>
-        <div class="oc-tile">
-          <span class="oc-lbl">Warning Trips</span>
-          <strong class="oc-val warning">2</strong>
-        </div>
-        <div class="oc-tile">
-          <span class="oc-lbl">Critical Trips</span>
-          <strong class="oc-val green">0</strong>
-        </div>
-      </div>
-
-      <!-- SAFETY TREND STRIP -->
-      <div class="safety-trend-strip">
-        <div class="st-left">
-          <h4>Your Safety Trend</h4>
-          <p>Historical average driver fatigue risk across 12 monitored trips.</p>
-        </div>
-        <div class="st-metrics-row">
-          <div class="st-met"><span>Average Risk:</span> <strong>24%</strong></div>
-          <div class="st-met"><span>Best Trip:</span> <strong class="green">8%</strong></div>
-          <div class="st-met"><span>Highest Risk:</span> <strong class="lemon">46%</strong></div>
-        </div>
-      </div>
-
-      <!-- HISTORY FILTER BUTTONS -->
-      <div class="history-filter-bar">
-        <div class="filter-tabs-group">
-          <button class="btn-filter-tab active" data-filter="all" onclick="window.safetyDashboard.setHistoryFilter('all')">All Trips (4)</button>
-          <button class="btn-filter-tab" data-filter="safe" onclick="window.safetyDashboard.setHistoryFilter('safe')">Safe Only</button>
-          <button class="btn-filter-tab" data-filter="warnings" onclick="window.safetyDashboard.setHistoryFilter('warnings')">With Warnings</button>
-          <button class="btn-filter-tab" data-filter="critical" onclick="window.safetyDashboard.setHistoryFilter('critical')">Critical (0)</button>
-        </div>
-      </div>
-
-      <!-- RIDE HISTORY CARDS CONTAINER -->
-      <div class="ride-history-cards-grid" id="ride-history-cards-container">
-        <!-- Populated by dashboard.js -->
-      </div>
-    </section>
-
-    <!-- 9. BOTTOM ACTION ROW: DOWNLOAD, SHARE, BOOK NEXT RIDE -->
+    <!-- 8. BOTTOM ACTION BANNER -->
     <section class="dash-bottom-action-banner">
       <div class="bab-left">
         <h3 class="bab-title">Ready for your next journey?</h3>
-        <p class="bab-desc">WideEYE camera monitoring is ready to protect your next ride.</p>
+        <p class="bab-desc">WideEYE active camera monitoring is ready to protect your next ride.</p>
       </div>
       <div class="bab-right-actions">
-        <button class="btn btn-secondary" onclick="window.print()">
-          <i data-lucide="download"></i>
-          <span>Download Safety Report</span>
-        </button>
-        <button class="btn btn-secondary" onclick="window.safetyDashboard.openShareModal()">
+        <button class="btn btn-dash-white" onclick="window.safetyDashboard.openShareModal()">
           <i data-lucide="share-2"></i>
           <span>Share Summary</span>
         </button>
-        <a href="book.html" class="btn btn-primary">
-          <i data-lucide="compass"></i>
-          <span>Book a Safe Ride</span>
+        <button class="btn btn-dash-white" onclick="window.print()">
+          <i data-lucide="printer"></i>
+          <span>Print / Save Report</span>
+        </button>
+        <a href="book.html" class="btn btn-dash-lemon">
+          <i data-lucide="arrow-right"></i>
+          <span>Book Next Ride</span>
         </a>
       </div>
     </section>
@@ -572,24 +566,24 @@
     <div class="modal-dialog">
       <div class="modal-header">
         <div class="modal-title-group">
-          <span class="brand-name" style="font-size: 1.15rem; color: #DFFF00;">Share Trip Safety Summary</span>
+          <span class="brand-name" style="font-size: 1.15rem; color: #050505;">Share Trip Safety Summary</span>
         </div>
         <button class="modal-close-btn" onclick="window.safetyDashboard.closeShareModal()"><i data-lucide="x"></i></button>
       </div>
       <div class="modal-body" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
-        <p style="font-size: 0.88rem; color: #9CA3AF; line-height: 1.5;">
+        <p style="font-size: 0.88rem; color: #666666; line-height: 1.5;">
           Share your completed trip's safety report, verified driver credentials, and safety score with trusted contacts.
         </p>
 
         <div class="share-summary-box">
           <div class="share-row"><span>Booking ID:</span> <strong>#WE-24081</strong></div>
           <div class="share-row"><span>Driver:</span> <strong>Rahul Kumar (Auto UP32 AB 1234)</strong></div>
-          <div class="share-row"><span>Safety Score:</span> <strong class="lemon">92 / 100 (SAFE)</strong></div>
+          <div class="share-row"><span>Safety Score:</span> <strong style="color: #050505;">92 / 100 (SAFE)</strong></div>
           <div class="share-row"><span>Max Drowsiness Risk:</span> <strong>46%</strong></div>
         </div>
 
         <div>
-          <label style="font-size: 0.78rem; font-weight: 700; color: #AAA; display: block; margin-bottom: 6px;">Summary Link</label>
+          <label style="font-size: 0.78rem; font-weight: 700; color: #555555; display: block; margin-bottom: 6px;">Summary Link</label>
           <div class="share-link-input-group">
             <input type="text" id="share-summary-link-input" readonly value="https://wideeye.app/summary/WE-24081?auth=public" class="share-link-input">
             <button class="btn btn-secondary" onclick="window.safetyDashboard.copyShareLink()">
@@ -600,7 +594,7 @@
 
         <div class="modal-btn-row" style="margin-top: 8px;">
           <button class="btn btn-secondary" style="flex: 1;" onclick="window.safetyDashboard.closeShareModal()">Close</button>
-          <button class="btn btn-primary" style="flex: 1;" onclick="window.safetyDashboard.executeShare()">
+          <button class="btn btn-primary" style="flex: 1; background: #D4A017; color: #050505; border: none;" onclick="window.safetyDashboard.executeShare()">
             <i data-lucide="share-2"></i>
             <span>Share via WhatsApp</span>
           </button>

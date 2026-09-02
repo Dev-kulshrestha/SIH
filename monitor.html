@@ -6,7 +6,7 @@
   <title>WideEYE AI Driver Safety Monitor & Smart Alert System — Real-Time Drowsiness Intervention</title>
   <meta name="description" content="In-browser AI Driver Safety Monitor and Smart Alert Response System with real-time fatigue escalation, synthesized dual-tone audio alerts, driver intervention challenges, and SOS triage.">
   
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23050505' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3.2' fill='%23DFFF00'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23050505' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/><circle cx='12' cy='12' r='3.2' fill='%23D4A017'/></svg>">
 
   <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,7 +37,7 @@
           <div class="logo-mark">
             <svg viewBox="0 0 28 28" fill="none" class="logo-icon">
               <path d="M2.5 14C2.5 14 6.5 6 14 6C21.5 6 25.5 14 25.5 14C25.5 14 21.5 22 14 22C6.5 22 2.5 14 2.5 14Z" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="14" cy="14" r="4.2" fill="#DFFF00" class="logo-pupil-yellow"/>
+              <circle cx="14" cy="14" r="4.2" fill="#D4A017" class="logo-pupil-yellow"/>
               <circle cx="15.5" cy="12.5" r="1.2" fill="#050505"/>
             </svg>
           </div>
@@ -62,6 +62,11 @@
         <button class="btn-sound-toggle" id="btn-sound-toggle" onclick="window.safetyMonitor.toggleSound()" title="Toggle Audio Alerts">
           <i data-lucide="volume-2" id="sound-icon"></i>
           <span id="sound-label">Sound On</span>
+        </button>
+
+        <button class="btn-toggle-monitoring" id="btn-toggle-monitoring" onclick="window.safetyMonitor.handleMonitoringToggle()" title="Toggle Live Monitoring">
+          <i data-lucide="square" id="toggle-monitor-icon"></i>
+          <span id="toggle-monitor-text">Stop Monitoring</span>
         </button>
       </div>
     </div>
@@ -157,9 +162,15 @@
               <span class="pulse-lemon-dot"></span>
               <span>LIVE DRIVER MONITORING</span>
             </div>
-            <div class="hud-pill dark">
-              <i data-lucide="shield-check"></i>
-              <span>CONFIDENCE: <strong id="metric-confidence">94%</strong></span>
+            <div class="hud-right-group" style="display: flex; align-items: center; gap: 8px;">
+              <div class="hud-pill dark">
+                <i data-lucide="shield-check"></i>
+                <span>CONFIDENCE: <strong id="metric-confidence">94%</strong></span>
+              </div>
+              <button class="btn-hud-stop-monitor" id="hud-stop-monitor-btn" onclick="window.safetyMonitor.handleMonitoringToggle()" title="Stop Monitoring">
+                <i data-lucide="square"></i>
+                <span>Stop Monitoring</span>
+              </button>
             </div>
           </div>
 
@@ -340,9 +351,9 @@
 
       <!-- 7. MONITORING CONTROLS -->
       <div class="monitor-action-controls">
-        <button class="btn btn-secondary btn-full" onclick="window.safetyMonitor.stopMonitoring()">
-          <i data-lucide="square"></i>
-          <span>Stop Monitoring</span>
+        <button class="btn btn-stop-monitoring-card btn-full" id="btn-stop-card" onclick="window.safetyMonitor.handleMonitoringToggle()">
+          <i data-lucide="square" id="card-toggle-icon"></i>
+          <span id="card-toggle-text">Stop Monitoring</span>
         </button>
       </div>
 
@@ -391,7 +402,7 @@
     <div class="modal-dialog">
       <div class="modal-header" style="background: #050505; color: #FFFFFF;">
         <div class="modal-title-group">
-          <span class="brand-name" style="font-size: 1.1rem; color: #DFFF00;">Driver Alert Verification</span>
+          <span class="brand-name" style="font-size: 1.1rem; color: #D4A017;">Driver Alert Verification</span>
         </div>
       </div>
       <div class="modal-body text-center" style="padding: 24px;">
@@ -416,23 +427,37 @@
   <div class="modal-backdrop" id="sos-countdown-modal" aria-hidden="true" role="dialog">
     <div class="modal-dialog sos-countdown-dialog">
       <div class="sos-countdown-body text-center">
-        <h2 class="sos-head-title">🚨 Emergency assistance will activate in</h2>
+        <!-- Emergency Kicker & Header -->
+        <div class="sos-header-block">
+          <div class="sos-emergency-badge">
+            <span class="sos-blink-dot"></span>
+            <span>🚨 EMERGENCY</span>
+          </div>
+          <h2 class="sos-main-title">SOS ACTIVATION</h2>
+          <p class="sos-header-sub">Emergency alert will be sent automatically.</p>
+        </div>
         
+        <!-- Center Progress Ring & Large White Number -->
         <div class="sos-countdown-ring-wrap">
-          <svg class="sos-ring-svg" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
-            <circle id="sos-countdown-circle" cx="60" cy="60" r="45" fill="none" stroke="#EF4444" stroke-width="8" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+          <svg class="sos-ring-svg" viewBox="0 0 160 160">
+            <!-- Background Dark Gray Ring -->
+            <circle cx="80" cy="80" r="64" fill="none" stroke="#262626" stroke-width="10"/>
+            <!-- Emergency Red Progress Ring -->
+            <circle id="sos-countdown-circle" cx="80" cy="80" r="64" fill="none" stroke="#DC2626" stroke-width="10" stroke-linecap="round" stroke-dasharray="402.12" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
           </svg>
           <div class="sos-countdown-number" id="sos-countdown-number">5</div>
         </div>
 
-        <p class="sos-countdown-desc">
-          Automated GPS triage dispatch to Emergency Services (112) and passenger emergency contacts.
-        </p>
+        <!-- Dynamic Countdown Status Text -->
+        <div class="sos-countdown-status-box">
+          <span class="sos-status-label">SOS ACTIVATING IN</span>
+          <span class="sos-status-seconds" id="sos-countdown-sec-text">5 seconds</span>
+        </div>
 
-        <button class="btn btn-secondary btn-full btn-lg" style="color: #FFFFFF; border-color: rgba(255,255,255,0.4);" onclick="window.safetyMonitor.alertManager.cancelSosCountdown()">
+        <!-- Cancel SOS Action Button -->
+        <button class="btn-sos-cancel-white" onclick="window.safetyMonitor.alertManager.cancelSosCountdown()">
           <i data-lucide="x"></i>
-          <span>CANCEL ASSISTANCE</span>
+          <span>CANCEL SOS</span>
         </button>
       </div>
     </div>
@@ -442,21 +467,40 @@
   <div class="modal-backdrop" id="sos-activated-modal" aria-hidden="true" role="dialog">
     <div class="modal-dialog sos-activated-dialog">
       <div class="sos-act-header">
-        <div class="sos-act-icon"><i data-lucide="shield-alert"></i></div>
-        <h2>🚨 EMERGENCY SOS ACTIVATED</h2>
-      </div>
-      <div class="modal-body" style="padding: 24px;">
-        <p style="color: #E2E8F0; font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px;">
-          WideEYE has detected a critical driver safety event and dispatched emergency triage telemetry to Central Emergency Response (112) & passenger trusted contacts.
-        </p>
-        <div class="sos-dispatch-box">
-          <div class="dispatch-row"><span>Driver:</span> <strong>Rahul Kumar (UP32 AB 1234)</strong></div>
-          <div class="dispatch-row"><span>Current Trip:</span> <strong>City Centre (Cyber City Route)</strong></div>
-          <div class="dispatch-row"><span>GPS Coordinates:</span> <strong>28.4986° N, 77.0878° E</strong></div>
-          <div class="dispatch-row"><span>Fatigue Risk Index:</span> <strong style="color: #EF4444;">96% (CRITICAL)</strong></div>
-          <div class="dispatch-row"><span>Status:</span> <strong style="color: #10B981;">● Triage Dispatch Transmitted</strong></div>
+        <div class="sos-act-badge">
+          <i data-lucide="shield-alert"></i>
+          <span>🚨 SOS ACTIVATED</span>
         </div>
-        <button class="btn btn-secondary btn-full" style="color: #FFFFFF; border-color: rgba(255,255,255,0.3); margin-top: 16px;" onclick="window.safetyMonitor.alertManager.closeSosActivatedModal()">
+      </div>
+      <div class="modal-body" style="padding: 24px; background: #050505;">
+        <p style="color: #FFFFFF; font-size: 0.95rem; font-weight: 700; margin-bottom: 6px;">
+          Emergency assistance has been requested.
+        </p>
+        <p style="color: #888888; font-size: 0.82rem; line-height: 1.4; margin-bottom: 16px;">
+          Telemetry and live triage data have been transmitted to emergency responders and passenger contacts.
+        </p>
+
+        <div class="sos-checklist-box">
+          <div class="sos-check-item">
+            <i data-lucide="check-circle-2"></i>
+            <span>Location Shared (Cyber City · 28.4986° N, 77.0878° E)</span>
+          </div>
+          <div class="sos-check-item">
+            <i data-lucide="check-circle-2"></i>
+            <span>Emergency Contact Notified (SMS & Push Alert)</span>
+          </div>
+          <div class="sos-check-item">
+            <i data-lucide="check-circle-2"></i>
+            <span>Trip & Driver Information Shared (#WE-24081 · Rahul Kumar)</span>
+          </div>
+        </div>
+
+        <div class="sos-help-banner">
+          <i data-lucide="shield"></i>
+          <span>HELP IS ON THE WAY</span>
+        </div>
+
+        <button class="btn btn-secondary btn-full" style="color: #FFFFFF; border-color: rgba(255,255,255,0.3); margin-top: 18px; border-radius: 12px; font-weight: 700;" onclick="window.safetyMonitor.alertManager.closeSosActivatedModal()">
           <span>Close Emergency Console</span>
         </button>
       </div>
