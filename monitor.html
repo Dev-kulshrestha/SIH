@@ -105,49 +105,54 @@
         <!-- Camera Permission & Start Screen -->
         <div class="camera-permission-screen" id="camera-permission-overlay">
           <div class="perm-content-box">
-            <div class="perm-eye-icon">
-              <i data-lucide="video"></i>
+            <div class="perm-eye-icon" id="perm-icon-box">
+              <i data-lucide="video" id="perm-main-icon"></i>
             </div>
-            <h1 class="perm-heading">Activate Driver Monitoring</h1>
-            <p class="perm-desc">
+            <h1 class="perm-heading" id="perm-main-heading">Activate Driver Monitoring</h1>
+            <p class="perm-desc" id="perm-main-desc">
               WideEYE uses your camera to detect signs of driver fatigue in real time. Processing happens 100% locally on your device for absolute privacy.
             </p>
 
-            <div class="perm-features-list">
-              <div class="perm-feat-item"><i data-lucide="check"></i> <span>Eye Aspect Ratio (EAR) tracking</span></div>
-              <div class="perm-feat-item"><i data-lucide="check"></i> <span>Blink & prolonged eye-closure detection</span></div>
+            <div class="perm-features-list" id="perm-features-list">
+              <div class="perm-feat-item"><i data-lucide="check"></i> <span>Eye Aspect Ratio (EAR) & blink rate tracking</span></div>
+              <div class="perm-feat-item"><i data-lucide="check"></i> <span>Prolonged eye-closure & microsleep detection</span></div>
               <div class="perm-feat-item"><i data-lucide="check"></i> <span>Mouth Aspect Ratio (MAR) & yawn analysis</span></div>
-              <div class="perm-feat-item"><i data-lucide="check"></i> <span>Head pose orientation estimation</span></div>
+              <div class="perm-feat-item"><i data-lucide="check"></i> <span>Head pose orientation & nod detection</span></div>
             </div>
 
-            <div class="perm-actions-row">
+            <div class="perm-actions-row" id="perm-actions-row">
               <button class="btn btn-primary btn-lg" id="btn-enable-cam" onclick="window.safetyMonitor.startLiveCamera()">
                 <i data-lucide="camera"></i>
                 <span>Enable Camera</span>
               </button>
               <button class="btn btn-secondary" id="btn-continue-demo" onclick="window.safetyMonitor.startSimulationMode()">
-                <span>Continue Demo Mode</span>
+                <span>Start Simulation Mode</span>
               </button>
             </div>
             
             <p class="perm-privacy-footnote">
               <i data-lucide="lock"></i>
-              <span>Camera feed is processed locally and never uploaded or saved.</span>
+              <span>Camera analysis is processed locally in your browser and never uploaded.</span>
             </p>
           </div>
         </div>
 
-        <!-- 4-Second Adaptive Calibration Overlay -->
+        <!-- 5-Second Adaptive Calibration Overlay (Clean Card) -->
         <div class="calibration-overlay hidden" id="calibration-overlay">
           <div class="calib-box">
-            <div class="calib-spinner-ring"></div>
-            <h2 class="calib-heading">Calibrating Driver...</h2>
-            <p class="calib-desc">Look straight ahead and keep your eyes open naturally.</p>
+            <div class="calib-spinner-ring" id="calib-spinner"></div>
+            <div class="calib-kicker" id="calib-kicker">ADAPTIVE CALIBRATION</div>
+            <h2 class="calib-heading" id="calib-heading">Calibrating Driver...</h2>
+            <p class="calib-desc" id="calib-desc">Look straight ahead and keep your eyes open naturally.</p>
             
             <div class="calib-progress-track">
               <div class="calib-progress-bar" id="calib-progress-fill" style="width: 0%;"></div>
             </div>
-            <span class="calib-time-sub" id="calib-countdown-text">4s remaining</span>
+            
+            <div class="calib-status-details">
+              <span class="calib-time-sub" id="calib-countdown-text">5s remaining</span>
+              <span class="calib-samples-sub" id="calib-samples-text">Waiting for face...</span>
+            </div>
           </div>
         </div>
 
@@ -158,14 +163,14 @@
 
           <!-- Top Video HUD Badges -->
           <div class="video-hud-top">
-            <div class="hud-pill lemon">
+            <div class="hud-pill lemon" id="hud-live-badge">
               <span class="pulse-lemon-dot"></span>
-              <span>LIVE DRIVER MONITORING</span>
+              <span id="hud-live-tag-text">● AI MONITORING ACTIVE</span>
             </div>
             <div class="hud-right-group" style="display: flex; align-items: center; gap: 8px;">
               <div class="hud-pill dark">
                 <i data-lucide="shield-check"></i>
-                <span>CONFIDENCE: <strong id="metric-confidence">94%</strong></span>
+                <span>TRACKING CONFIDENCE: <strong id="metric-confidence">0%</strong></span>
               </div>
               <button class="btn-hud-stop-monitor" id="hud-stop-monitor-btn" onclick="window.safetyMonitor.handleMonitoringToggle()" title="Stop Monitoring">
                 <i data-lucide="square"></i>
@@ -186,10 +191,18 @@
           <div class="video-hud-bottom">
             <div class="hud-chip">
               <span>FACE:</span>
-              <strong id="metric-face-status">ONE FACE DETECTED</strong>
+              <strong id="metric-face-status" style="color: #666666;">WAITING FOR FACE...</strong>
             </div>
             <div class="hud-chip">
-              <span>EYE CLOSURE:</span>
+              <span>EYES:</span>
+              <strong id="metric-eyes-status" style="color: #666666;">--</strong>
+            </div>
+            <div class="hud-chip">
+              <span>MOUTH:</span>
+              <strong id="metric-mouth-status" style="color: #666666;">--</strong>
+            </div>
+            <div class="hud-chip">
+              <span>CLOSURE:</span>
               <strong id="metric-closure-sec">0.0s</strong>
             </div>
           </div>
@@ -200,7 +213,7 @@
       <!-- PRIVACY NOTE FOOTER -->
       <div class="privacy-notice-box">
         <i data-lucide="shield-check"></i>
-        <span><strong>Local Edge Processing:</strong> Your camera feed is processed in real time in your browser memory. WideEYE provides assistive safety alerts and does not record or store facial images.</span>
+        <span><strong>Local Edge Processing:</strong> Camera analysis is processed locally in your browser. WideEYE provides assistive safety alerts and does not record or store facial images.</span>
       </div>
     </section>
 
@@ -223,6 +236,12 @@
             <span class="risk-number-large" id="risk-score-value">18%</span>
             <span class="risk-sub-label">DROWSINESS</span>
           </div>
+        </div>
+
+        <!-- Prominent Driver Status Indicator -->
+        <div class="driver-status-banner-pill status-attentive" id="driver-status-pill">
+          <span class="dsp-dot">●</span>
+          <span id="driver-status-text">DRIVER ATTENTIVE</span>
         </div>
 
         <p class="risk-explanation-text" id="risk-desc-text">Driver appears alert and attentive.</p>
@@ -257,46 +276,62 @@
         </div>
       </div>
 
-      <!-- 3. REAL-TIME METRICS DASHBOARD (EAR, MAR, Blinks, Yawns, Head Pose) -->
+      <!-- 3. REAL-TIME METRICS DASHBOARD (EAR, MAR, Blinks, Blink Rate, Yawns, Head Pose) -->
       <div class="metrics-grid-card">
-        <h3 class="metrics-card-title">Live Biometric Telemetry</h3>
+        <div class="metrics-card-head-row">
+          <h3 class="metrics-card-title">Live Biometric Telemetry</h3>
+          <span class="metrics-live-tag" id="metrics-live-tag">● Adaptive</span>
+        </div>
 
         <div class="telemetry-metrics-grid">
           
           <div class="metric-cell">
             <span class="m-lbl">Average EAR</span>
             <span class="m-val highlight" id="metric-avg-ear">0.305</span>
-            <span class="m-sub">L: <span id="metric-left-ear">0.31</span> | R: <span id="metric-right-ear">0.30</span></span>
+            <span class="m-sub">L: <span id="metric-left-ear">0.31</span> | R: <span id="metric-right-ear">0.30</span> (Base: <span id="metric-base-ear">0.31</span>)</span>
+          </div>
+
+          <div class="metric-cell">
+            <span class="m-lbl">Blink Rate</span>
+            <span class="m-val" id="metric-blink-rate">18/min</span>
+            <span class="m-sub">Total Blinks: <strong id="metric-blinks">0</strong></span>
           </div>
 
           <div class="metric-cell">
             <span class="m-lbl">Mouth MAR</span>
             <span class="m-val" id="metric-mar">0.18</span>
-            <span class="m-sub">Yawn Threshold: > 0.40</span>
+            <span class="m-sub">Yawns: <strong id="metric-yawns">0</strong> (Base: <span id="metric-base-mar">0.18</span>)</span>
           </div>
 
           <div class="metric-cell">
-            <span class="m-lbl">Blink Count</span>
-            <span class="m-val" id="metric-blinks">0</span>
-            <span class="m-sub">Temporal analysis</span>
-          </div>
-
-          <div class="metric-cell">
-            <span class="m-lbl">Yawn Count</span>
-            <span class="m-val" id="metric-yawns">0</span>
-            <span class="m-sub">Sustained MAR count</span>
-          </div>
-
-          <div class="metric-cell span-2">
-            <span class="m-lbl">Head Position</span>
+            <span class="m-lbl">Head Pose</span>
             <span class="m-val pose-val" id="metric-head-pose">STABLE</span>
-            <span class="m-sub">Yaw & Pitch 3D vector orientation</span>
+            <span class="m-sub">Pitch / Yaw orientation</span>
           </div>
 
         </div>
       </div>
 
-      <!-- 4. DRIVER PROFILE SUMMARY CARD -->
+      <!-- 4. REAL-TIME DROWSINESS RISK GRAPH CARD -->
+      <div class="risk-graph-card">
+        <div class="risk-graph-header">
+          <div class="rgh-left">
+            <span class="rgh-title">Real-Time Risk Timeline</span>
+            <span class="rgh-sub">Rolling 30s temporal analysis</span>
+          </div>
+          <span class="graph-data-badge" id="graph-data-badge">LIVE TELEMETRY</span>
+        </div>
+        <div class="risk-canvas-wrapper">
+          <canvas id="realtime-risk-graph" width="560" height="130" class="risk-graph-canvas"></canvas>
+        </div>
+        <div class="risk-graph-legend">
+          <span class="rgl-item safe"><span class="rgl-dot"></span> 0-30% Safe</span>
+          <span class="rgl-item warn"><span class="rgl-dot"></span> 31-60% Warning</span>
+          <span class="rgl-item crit"><span class="rgl-dot"></span> 61-100% High/Critical</span>
+        </div>
+      </div>
+
+      <!-- 5. DRIVER PROFILE SUMMARY CARD -->
       <div class="monitor-driver-summary">
         <div class="driver-avatar-mini">RK</div>
         <div class="driver-summary-info">
@@ -308,7 +343,7 @@
         </div>
       </div>
 
-      <!-- 5. SIH JUDGE DEMO CONTROLLER (PHASE 5 & 6 ALERT & SOS PRESETS) -->
+      <!-- 6. SIH JUDGE DEMO CONTROLLER (PHASE 5 & 6 ALERT & SOS PRESETS) -->
       <div class="demo-controller-card">
         <div class="demo-ctrl-head">
           <span class="demo-ctrl-title">SIH Demo Alert & SOS Controller:</span>
@@ -334,7 +369,7 @@
         </button>
       </div>
 
-      <!-- 6. ALERT EVENT TIMELINE LOG -->
+      <!-- 7. ALERT EVENT TIMELINE LOG -->
       <div class="event-timeline-card">
         <div class="timeline-header">
           <span class="timeline-title">Alert & Event History</span>
@@ -349,7 +384,7 @@
         </ul>
       </div>
 
-      <!-- 7. MONITORING CONTROLS -->
+      <!-- 8. MONITORING CONTROLS -->
       <div class="monitor-action-controls">
         <button class="btn btn-stop-monitoring-card btn-full" id="btn-stop-card" onclick="window.safetyMonitor.handleMonitoringToggle()">
           <i data-lucide="square" id="card-toggle-icon"></i>
@@ -364,6 +399,38 @@
   <!-- =========================================================================
        PHASE 5 MODALS: CRITICAL ALERT, I'M ALERT & SOS COUNTDOWN
        ========================================================================= -->
+
+  <!-- 0. FACE NOT DETECTED CALIBRATION MODAL -->
+  <div class="modal-backdrop" id="face-not-detected-modal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog face-lost-dialog">
+      <div class="face-lost-header">
+        <div class="face-lost-icon-box">
+          <i data-lucide="alert-triangle"></i>
+        </div>
+        <h2 class="face-lost-title">FACE NOT DETECTED</h2>
+      </div>
+      <div class="face-lost-body">
+        <p class="face-lost-msg">We couldn't detect your face clearly.</p>
+        <div class="face-lost-guidelines">
+          <p class="fl-guide-title">Please:</p>
+          <ul class="fl-checklist">
+            <li>• Sit directly in front of the camera</li>
+            <li>• Keep your face inside the frame</li>
+            <li>• Make sure lighting is sufficient</li>
+          </ul>
+        </div>
+      </div>
+      <div class="face-lost-actions">
+        <button class="btn btn-mustard-modal btn-full" onclick="window.safetyMonitor.retryCalibration()">
+          <i data-lucide="rotate-ccw"></i>
+          <span>Try Again</span>
+        </button>
+        <button class="btn btn-dark-secondary btn-full" onclick="window.safetyMonitor.startSimulationMode()">
+          <span>Use Simulation Mode</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- 1. CRITICAL ALERT MODAL (LEVEL 4) -->
   <div class="modal-backdrop" id="critical-alert-modal" aria-hidden="true" role="dialog">

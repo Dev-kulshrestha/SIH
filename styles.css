@@ -5558,11 +5558,63 @@ button {
   transition: width 0.1s linear;
 }
 
+.calib-kicker {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--color-mustard, #D4A017);
+  background: rgba(212, 160, 23, 0.12);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(212, 160, 23, 0.3);
+}
+
+.calib-status-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  width: 100%;
+}
+
 .calib-time-sub {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: var(--lemon-yellow);
+  font-size: 0.82rem;
+  color: var(--color-mustard, #D4A017);
   font-weight: 800;
+}
+
+.calib-samples-sub {
+  font-size: 0.74rem;
+  color: #888888;
+}
+
+.calib-lost-box {
+  margin-top: 10px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.calib-warn-icon {
+  color: #EF4444;
+}
+
+.calib-warn-msg {
+  font-size: 0.8rem;
+  color: #FCA5A5;
+  margin: 0;
+}
+
+.calib-retry-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
 }
 
 /* Privacy Notice Box */
@@ -5706,6 +5758,48 @@ button {
   margin-bottom: 10px;
 }
 
+/* Driver Status Banner Pill */
+.driver-status-banner-pill {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+  transition: all var(--transition-fast);
+}
+
+.driver-status-banner-pill.status-attentive {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.driver-status-banner-pill.status-warning {
+  background: rgba(212, 160, 23, 0.15);
+  color: #D4A017;
+  border: 1px solid rgba(212, 160, 23, 0.4);
+}
+
+.driver-status-banner-pill.status-high-risk {
+  background: rgba(249, 115, 22, 0.18);
+  color: #F97316;
+  border: 1px solid rgba(249, 115, 22, 0.45);
+}
+
+.driver-status-banner-pill.status-critical {
+  background: rgba(239, 68, 68, 0.22);
+  color: #EF4444;
+  border: 1px solid #EF4444;
+  animation: pulse-border 1s infinite alternate;
+}
+
 .risk-scale-legend {
   display: flex;
   gap: 6px;
@@ -5738,11 +5832,29 @@ button {
   padding: 16px;
 }
 
+.metrics-card-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
 .metrics-card-title {
   font-size: 0.85rem;
   font-weight: 800;
-  margin-bottom: 12px;
+  margin: 0;
   color: #FFFFFF;
+}
+
+.metrics-live-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--color-mustard, #D4A017);
+  background: rgba(212, 160, 23, 0.12);
+  border: 1px solid rgba(212, 160, 23, 0.3);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
 }
 
 .telemetry-metrics-grid {
@@ -5783,13 +5895,100 @@ button {
 }
 
 .m-val.pose-val {
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 .m-sub {
   font-size: 0.65rem;
   color: var(--text-light-muted);
 }
+
+/* 3. REAL-TIME DROWSINESS RISK GRAPH CARD */
+.risk-graph-card {
+  background: #0B0B0B;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.risk-graph-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rgh-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.rgh-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.rgh-sub {
+  font-size: 0.65rem;
+  color: #888888;
+}
+
+.graph-data-badge {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.risk-canvas-wrapper {
+  width: 100%;
+  height: 110px;
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.risk-graph-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.risk-graph-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  color: #888888;
+  padding: 0 4px;
+}
+
+.rgl-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rgl-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.rgl-item.safe .rgl-dot { background: #10B981; }
+.rgl-item.warn .rgl-dot { background: #D4A017; }
+.rgl-item.crit .rgl-dot { background: #EF4444; }
 
 /* 3. DRIVER SUMMARY CARD */
 .monitor-driver-summary {
@@ -6131,6 +6330,29 @@ button {
   color: var(--lemon-yellow);
 }
 
+/* MODAL BACKDROP SYSTEM */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.modal-backdrop.active,
+.modal-backdrop.show {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
 /* CRITICAL ALERT MODAL (LEVEL 4) */
 .critical-alert-dialog {
   background: #0B0B0B;
@@ -6215,6 +6437,152 @@ button {
 .imalert-icon-box svg {
   width: 28px;
   height: 28px;
+}
+
+/* ==========================================================================
+   FACE NOT DETECTED CALIBRATION MODAL
+   ========================================================================== */
+.face-lost-dialog {
+  background: #0A0A0A !important;
+  border: 1.5px solid rgba(239, 68, 68, 0.45) !important;
+  color: #FFFFFF !important;
+  border-radius: 16px !important;
+  max-width: 440px !important;
+  width: 90% !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(239, 68, 68, 0.15) !important;
+  overflow: hidden;
+  animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalPop {
+  0% { opacity: 0; transform: scale(0.96) translateY(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.face-lost-header {
+  padding: 24px 24px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.face-lost-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #EF4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.face-lost-icon-box svg {
+  width: 26px;
+  height: 26px;
+}
+
+.face-lost-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.face-lost-body {
+  padding: 0 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+.face-lost-msg {
+  font-size: 0.88rem;
+  color: #E0E0E0;
+  text-align: center;
+  margin: 0;
+}
+
+.face-lost-guidelines {
+  background: #121212;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+}
+
+.fl-guide-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #888888;
+  margin-bottom: 6px;
+}
+
+.fl-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.82rem;
+  color: #CCCCCC;
+}
+
+.face-lost-actions {
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-mustard-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--color-mustard, #D4A017) !important;
+  color: #0A0A0A !important;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 800;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-mustard-modal:hover {
+  background: var(--color-mustard-light, #E0B52A) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(212, 160, 23, 0.35);
+}
+
+.btn-dark-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-dark-secondary:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
 }
 
 /* ==========================================================================

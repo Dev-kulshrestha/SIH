@@ -24,83 +24,133 @@ class WideEyeSafetyMonitor {
     this.canvasElement = document.getElementById(config.canvasId || 'face-canvas');
     this.canvasCtx = this.canvasElement ? this.canvasElement.getContext('2d') : null;
 
+    // Real-Time Risk Graph Canvas
+    this.graphCanvas = document.getElementById('realtime-risk-graph');
+    this.graphCtx = this.graphCanvas ? this.graphCanvas.getContext('2d') : null;
+
     // Operational Modes: 'idle' | 'calibrating' | 'monitoring' | 'paused' | 'simulation'
     this.mode = 'idle';
     this.isSimulation = false;
     this.audioEnabled = true;
 
-    // Baseline & Calibration
-    this.calibrationDuration = 4000; // 4 seconds
-    this.calibrationStartTime = null;
-    this.baselineEAR = 0.31;
-    this.baselineMAR = 0.18;
+    // 1. Adaptive Calibration & Baselines (Target: 75 valid consecutive face frames ~5 seconds)
+    this.TARGET_CALIBRATION_FRAMES = 75;
     this.calibrationSamples = [];
+    this.calibrationMissedFrames = 0;
+    this.lastFaceDetectedTime = null;
 
-    // Real-Time Biometric Measurements
+    // Calibrated Personalized Baselines (Default fallbacks before calibration)
+    this.baselineEAR = 0.290;
+    this.baselineLeftEAR = 0.290;
+    this.baselineRightEAR = 0.290;
+    this.baselineMAR = 0.180;
+    this.baselinePitch = 0.48; // Vertical ratio of nose-to-forehead vs chin-to-forehead
+    this.baselineYaw = 0;
+    this.baselineRoll = 0;
+    this.isCalibrated = false;
+
+    // 2. Real-Time Biometric Measurements
     this.metrics = {
-      leftEAR: 0.31,
-      rightEAR: 0.30,
-      avgEAR: 0.305,
+      leftEAR: 0.29,
+      rightEAR: 0.29,
+      avgEAR: 0.29,
       mar: 0.18,
       blinkCount: 0,
+      blinkRate: 14, // Blinks per minute (rolling window)
       yawnCount: 0,
-      headPose: 'STABLE', // 'STABLE' | 'LOOKING LEFT' | 'LOOKING RIGHT' | 'HEAD DOWN' | 'HEAD TILT'
-      confidence: 94,
-      faceStatus: 'ONE FACE DETECTED',
+      headPose: 'STABLE', // 'STABLE' | 'HEAD DOWN (NODDING)' | 'LOOKING LEFT' | 'LOOKING RIGHT' | 'HEAD TILT'
+      confidence: 0,
+      faceStatus: 'WAITING FOR FACE...',
+      eyesStatus: '--',
+      mouthStatus: '--',
       eyeClosureDuration: 0, // seconds eyes currently closed
       maxClosureDuration: 0,
-      rawRiskScore: 18,
-      smoothedRiskScore: 18,
+      rawRiskScore: 15,
+      smoothedRiskScore: 15,
+      driverStatus: 'DRIVER ATTENTIVE',
       riskLevel: 'SAFE' // 'SAFE' (0-30%) | 'WARNING' (31-60%) | 'HIGH RISK' (61-90%) | 'CRITICAL' (91-100%)
     };
 
-    // Temporal State & Counters
+    // 3. Temporal State, Rolling Windows & History
     this.lastFrameTime = performance.now();
     this.eyeClosedStartTime = null;
     this.yawnStartTime = null;
     this.isBlinking = false;
     this.isYawning = false;
+    this.blinkTimestamps = []; // Timestamps of blinks in last 60s
     this.sessionStartTime = null;
     this.sessionInterval = null;
 
-    // MediaPipe / Tracking Setup
+    // Rolling 30s Risk History for Graph: [ { time: Date.now(), score: 15, event: null } ]
+    this.riskHistory = [];
+    this.graphRenderInterval = null;
+
+    // MediaPipe / Camera Streams
     this.stream = null;
     this.animationFrameId = null;
     this.faceMesh = null;
+    this.isProcessingFrame = false;
 
     // Phase 5 Smart Alert Manager Instance
     this.alertManager = new AlertManager(this);
 
     // Bind UI elements
     this.bindDomElements();
+    this.initRiskGraph();
   }
 
   // 1. DOM REFERENCES BINDING
   bindDomElements() {
     this.dom = {
-      // Containers
+      // Permission & Camera Overlays
       permissionOverlay: document.getElementById('camera-permission-overlay'),
+      permMainHeading: document.getElementById('perm-main-heading'),
+      permMainDesc: document.getElementById('perm-main-desc'),
+      permIconBox: document.getElementById('perm-icon-box'),
+      permActionsRow: document.getElementById('perm-actions-row'),
+
+      // Calibration Overlay & Face Lost Modal
       calibrationOverlay: document.getElementById('calibration-overlay'),
+      calibProgressFill: document.getElementById('calib-progress-fill'),
+      calibCountdown: document.getElementById('calib-countdown-text'),
+      calibSamplesText: document.getElementById('calib-samples-text'),
+      faceNotDetectedModal: document.getElementById('face-not-detected-modal'),
+      calibSpinner: document.getElementById('calib-spinner'),
+
+      // Video HUD & Monitor View
       activeMonitorView: document.getElementById('active-monitor-view'),
       simModeBadge: document.getElementById('sim-mode-badge'),
+      hudLiveBadge: document.getElementById('hud-live-badge'),
+      hudLiveText: document.getElementById('hud-live-tag-text'),
+      cameraAlertBadge: document.getElementById('camera-alert-badge'),
 
       // Metrics Displays
       riskScoreVal: document.getElementById('risk-score-value'),
       riskLevelVal: document.getElementById('risk-level-value'),
       riskDescText: document.getElementById('risk-desc-text'),
       riskMeterCircle: document.getElementById('risk-meter-circle'),
+      driverStatusPill: document.getElementById('driver-status-pill'),
+      driverStatusText: document.getElementById('driver-status-text'),
 
       // Detailed Telemetry Values
       valAvgEAR: document.getElementById('metric-avg-ear'),
       valLeftEAR: document.getElementById('metric-left-ear'),
       valRightEAR: document.getElementById('metric-right-ear'),
-      valMAR: document.getElementById('metric-mar'),
+      valBaseEAR: document.getElementById('metric-base-ear'),
+      valBlinkRate: document.getElementById('metric-blink-rate'),
       valBlinks: document.getElementById('metric-blinks'),
+      valMAR: document.getElementById('metric-mar'),
+      valBaseMAR: document.getElementById('metric-base-mar'),
       valYawns: document.getElementById('metric-yawns'),
       valHeadPose: document.getElementById('metric-head-pose'),
       valConfidence: document.getElementById('metric-confidence'),
       valFaceStatus: document.getElementById('metric-face-status'),
+      valEyesStatus: document.getElementById('metric-eyes-status'),
+      valMouthStatus: document.getElementById('metric-mouth-status'),
       valClosureDuration: document.getElementById('metric-closure-sec'),
+
+      // Graph Badge
+      graphDataBadge: document.getElementById('graph-data-badge'),
 
       // Status Bar & Controls
       sessionTimer: document.getElementById('session-timer-text'),
@@ -108,11 +158,7 @@ class WideEyeSafetyMonitor {
       statusText: document.getElementById('top-status-text'),
       soundToggleBtn: document.getElementById('btn-sound-toggle'),
       soundIcon: document.getElementById('sound-icon'),
-      soundLabel: document.getElementById('sound-label'),
-
-      // Calibration Progress
-      calibProgressFill: document.getElementById('calib-progress-fill'),
-      calibCountdown: document.getElementById('calib-countdown-text')
+      soundLabel: document.getElementById('sound-label')
     };
 
     this.updateMonitoringControlButtons();
@@ -128,20 +174,30 @@ class WideEyeSafetyMonitor {
       this.dom.soundIcon.setAttribute('data-lucide', this.audioEnabled ? 'volume-2' : 'volume-x');
       if (window.lucide) window.lucide.createIcons();
     }
-    this.alertManager.logAlertEvent('AUDIO_TOGGLE', this.metrics.smoothedRiskScore, this.audioEnabled ? 'Audio alerts enabled' : 'Audio alerts muted');
+    this.alertManager.logAlertEvent('AUDIO_TOGGLE', Math.round(this.metrics.smoothedRiskScore), this.audioEnabled ? 'Audio alerts enabled' : 'Audio alerts muted');
   }
 
   // 2. CAMERA ACCESS & LIFECYCLE
   async startLiveCamera() {
     this.isSimulation = false;
     if (this.dom.simModeBadge) this.dom.simModeBadge.classList.add('hidden');
+    if (this.dom.hudLiveText) this.dom.hudLiveText.textContent = '● AI MONITORING ACTIVE';
+    if (this.dom.graphDataBadge) {
+      this.dom.graphDataBadge.textContent = 'LIVE TELEMETRY';
+      this.dom.graphDataBadge.style.color = '#10B981';
+      this.dom.graphDataBadge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+    }
+
+    // Set Loading State
+    if (this.dom.permMainHeading) this.dom.permMainHeading.textContent = 'Starting camera...';
+    if (this.dom.permMainDesc) this.dom.permMainDesc.textContent = 'Requesting camera stream and initializing MediaPipe Face Landmarker...';
 
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error('Browser does not support camera access via getUserMedia.');
       }
 
-      this.alertManager.logAlertEvent('INFO', 0, 'Requesting camera permission...');
+      this.alertManager.logAlertEvent('INFO', 0, 'Requesting camera stream...');
       const constraints = {
         video: {
           facingMode: 'user',
@@ -157,7 +213,7 @@ class WideEyeSafetyMonitor {
         await this.videoElement.play();
       }
 
-      this.alertManager.logAlertEvent('INFO', 0, 'Camera active · Local edge AI connected');
+      this.alertManager.logAlertEvent('INFO', 0, 'Camera active · MediaPipe Face Landmarker running locally');
       if (this.dom.permissionOverlay) this.dom.permissionOverlay.classList.add('hidden');
       if (this.dom.activeMonitorView) this.dom.activeMonitorView.classList.remove('hidden');
 
@@ -168,29 +224,53 @@ class WideEyeSafetyMonitor {
       this.updateMonitoringControlButtons();
     } catch (err) {
       console.warn('Camera access unavailable or denied:', err);
-      this.alertManager.logAlertEvent('WARNING', 0, 'Camera unavailable: ' + err.message);
-      this.promptFallbackSimulation();
+      this.alertManager.logAlertEvent('WARNING', 0, 'Camera error: ' + err.message);
+      this.renderCameraErrorState(err.message);
     }
   }
 
-  promptFallbackSimulation() {
-    const fallback = confirm(
-      'Webcam access is unavailable or denied.\n\nWould you like to continue in SIMULATION MODE to test all WideEYE AI features and SIH demo presets?'
-    );
-    if (fallback) {
-      this.startSimulationMode();
+  renderCameraErrorState(errMsg) {
+    if (this.dom.permMainHeading) this.dom.permMainHeading.textContent = 'Camera access required';
+    if (this.dom.permMainDesc) {
+      this.dom.permMainDesc.textContent = 'WideEYE was unable to connect to your webcam. Please allow camera permissions in your browser or launch Simulation Mode.';
     }
+    if (this.dom.permIconBox) {
+      this.dom.permIconBox.style.background = '#EF4444';
+      this.dom.permIconBox.innerHTML = '<i data-lucide="video-off"></i>';
+      if (window.lucide) window.lucide.createIcons();
+    }
+    if (this.dom.permActionsRow) {
+      this.dom.permActionsRow.innerHTML = `
+        <button class="btn btn-primary btn-lg" onclick="window.safetyMonitor.startLiveCamera()">
+          <i data-lucide="rotate-ccw"></i>
+          <span>Try Again</span>
+        </button>
+        <button class="btn btn-secondary" onclick="window.safetyMonitor.startSimulationMode()">
+          <span>Start Simulation Mode</span>
+        </button>
+      `;
+      if (window.lucide) window.lucide.createIcons();
+    }
+    if (this.dom.permissionOverlay) this.dom.permissionOverlay.classList.remove('hidden');
+    if (this.dom.activeMonitorView) this.dom.activeMonitorView.classList.add('hidden');
   }
 
   startSimulationMode() {
     this.isSimulation = true;
     this.mode = 'simulation';
 
+    if (this.dom.faceNotDetectedModal) this.dom.faceNotDetectedModal.classList.remove('active', 'show');
     if (this.dom.simModeBadge) this.dom.simModeBadge.classList.remove('hidden');
+    if (this.dom.hudLiveText) this.dom.hudLiveText.textContent = 'SIMULATION MODE';
+    if (this.dom.graphDataBadge) {
+      this.dom.graphDataBadge.textContent = 'DEMO DATA';
+      this.dom.graphDataBadge.style.color = '#D4A017';
+      this.dom.graphDataBadge.style.borderColor = 'rgba(212, 160, 23, 0.4)';
+    }
     if (this.dom.permissionOverlay) this.dom.permissionOverlay.classList.add('hidden');
     if (this.dom.activeMonitorView) this.dom.activeMonitorView.classList.remove('hidden');
 
-    this.alertManager.logAlertEvent('INFO', 0, 'Simulation Mode activated (Camera fallback)');
+    this.alertManager.logAlertEvent('INFO', 0, 'Simulation Mode activated (SIH Demo Fallback)');
     this.updateMonitoringControlButtons();
     this.startCalibration();
   }
@@ -201,6 +281,9 @@ class WideEyeSafetyMonitor {
       this.stream.getTracks().forEach(track => track.stop());
       this.stream = null;
     }
+    if (this.videoElement) {
+      this.videoElement.srcObject = null;
+    }
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
@@ -209,10 +292,16 @@ class WideEyeSafetyMonitor {
       clearInterval(this.sessionInterval);
       this.sessionInterval = null;
     }
+    if (this.graphRenderInterval) {
+      clearInterval(this.graphRenderInterval);
+      this.graphRenderInterval = null;
+    }
     this.alertManager.resetAlertState();
     if (this.dom.permissionOverlay) this.dom.permissionOverlay.classList.remove('hidden');
     if (this.dom.activeMonitorView) this.dom.activeMonitorView.classList.add('hidden');
-    this.alertManager.logAlertEvent('INFO', 0, 'Monitoring stopped');
+    if (this.dom.calibrationOverlay) this.dom.calibrationOverlay.classList.add('hidden');
+    if (this.dom.faceNotDetectedModal) this.dom.faceNotDetectedModal.classList.remove('active', 'show');
+    this.alertManager.logAlertEvent('INFO', 0, 'AI Monitoring stopped');
     this.updateMonitoringControlButtons();
   }
 
@@ -284,54 +373,75 @@ class WideEyeSafetyMonitor {
     if (window.lucide) window.lucide.createIcons();
   }
 
-  // 3. ADAPTIVE CALIBRATION SEQUENCE
+  // 3. ADAPTIVE CALIBRATION SEQUENCE (COLLECTS 75 VALID REAL FRAMES)
   startCalibration() {
     this.mode = 'calibrating';
-    this.calibrationStartTime = performance.now();
     this.calibrationSamples = [];
+    this.calibrationMissedFrames = 0;
+    this.isCalibrated = false;
 
     if (this.dom.calibrationOverlay) this.dom.calibrationOverlay.classList.remove('hidden');
-    this.alertManager.logAlertEvent('INFO', 0, 'Starting 4s adaptive driver calibration...');
+    if (this.dom.faceNotDetectedModal) this.dom.faceNotDetectedModal.classList.remove('active', 'show');
+    if (this.dom.calibProgressFill) this.dom.calibProgressFill.style.width = '0%';
+    if (this.dom.calibCountdown) this.dom.calibCountdown.textContent = '5s remaining';
+    if (this.dom.calibSamplesText) this.dom.calibSamplesText.textContent = 'Look straight ahead and keep eyes open naturally';
 
-    const updateCalib = () => {
-      if (this.mode !== 'calibrating') return;
+    this.alertManager.logAlertEvent('CALIBRATION', 0, 'Starting 5s adaptive driver calibration · Waiting for real face');
 
-      const elapsed = performance.now() - this.calibrationStartTime;
-      const progress = Math.min(1, elapsed / this.calibrationDuration);
-      const remainingSeconds = Math.ceil((this.calibrationDuration - elapsed) / 1000);
+    this.startRenderLoop();
+  }
 
-      if (this.dom.calibProgressFill) {
-        this.dom.calibProgressFill.style.width = `${progress * 100}%`;
-      }
-      if (this.dom.calibCountdown) {
-        this.dom.calibCountdown.textContent = `${remainingSeconds}s remaining`;
-      }
+  onCalibrationFaceLost() {
+    if (this.mode === 'calibrating') {
+      this.mode = 'paused';
+      if (this.dom.faceNotDetectedModal) this.dom.faceNotDetectedModal.classList.add('active');
+      this.alertManager.logAlertEvent('WARNING', 0, 'Calibration paused: Face not clearly detected');
+    }
+  }
 
-      if (progress >= 1) {
-        this.finishCalibration();
-      } else {
-        requestAnimationFrame(updateCalib);
-      }
-    };
-    requestAnimationFrame(updateCalib);
+  retryCalibration() {
+    if (this.dom.faceNotDetectedModal) this.dom.faceNotDetectedModal.classList.remove('active', 'show');
+    this.startCalibration();
   }
 
   finishCalibration() {
     this.mode = 'monitoring';
-    if (this.dom.calibrationOverlay) this.dom.calibrationOverlay.classList.add('hidden');
+    this.isCalibrated = true;
 
-    if (this.calibrationSamples.length > 10) {
-      const sumEAR = this.calibrationSamples.reduce((acc, s) => acc + s.ear, 0);
+    if (this.calibrationSamples.length >= 20) {
+      const sumAvgEAR = this.calibrationSamples.reduce((acc, s) => acc + s.avgEAR, 0);
+      const sumLeftEAR = this.calibrationSamples.reduce((acc, s) => acc + s.leftEAR, 0);
+      const sumRightEAR = this.calibrationSamples.reduce((acc, s) => acc + s.rightEAR, 0);
       const sumMAR = this.calibrationSamples.reduce((acc, s) => acc + s.mar, 0);
-      this.baselineEAR = sumEAR / this.calibrationSamples.length;
-      this.baselineMAR = sumMAR / this.calibrationSamples.length;
+      const sumPitch = this.calibrationSamples.reduce((acc, s) => acc + (s.pitchRatio || 0.48), 0);
+      const sumYaw = this.calibrationSamples.reduce((acc, s) => acc + (s.yawDiff || 0), 0);
+
+      this.baselineEAR = Math.max(0.20, Math.min(0.38, sumAvgEAR / this.calibrationSamples.length));
+      this.baselineLeftEAR = Math.max(0.20, Math.min(0.38, sumLeftEAR / this.calibrationSamples.length));
+      this.baselineRightEAR = Math.max(0.20, Math.min(0.38, sumRightEAR / this.calibrationSamples.length));
+      this.baselineMAR = Math.max(0.10, Math.min(0.28, sumMAR / this.calibrationSamples.length));
+      this.baselinePitch = sumPitch / this.calibrationSamples.length;
+      this.baselineYaw = sumYaw / this.calibrationSamples.length;
+    } else {
+      this.baselineEAR = 0.290;
+      this.baselineMAR = 0.180;
     }
 
-    this.startSessionTimer();
-    this.alertManager.logAlertEvent('CALIBRATION', 12, `Calibration complete ✓ Baseline EAR: ${this.baselineEAR.toFixed(3)} | MAR: ${this.baselineMAR.toFixed(3)}`);
-    this.alertManager.logAlertEvent('INFO', 12, 'WideEYE Real-Time AI Safety Monitoring active');
+    if (this.dom.valBaseEAR) this.dom.valBaseEAR.textContent = this.baselineEAR.toFixed(2);
+    if (this.dom.valBaseMAR) this.dom.valBaseMAR.textContent = this.baselineMAR.toFixed(2);
 
-    this.startRenderLoop();
+    if (this.dom.calibSamplesText) {
+      this.dom.calibSamplesText.textContent = `✓ Personalized baseline established: EAR ${this.baselineEAR.toFixed(2)} · MAR ${this.baselineMAR.toFixed(2)}`;
+    }
+
+    setTimeout(() => {
+      if (this.dom.calibrationOverlay) this.dom.calibrationOverlay.classList.add('hidden');
+    }, 500);
+
+    this.startSessionTimer();
+    this.addRiskEvent('CALIBRATION');
+    this.alertManager.logAlertEvent('CALIBRATION', 12, `Calibration complete ✓ Baseline EAR: ${this.baselineEAR.toFixed(2)} | MAR: ${this.baselineMAR.toFixed(2)}`);
+    this.alertManager.logAlertEvent('INFO', 12, 'WideEYE Real-Time AI Safety Monitoring active');
   }
 
   startSessionTimer() {
@@ -352,7 +462,7 @@ class WideEyeSafetyMonitor {
 
   // 4. MEDIAPIPE INITIALIZATION
   initMediaPipe() {
-    if (window.FaceMesh) {
+    if (!this.faceMesh && window.FaceMesh) {
       this.faceMesh = new window.FaceMesh({
         locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
       });
@@ -374,7 +484,7 @@ class WideEyeSafetyMonitor {
     const vertical1 = dist(p2, p6);
     const vertical2 = dist(p3, p5);
     const horizontal = dist(p1, p4);
-    if (horizontal === 0) return 0.3;
+    if (horizontal === 0) return 0.29;
     return (vertical1 + vertical2) / (2.0 * horizontal);
   }
 
@@ -387,30 +497,51 @@ class WideEyeSafetyMonitor {
   }
 
   onFaceMeshResults(results) {
+    this.isProcessingFrame = false;
     if (!this.canvasCtx || !this.canvasElement) return;
 
     const ctx = this.canvasCtx;
     const canvas = this.canvasElement;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // A. NO FACE DETECTED
     if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
-      this.metrics.faceStatus = 'NO FACE DETECTED';
-      this.metrics.confidence = Math.max(20, this.metrics.confidence - 2);
+      this.metrics.faceStatus = 'FACE NOT DETECTED';
+      this.metrics.eyesStatus = '--';
+      this.metrics.mouthStatus = '--';
+      this.metrics.confidence = 0;
+
+      if (this.mode === 'calibrating') {
+        this.calibrationMissedFrames++;
+        if (this.calibrationMissedFrames >= 15) { // ~0.8s without face
+          this.onCalibrationFaceLost();
+        }
+      }
+
       this.updateUI();
       return;
     }
 
+    // B. MULTIPLE FACES DETECTED
     if (results.multiFaceLandmarks.length > 1) {
       this.metrics.faceStatus = 'MULTIPLE FACES DETECTED';
-      this.metrics.confidence = 65;
-    } else {
-      this.metrics.faceStatus = 'ONE FACE DETECTED';
-      this.metrics.confidence = Math.min(98, this.metrics.confidence + 1);
+      this.metrics.confidence = 45;
+      this.metrics.eyesStatus = '--';
+      this.metrics.mouthStatus = '--';
+      this.updateUI();
+      return;
     }
 
-    const landmarks = results.multiFaceLandmarks[0];
-    this.drawLemonLandmarks(ctx, canvas, landmarks);
+    // C. EXACTLY ONE FACE DETECTED
+    this.calibrationMissedFrames = 0;
+    this.lastFaceDetectedTime = performance.now();
+    this.metrics.faceStatus = '✓ FACE DETECTED';
+    this.metrics.confidence = 94;
 
+    const landmarks = results.multiFaceLandmarks[0];
+    this.drawFacialLandmarks(ctx, canvas, landmarks);
+
+    // 1. Calculate Real EAR for Left and Right Eyes
     const leftEAR = this.calculateEyeAspect(
       landmarks[33], landmarks[160], landmarks[158],
       landmarks[133], landmarks[153], landmarks[144]
@@ -421,29 +552,83 @@ class WideEyeSafetyMonitor {
       landmarks[263], landmarks[373], landmarks[380]
     );
 
+    const avgEAR = (leftEAR + rightEAR) / 2.0;
+
+    // Glasses & Eye Visibility Verification
+    if (leftEAR < 0.08 && rightEAR < 0.08) {
+      this.metrics.eyesStatus = 'LIMITED EYE VISIBILITY';
+    } else {
+      this.metrics.eyesStatus = 'DETECTED ✓';
+    }
+
+    // 2. Calculate Real MAR
     const mar = this.calculateMouthAspect(
       landmarks[61], landmarks[291], landmarks[13], landmarks[14]
     );
+    this.metrics.mouthStatus = 'DETECTED ✓';
 
+    // 3. Calculate 3D Head Pose Vectors
     const nose = landmarks[1];
     const chin = landmarks[152];
+    const forehead = landmarks[10];
     const leftCheek = landmarks[234];
     const rightCheek = landmarks[454];
 
     let headPose = 'STABLE';
     const yawDiff = (nose.x - leftCheek.x) - (rightCheek.x - nose.x);
-    if (yawDiff > 0.08) headPose = 'LOOKING RIGHT';
-    else if (yawDiff < -0.08) headPose = 'LOOKING LEFT';
-    else if (chin.y - nose.y < 0.12) headPose = 'HEAD DOWN';
+    const pitchRatio = (nose.y - forehead.y) / Math.max(0.01, chin.y - forehead.y);
+    const rollAngle = Math.atan2(landmarks[263].y - landmarks[33].y, landmarks[263].x - landmarks[33].x);
 
-    this.processSignals(leftEAR, rightEAR, mar, headPose);
+    if (pitchRatio > (this.baselinePitch * 1.25) || (chin.y - nose.y < 0.10)) {
+      headPose = 'HEAD DOWN (NODDING)';
+    } else if (yawDiff > 0.08) {
+      headPose = 'LOOKING RIGHT';
+    } else if (yawDiff < -0.08) {
+      headPose = 'LOOKING LEFT';
+    } else if (Math.abs(rollAngle) > 0.09) {
+      headPose = 'HEAD TILT';
+    }
+
+    // 4. If in Calibration Mode, accumulate valid face samples
+    if (this.mode === 'calibrating') {
+      this.calibrationSamples.push({ leftEAR, rightEAR, avgEAR, mar, pitchRatio, yawDiff, rollAngle, headPose });
+      const progress = Math.min(1, this.calibrationSamples.length / this.TARGET_CALIBRATION_FRAMES);
+
+      if (this.dom.calibProgressFill) {
+        this.dom.calibProgressFill.style.width = `${(progress * 100).toFixed(0)}%`;
+      }
+      const remainingSec = Math.max(1, Math.ceil((1 - progress) * 5));
+      if (this.dom.calibCountdown) {
+        this.dom.calibCountdown.textContent = `${remainingSec}s remaining`;
+      }
+      if (this.dom.calibSamplesText) {
+        this.dom.calibSamplesText.textContent = `Gathering biometric baseline (${Math.round(progress * 100)}%)`;
+      }
+
+      if (this.calibrationSamples.length >= this.TARGET_CALIBRATION_FRAMES) {
+        this.finishCalibration();
+      }
+
+      this.metrics.leftEAR = leftEAR;
+      this.metrics.rightEAR = rightEAR;
+      this.metrics.avgEAR = avgEAR;
+      this.metrics.mar = mar;
+      this.metrics.headPose = headPose;
+      this.updateUI();
+      return;
+    }
+
+    // 5. If in Active Monitoring, process signals
+    if (this.mode === 'monitoring') {
+      this.processSignals(leftEAR, rightEAR, mar, headPose);
+    }
   }
 
-  drawLemonLandmarks(ctx, canvas, landmarks) {
+  drawFacialLandmarks(ctx, canvas, landmarks) {
     ctx.save();
     ctx.strokeStyle = 'rgba(212, 160, 23, 0.45)';
     ctx.fillStyle = '#D4A017';
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.3;
 
     const leftEyeIdx = [33, 160, 158, 133, 153, 144, 33];
     const rightEyeIdx = [362, 385, 387, 263, 373, 380, 362];
@@ -465,11 +650,12 @@ class WideEyeSafetyMonitor {
     drawContour(rightEyeIdx);
     drawContour(mouthIdx);
 
-    [468, 473].forEach(idx => {
+    // Iris center points & Nose tip
+    [468, 473, 1].forEach(idx => {
       if (landmarks[idx]) {
         const pt = landmarks[idx];
         ctx.beginPath();
-        ctx.arc(pt.x * canvas.width, pt.y * canvas.height, 3, 0, 2 * Math.PI);
+        ctx.arc(pt.x * canvas.width, pt.y * canvas.height, 2.5, 0, 2 * Math.PI);
         ctx.fill();
       }
     });
@@ -482,19 +668,14 @@ class WideEyeSafetyMonitor {
     const now = performance.now();
     const avgEAR = (leftEAR + rightEAR) / 2.0;
 
-    if (this.mode === 'calibrating') {
-      this.calibrationSamples.push({ ear: avgEAR, mar });
-      return;
-    }
-
     this.metrics.leftEAR = leftEAR;
     this.metrics.rightEAR = rightEAR;
     this.metrics.avgEAR = avgEAR;
     this.metrics.mar = mar;
     this.metrics.headPose = headPose;
 
-    // A. Blink & Prolonged Eye Closure Tracking
-    const earThreshold = this.baselineEAR * 0.72;
+    // A. Real Blink & Prolonged Eye Closure Tracking
+    const earThreshold = this.baselineEAR * 0.72; // Relative to personalized driver baseline
     if (avgEAR < earThreshold) {
       if (!this.isBlinking) {
         this.isBlinking = true;
@@ -507,27 +688,38 @@ class WideEyeSafetyMonitor {
     } else {
       if (this.isBlinking) {
         const closureDur = (now - this.eyeClosedStartTime) / 1000;
-        if (closureDur < 0.45) {
+        if (closureDur >= 0.08 && closureDur < 0.45) {
+          // Normal brief blink
           this.metrics.blinkCount++;
+          this.blinkTimestamps.push(now);
+          this.addRiskEvent('BLINK');
           if (this.metrics.blinkCount % 5 === 0) {
-            this.alertManager.logAlertEvent('BLINK', Math.round(this.metrics.smoothedRiskScore), `Blink count: ${this.metrics.blinkCount}`);
+            this.alertManager.logAlertEvent('BLINK', Math.round(this.metrics.smoothedRiskScore), `Blink count: ${this.metrics.blinkCount} (Rate: ${this.metrics.blinkRate}/min)`);
           }
         } else if (closureDur >= 1.2) {
-          this.alertManager.logAlertEvent('WARNING', Math.round(this.metrics.smoothedRiskScore), `Prolonged eye closure (${closureDur.toFixed(1)}s)`);
+          this.addRiskEvent('CLOSURE');
+          this.alertManager.logAlertEvent('WARNING', Math.round(this.metrics.smoothedRiskScore), `Prolonged eye closure detected (${closureDur.toFixed(1)}s)`);
         }
         this.isBlinking = false;
         this.metrics.eyeClosureDuration = 0;
       }
     }
 
-    // B. Yawn Detection (MAR > threshold for > 1.4s)
-    const marThreshold = this.baselineMAR * 2.2;
+    // B. Rolling Blink Rate Calculation (Blinks in last 60 seconds)
+    this.blinkTimestamps = this.blinkTimestamps.filter(t => now - t <= 60000);
+    const sessionAgeMs = this.sessionStartTime ? (Date.now() - this.sessionStartTime) : 60000;
+    const factor = sessionAgeMs < 45000 ? (60000 / Math.max(10000, sessionAgeMs)) : 1;
+    this.metrics.blinkRate = Math.min(45, Math.round(this.blinkTimestamps.length * factor));
+
+    // C. Yawn Detection (MAR > threshold for > 1.2s)
+    const marThreshold = Math.max(0.38, this.baselineMAR * 2.0);
     if (mar > marThreshold) {
       if (!this.isYawning) {
         this.isYawning = true;
         this.yawnStartTime = now;
-      } else if ((now - this.yawnStartTime) > 1400) {
+      } else if ((now - this.yawnStartTime) > 1200) {
         this.metrics.yawnCount++;
+        this.addRiskEvent('YAWN');
         this.alertManager.logAlertEvent('YAWN', Math.round(this.metrics.smoothedRiskScore), `Yawn event logged (Total: ${this.metrics.yawnCount})`);
         this.isYawning = false;
       }
@@ -535,26 +727,34 @@ class WideEyeSafetyMonitor {
       this.isYawning = false;
     }
 
-    // C. Multi-Signal Time-Series Risk Model Calculation
+    // D. Multi-Signal Time-Series Risk Model Calculation (0–100%)
     let rawRisk = 12; // Baseline alertness
 
+    // 1. Eye closure penalty
     if (this.metrics.eyeClosureDuration > 0.5) {
-      rawRisk += Math.min(65, this.metrics.eyeClosureDuration * 32);
+      rawRisk += Math.min(75, this.metrics.eyeClosureDuration * 36);
     } else if (avgEAR < earThreshold) {
       rawRisk += 18;
     }
 
+    // 2. Yawning penalty
     if (this.metrics.yawnCount > 0) {
-      rawRisk += Math.min(25, this.metrics.yawnCount * 8);
+      rawRisk += Math.min(24, this.metrics.yawnCount * 7);
     }
     if (this.isYawning) {
-      rawRisk += 14;
+      rawRisk += 16;
     }
 
-    if (headPose === 'HEAD DOWN') rawRisk += 24;
-    else if (headPose === 'HEAD TILT') rawRisk += 15;
+    // 3. Head pose & nodding penalty
+    if (headPose === 'HEAD DOWN (NODDING)') rawRisk += 25;
+    else if (headPose === 'HEAD TILT') rawRisk += 12;
     else if (headPose !== 'STABLE') rawRisk += 10;
 
+    // 4. Abnormal blink rate penalty (very slow < 6/min or rapid flutter > 28/min)
+    if (this.metrics.blinkRate > 0 && this.metrics.blinkRate < 7) rawRisk += 10;
+    else if (this.metrics.blinkRate > 30) rawRisk += 12;
+
+    // 5. Confidence scaling
     if (this.metrics.confidence < 70) {
       rawRisk = rawRisk * (this.metrics.confidence / 100);
     }
@@ -562,31 +762,211 @@ class WideEyeSafetyMonitor {
     rawRisk = Math.max(0, Math.min(100, Math.round(rawRisk)));
     this.metrics.rawRiskScore = rawRisk;
 
-    // D. Exponential Moving Average (EMA) Smoothing
+    // Exponential Moving Average (EMA) Smoothing
     this.metrics.smoothedRiskScore = (ALERT_CONFIG.SMOOTHING_ALPHA * rawRisk) + ((1 - ALERT_CONFIG.SMOOTHING_ALPHA) * this.metrics.smoothedRiskScore);
 
-    // E. Pass Smoothed Score to Smart Alert Manager
+    // Update Driver Status String & Pill
+    const smoothed = Math.round(this.metrics.smoothedRiskScore);
+    if (smoothed >= 91) {
+      this.metrics.driverStatus = '🚨 CRITICAL DROWSINESS';
+      this.metrics.riskLevel = 'CRITICAL';
+    } else if (smoothed >= 61) {
+      this.metrics.driverStatus = '⚠ HIGH RISK FATIGUE';
+      this.metrics.riskLevel = 'HIGH RISK';
+    } else if (smoothed >= 31) {
+      this.metrics.driverStatus = '● DROWSINESS DETECTED';
+      this.metrics.riskLevel = 'WARNING';
+    } else {
+      this.metrics.driverStatus = '● DRIVER ATTENTIVE';
+      this.metrics.riskLevel = 'SAFE';
+    }
+
+    // Record sample to Risk Graph Timeline
+    this.recordRiskSample(smoothed);
+
+    // Pass Smoothed Score to Smart Alert Manager
     this.alertManager.evaluateRisk(this.metrics.smoothedRiskScore, this.metrics.confidence);
 
     this.updateUI();
   }
 
-  // 7. UI UPDATE ENGINE
+  // 7. REAL-TIME RISK TIMELINE GRAPH
+  initRiskGraph() {
+    const now = Date.now();
+    for (let i = 30; i >= 0; i--) {
+      this.riskHistory.push({
+        time: now - (i * 1000),
+        score: 15,
+        event: null
+      });
+    }
+
+    if (this.graphCanvas) {
+      this.drawRiskGraph();
+    }
+  }
+
+  recordRiskSample(score) {
+    const now = Date.now();
+    const last = this.riskHistory[this.riskHistory.length - 1];
+    if (!last || (now - last.time) >= 800) {
+      this.riskHistory.push({
+        time: now,
+        score,
+        event: null
+      });
+      if (this.riskHistory.length > 36) {
+        this.riskHistory.shift();
+      }
+      this.drawRiskGraph();
+    }
+  }
+
+  addRiskEvent(eventType) {
+    if (this.riskHistory.length > 0) {
+      this.riskHistory[this.riskHistory.length - 1].event = eventType;
+      this.drawRiskGraph();
+    }
+  }
+
+  drawRiskGraph() {
+    if (!this.graphCtx || !this.graphCanvas) return;
+
+    const ctx = this.graphCtx;
+    const w = this.graphCanvas.width;
+    const h = this.graphCanvas.height;
+
+    ctx.clearRect(0, 0, w, h);
+
+    // Subtle Grid lines (30%, 60%, 90%)
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+    ctx.lineWidth = 1;
+    [0.3, 0.6, 0.9].forEach(level => {
+      const y = h - (level * (h - 20)) - 10;
+      ctx.beginPath();
+      ctx.setLineDash([4, 4]);
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    });
+    ctx.setLineDash([]);
+
+    if (this.riskHistory.length < 2) return;
+
+    const pad = 10;
+    const graphW = w - (pad * 2);
+    const graphH = h - (pad * 2);
+    const step = graphW / (this.riskHistory.length - 1);
+
+    // Gradient Fill Under Line
+    const grad = ctx.createLinearGradient(0, pad, 0, h - pad);
+    const currentScore = this.riskHistory[this.riskHistory.length - 1].score;
+    if (currentScore >= 61) {
+      grad.addColorStop(0, 'rgba(239, 68, 68, 0.35)');
+      grad.addColorStop(1, 'rgba(239, 68, 68, 0.0)');
+    } else if (currentScore >= 31) {
+      grad.addColorStop(0, 'rgba(212, 160, 23, 0.35)');
+      grad.addColorStop(1, 'rgba(212, 160, 23, 0.0)');
+    } else {
+      grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+      grad.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(pad, h - pad);
+
+    this.riskHistory.forEach((sample, i) => {
+      const x = pad + (i * step);
+      const y = h - pad - ((sample.score / 100) * graphH);
+      if (i === 0) ctx.lineTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+
+    ctx.lineTo(pad + graphW, h - pad);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Line Plot
+    ctx.beginPath();
+    ctx.lineWidth = 2.2;
+    ctx.strokeStyle = currentScore >= 61 ? '#EF4444' : (currentScore >= 31 ? '#D4A017' : '#10B981');
+
+    this.riskHistory.forEach((sample, i) => {
+      const x = pad + (i * step);
+      const y = h - pad - ((sample.score / 100) * graphH);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Event Markers on Graph
+    this.riskHistory.forEach((sample, i) => {
+      if (sample.event) {
+        const x = pad + (i * step);
+        const y = h - pad - ((sample.score / 100) * graphH);
+
+        ctx.beginPath();
+        if (sample.event === 'BLINK') {
+          ctx.arc(x, y, 3, 0, 2 * Math.PI);
+          ctx.fillStyle = '#60A5FA';
+          ctx.fill();
+        } else if (sample.event === 'YAWN') {
+          ctx.arc(x, y, 4, 0, 2 * Math.PI);
+          ctx.fillStyle = '#F59E0B';
+          ctx.fill();
+        } else if (sample.event === 'CLOSURE') {
+          ctx.arc(x, y, 4.5, 0, 2 * Math.PI);
+          ctx.fillStyle = '#EF4444';
+          ctx.fill();
+        }
+      }
+    });
+
+    // Current Leading Dot
+    const lastX = pad + graphW;
+    const lastY = h - pad - ((currentScore / 100) * graphH);
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 4, 0, 2 * Math.PI);
+    ctx.fillStyle = currentScore >= 61 ? '#EF4444' : (currentScore >= 31 ? '#D4A017' : '#10B981');
+    ctx.fill();
+  }
+
+  // 8. UI UPDATE ENGINE
   updateUI() {
     const m = this.metrics;
     const score = Math.round(m.smoothedRiskScore);
 
-    if (this.dom.valAvgEAR) this.dom.valAvgEAR.textContent = m.avgEAR.toFixed(3);
+    if (this.dom.valAvgEAR) this.dom.valAvgEAR.textContent = m.avgEAR.toFixed(2);
     if (this.dom.valLeftEAR) this.dom.valLeftEAR.textContent = m.leftEAR.toFixed(2);
     if (this.dom.valRightEAR) this.dom.valRightEAR.textContent = m.rightEAR.toFixed(2);
     if (this.dom.valMAR) this.dom.valMAR.textContent = m.mar.toFixed(2);
+    if (this.dom.valBlinkRate) this.dom.valBlinkRate.textContent = `${m.blinkRate}/min`;
     if (this.dom.valBlinks) this.dom.valBlinks.textContent = m.blinkCount;
     if (this.dom.valYawns) this.dom.valYawns.textContent = m.yawnCount;
     if (this.dom.valHeadPose) this.dom.valHeadPose.textContent = m.headPose;
     if (this.dom.valConfidence) this.dom.valConfidence.textContent = `${m.confidence}%`;
-    if (this.dom.valFaceStatus) this.dom.valFaceStatus.textContent = m.faceStatus;
+    if (this.dom.valFaceStatus) {
+      this.dom.valFaceStatus.textContent = m.faceStatus;
+      this.dom.valFaceStatus.style.color = m.faceStatus.includes('✓') ? '#10B981' : (m.faceStatus.includes('WAITING') ? '#888888' : '#EF4444');
+    }
+    if (this.dom.valEyesStatus) {
+      this.dom.valEyesStatus.textContent = m.eyesStatus;
+      this.dom.valEyesStatus.style.color = m.eyesStatus.includes('✓') ? '#10B981' : (m.eyesStatus.includes('LIMITED') ? '#D4A017' : '#888888');
+    }
+    if (this.dom.valMouthStatus) {
+      this.dom.valMouthStatus.textContent = m.mouthStatus;
+      this.dom.valMouthStatus.style.color = m.mouthStatus.includes('✓') ? '#10B981' : '#888888';
+    }
     if (this.dom.valClosureDuration) {
       this.dom.valClosureDuration.textContent = m.eyeClosureDuration > 0 ? `${m.eyeClosureDuration.toFixed(1)}s` : '0.0s';
+    }
+
+    // Driver Status Pill
+    if (this.dom.driverStatusText) this.dom.driverStatusText.textContent = m.driverStatus;
+    if (this.dom.driverStatusPill) {
+      const cls = score >= 91 ? 'status-critical' : (score >= 61 ? 'status-high-risk' : (score >= 31 ? 'status-warning' : 'status-attentive'));
+      this.dom.driverStatusPill.className = `driver-status-banner-pill ${cls}`;
     }
 
     // Circular Risk Meter UI
@@ -608,24 +988,68 @@ class WideEyeSafetyMonitor {
   }
 
   startRenderLoop() {
-    const loop = () => {
-      if (this.mode === 'idle') return;
+    if (this.animationFrameId) return;
+
+    const loop = async () => {
+      if (this.mode === 'idle') {
+        this.animationFrameId = null;
+        return;
+      }
 
       if (this.isSimulation) {
         this.stepSimulationFrame();
       } else if (this.faceMesh && this.videoElement && this.videoElement.readyState >= 2) {
-        this.faceMesh.send({ image: this.videoElement });
+        if (!this.isProcessingFrame) {
+          this.isProcessingFrame = true;
+          try {
+            await this.faceMesh.send({ image: this.videoElement });
+          } catch (e) {
+            this.isProcessingFrame = false;
+          }
+        }
       }
 
       this.animationFrameId = requestAnimationFrame(loop);
     };
+
     this.animationFrameId = requestAnimationFrame(loop);
   }
 
   stepSimulationFrame() {
+    if (this.mode === 'calibrating') {
+      const simEAR = 0.29 + (Math.random() - 0.5) * 0.02;
+      const simMAR = 0.18 + (Math.random() - 0.5) * 0.01;
+      this.calibrationSamples.push({ leftEAR: simEAR, rightEAR: simEAR, avgEAR: simEAR, mar: simMAR, pitchRatio: 0.48, yawDiff: 0, headPose: 'STABLE' });
+      const progress = Math.min(1, this.calibrationSamples.length / this.TARGET_CALIBRATION_FRAMES);
+
+      if (this.dom.calibProgressFill) this.dom.calibProgressFill.style.width = `${(progress * 100).toFixed(0)}%`;
+      const remainingSec = Math.max(1, Math.ceil((1 - progress) * 5));
+      if (this.dom.calibCountdown) this.dom.calibCountdown.textContent = `${remainingSec}s remaining`;
+      if (this.dom.calibSamplesText) this.dom.calibSamplesText.textContent = `Gathering biometric baseline (${Math.round(progress * 100)}%)`;
+
+      if (this.calibrationSamples.length >= this.TARGET_CALIBRATION_FRAMES) {
+        this.finishCalibration();
+      }
+
+      this.metrics.faceStatus = '✓ FACE DETECTED';
+      this.metrics.eyesStatus = 'DETECTED ✓';
+      this.metrics.mouthStatus = 'DETECTED ✓';
+      this.metrics.confidence = 94;
+      this.metrics.avgEAR = simEAR;
+      this.metrics.mar = simMAR;
+      this.updateUI();
+      if (this.canvasCtx && this.canvasElement) this.drawSimulatedFace(this.canvasCtx, this.canvasElement);
+      return;
+    }
+
     const jitter = (Math.random() - 0.5) * 0.02;
     let simEAR = Math.max(0.08, Math.min(0.38, this.metrics.avgEAR + jitter));
     let simMAR = Math.max(0.12, Math.min(0.48, this.metrics.mar + (Math.random() - 0.5) * 0.01));
+
+    this.metrics.faceStatus = '✓ FACE DETECTED';
+    this.metrics.eyesStatus = 'DETECTED ✓';
+    this.metrics.mouthStatus = 'DETECTED ✓';
+    this.metrics.confidence = 94;
 
     this.processSignals(simEAR, simEAR, simMAR, this.metrics.headPose);
 
@@ -648,10 +1072,10 @@ class WideEyeSafetyMonitor {
     ctx.ellipse(cx, cy, 90, 120, 0, 0, 2 * Math.PI);
     ctx.stroke();
 
-    const eyeOpening = (this.metrics.avgEAR / 0.3) * 8;
+    const eyeOpening = (this.metrics.avgEAR / 0.29) * 8;
     ctx.beginPath();
-    ctx.ellipse(cx - 35, cy - 20, 16, eyeOpening, 0, 0, 2 * Math.PI);
-    ctx.ellipse(cx + 35, cy - 20, 16, eyeOpening, 0, 0, 2 * Math.PI);
+    ctx.ellipse(cx - 35, cy - 20, 16, Math.max(1, eyeOpening), 0, 0, 2 * Math.PI);
+    ctx.ellipse(cx + 35, cy - 20, 16, Math.max(1, eyeOpening), 0, 0, 2 * Math.PI);
     ctx.stroke();
 
     ctx.beginPath();
@@ -661,7 +1085,7 @@ class WideEyeSafetyMonitor {
 
     const mouthHeight = (this.metrics.mar / 0.18) * 6;
     ctx.beginPath();
-    ctx.ellipse(cx, cy + 45, 24, mouthHeight, 0, 0, 2 * Math.PI);
+    ctx.ellipse(cx, cy + 45, 24, Math.max(2, mouthHeight), 0, 0, 2 * Math.PI);
     ctx.stroke();
 
     ctx.restore();
@@ -671,29 +1095,29 @@ class WideEyeSafetyMonitor {
   setPresetRisk(level) {
     this.alertManager.logAlertEvent('PRESET', level === 'SAFE' ? 18 : level === 'WARNING' ? 48 : level === 'HIGH_RISK' ? 78 : 96, `SIH Demo Controller: Force preset triggered [${level}]`);
     if (level === 'SAFE') {
-      this.metrics.avgEAR = 0.31;
-      this.metrics.leftEAR = 0.31;
-      this.metrics.rightEAR = 0.30;
+      this.metrics.avgEAR = 0.29;
+      this.metrics.leftEAR = 0.29;
+      this.metrics.rightEAR = 0.29;
       this.metrics.mar = 0.18;
       this.metrics.headPose = 'STABLE';
       this.metrics.eyeClosureDuration = 0;
       this.metrics.rawRiskScore = 15;
     } else if (level === 'WARNING') {
-      this.metrics.avgEAR = 0.22;
+      this.metrics.avgEAR = 0.21;
       this.metrics.mar = 0.28;
       this.metrics.headPose = 'LOOKING LEFT';
       this.metrics.eyeClosureDuration = 0.8;
       this.metrics.rawRiskScore = 48;
     } else if (level === 'HIGH_RISK') {
-      this.metrics.avgEAR = 0.14;
+      this.metrics.avgEAR = 0.13;
       this.metrics.mar = 0.42;
-      this.metrics.headPose = 'HEAD DOWN';
+      this.metrics.headPose = 'HEAD DOWN (NODDING)';
       this.metrics.eyeClosureDuration = 1.8;
       this.metrics.rawRiskScore = 78;
     } else if (level === 'CRITICAL') {
-      this.metrics.avgEAR = 0.08;
+      this.metrics.avgEAR = 0.07;
       this.metrics.mar = 0.46;
-      this.metrics.headPose = 'HEAD DOWN';
+      this.metrics.headPose = 'HEAD DOWN (NODDING)';
       this.metrics.eyeClosureDuration = 3.2;
       this.metrics.rawRiskScore = 96;
     }
