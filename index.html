@@ -351,14 +351,72 @@
       </div>
     </section>
 
-    <!-- PROBLEM -> SOLUTION SECTION -->
-    <section class="section problem-solution-section" id="problem-solution">
+    <!-- ==================================================
+         SECTION 1 — WHAT IS WIDEEYE?
+         ================================================== -->
+    <section class="section what-is-wideeye-section" id="what-is-wideeye">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-kicker">AI-Powered Mobility Safety</span>
+          <h2 class="section-heading">What is WideEYE?</h2>
+          <p class="section-subheading">
+            An AI-powered ride experience designed with safety at its core.
+          </p>
+          <p class="section-lead-text">
+            WideEYE is a ride-booking and driver safety platform that combines everyday mobility with real-time AI-based driver fatigue monitoring. It helps identify signs of drowsiness while a ride is in progress and provides timely alerts before the situation becomes critical.
+          </p>
+        </div>
+
+        <div class="what-cards-grid">
+          <!-- CARD 01: RIDE BOOKING -->
+          <div class="what-card">
+            <div class="what-card-top">
+              <span class="what-card-num">01</span>
+              <div class="what-card-icon"><i data-lucide="car"></i></div>
+            </div>
+            <h3 class="what-card-title">RIDE BOOKING</h3>
+            <p class="what-card-desc">
+              Book Bike, Auto or Cab rides with a simple and familiar ride-booking experience.
+            </p>
+          </div>
+
+          <!-- CARD 02: AI SAFETY -->
+          <div class="what-card">
+            <div class="what-card-top">
+              <span class="what-card-num">02</span>
+              <div class="what-card-icon" style="color: var(--lemon-yellow);"><i data-lucide="eye"></i></div>
+            </div>
+            <h3 class="what-card-title">AI SAFETY</h3>
+            <p class="what-card-desc">
+              Monitor driver alertness in real time using computer vision and facial analysis.
+            </p>
+          </div>
+
+          <!-- CARD 03: EMERGENCY RESPONSE -->
+          <div class="what-card">
+            <div class="what-card-top">
+              <span class="what-card-num">03</span>
+              <div class="what-card-icon" style="color: #EF4444;"><i data-lucide="shield-alert"></i></div>
+            </div>
+            <h3 class="what-card-title">EMERGENCY RESPONSE</h3>
+            <p class="what-card-desc">
+              Support critical situations with SOS, live ride location and emergency response workflows.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================
+         SECTION 2 — WHY WIDEEYE? (PROBLEM -> SOLUTION)
+         ================================================== -->
+    <section class="section problem-solution-section" id="why-wideeye-section">
       <div class="container">
         <div class="section-header text-center">
           <span class="section-kicker">The Reality & The Innovation</span>
-          <h2 class="section-heading">Every ride should feel safe.</h2>
+          <h2 class="section-heading">Why WideEYE?</h2>
           <p class="section-subheading">
-            Current ride-sharing platforms focus almost entirely on GPS tracking, leaving driver fatigue and in-cabin safety unaddressed.
+            Current ride platforms focus primarily on navigation, leaving driver fatigue and in-cabin safety unaddressed.
           </p>
         </div>
 
@@ -367,36 +425,30 @@
           <div class="card problem-card">
             <div class="card-badge problem-badge">
               <i data-lucide="alert-triangle"></i>
-              <span>The Problem</span>
+              <span>The Challenge</span>
             </div>
-            <h3 class="card-title">Traditional rides leave critical blind spots.</h3>
+            <h3 class="card-title">Driver fatigue is difficult to recognize before it becomes dangerous.</h3>
             <p class="card-desc">
-              Long working hours and late-night trips introduce unseen vulnerabilities for passengers and drivers alike.
+              During long or night journeys, drivers can experience reduced alertness, prolonged eye closure, frequent yawning and changes in head position. A driver may not always recognize these signs early enough.
             </p>
 
             <ul class="problem-list">
               <li class="problem-item">
                 <div class="list-bullet bullet-problem"><i data-lucide="x"></i></div>
                 <div>
-                  <strong>Driver fatigue increases accident risk:</strong> Sleep deprivation slows reaction time just like intoxication.
+                  <strong>Micro-sleeps happen in split seconds</strong> without conscious awareness.
                 </div>
               </li>
               <li class="problem-item">
                 <div class="list-bullet bullet-problem"><i data-lucide="x"></i></div>
                 <div>
-                  <strong>Drivers don't realize drowsiness:</strong> Micro-sleeps happen in split seconds without conscious awareness.
+                  <strong>Sleep deprivation impairs reflexes</strong> just like alcohol intoxication.
                 </div>
               </li>
               <li class="problem-item">
                 <div class="list-bullet bullet-problem"><i data-lucide="x"></i></div>
                 <div>
-                  <strong>Hardware barriers limit adoption:</strong> Expensive dedicated automotive sensors are cost-prohibitive for fleets.
-                </div>
-              </li>
-              <li class="problem-item">
-                <div class="list-bullet bullet-problem"><i data-lucide="x"></i></div>
-                <div>
-                  <strong>Detection without response fails:</strong> Simple warnings mean nothing without connected emergency support.
+                  <strong>Proprietary sensors are cost-prohibitive</strong> for everyday transit fleets.
                 </div>
               </li>
             </ul>
@@ -408,69 +460,244 @@
               <i data-lucide="shield-check"></i>
               <span>The WideEYE Solution</span>
             </div>
-            <h3 class="card-title">Intelligent vision meets instant intervention.</h3>
+            <h3 class="card-title">WideEYE adds an intelligent safety layer to the ride.</h3>
             <p class="card-desc">
-              WideEYE transforms any smartphone or vehicle camera into an intelligent active safety copilot.
+              Instead of waiting for an incident, WideEYE continuously analyzes available facial signals to identify increasing signs of fatigue and provide an early warning.
             </p>
 
             <ul class="solution-list">
               <li class="solution-item">
                 <div class="list-bullet bullet-solution"><i data-lucide="check"></i></div>
                 <div>
-                  <strong>Camera-based driver monitoring:</strong> Uses existing standard optical devices without costly hardware.
+                  <strong>Edge-computed vision AI</strong> running locally on camera devices.
                 </div>
               </li>
               <li class="solution-item">
                 <div class="list-bullet bullet-solution"><i data-lucide="check"></i></div>
                 <div>
-                  <strong>Real-time drowsiness detection:</strong> Computes eye-closure and yawn metrics to detect fatigue instantly.
+                  <strong>Progressive multi-stage warnings</strong> before critical risk occurs.
                 </div>
               </li>
               <li class="solution-item">
                 <div class="list-bullet bullet-solution"><i data-lucide="check"></i></div>
                 <div>
-                  <strong>Intelligent safety alerts:</strong> Escalating audio and haptic cues help drivers regain alertness promptly.
-                </div>
-              </li>
-              <li class="solution-item">
-                <div class="list-bullet bullet-solution"><i data-lucide="check"></i></div>
-                <div>
-                  <strong>Automated emergency assistance:</strong> Triggers emergency SOS triage when critical risk is detected.
+                  <strong>Automated emergency SOS</strong> and live triage response support.
                 </div>
               </li>
             </ul>
+          </div>
+        </div>
 
-            <!-- VISUAL TRANSITION STEPPER -->
-            <div class="transition-stepper">
-              <div class="stepper-label">Integrated Safety Pipeline</div>
-              <div class="stepper-flow">
-                <div class="step-node">
-                  <span class="step-circle">1</span>
-                  <span class="step-text">Risk</span>
-                </div>
-                <div class="step-arrow"><i data-lucide="arrow-right"></i></div>
-                <div class="step-node">
-                  <span class="step-circle">2</span>
-                  <span class="step-text">Detection</span>
-                </div>
-                <div class="step-arrow"><i data-lucide="arrow-right"></i></div>
-                <div class="step-node">
-                  <span class="step-circle">3</span>
-                  <span class="step-text">Alert</span>
-                </div>
-                <div class="step-arrow"><i data-lucide="arrow-right"></i></div>
-                <div class="step-node highlight">
-                  <span class="step-circle">4</span>
-                  <span class="step-text">Help</span>
-                </div>
-              </div>
+        <!-- 5-NODE VISUAL PIPELINE FLOW -->
+        <div class="why-pipeline-container">
+          <div class="why-pipeline-label">End-to-End Safety Pipeline</div>
+          <div class="why-pipeline-flow">
+            <div class="why-pipe-node">
+              <span>DRIVER FATIGUE</span>
+            </div>
+            <div class="why-pipe-arrow"><i data-lucide="arrow-right"></i></div>
+            <div class="why-pipe-node highlight-lemon">
+              <span>AI DETECTION</span>
+            </div>
+            <div class="why-pipe-arrow"><i data-lucide="arrow-right"></i></div>
+            <div class="why-pipe-node">
+              <span>EARLY WARNING</span>
+            </div>
+            <div class="why-pipe-arrow"><i data-lucide="arrow-right"></i></div>
+            <div class="why-pipe-node highlight-lemon">
+              <span>CRITICAL ALERT</span>
+            </div>
+            <div class="why-pipe-arrow"><i data-lucide="arrow-right"></i></div>
+            <div class="why-pipe-node highlight-red">
+              <span>SOS RESPONSE</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- WIDEEYE SAFETY FEATURE HIGHLIGHT (CORE SHOWCASE) -->
+    <!-- ==================================================
+         SECTION 3 — HOW WIDEEYE WORKS (5 STEPS TIMELINE)
+         ================================================== -->
+    <section class="section how-it-works-section" id="how-it-works">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-kicker">Seamless 5-Step Workflow</span>
+          <h2 class="section-heading">How WideEYE Works</h2>
+          <p class="section-subheading">
+            From pickup to drop-off, intelligent safety works silently in the background without complicating your ride.
+          </p>
+        </div>
+
+        <div class="timeline-5steps-grid">
+          <!-- STEP 01 -->
+          <div class="timeline-step-card">
+            <div class="timeline-step-badge">01</div>
+            <h3 class="timeline-step-title">BOOK YOUR RIDE</h3>
+            <p class="timeline-step-desc">
+              Choose your pickup, destination and preferred ride type.
+            </p>
+          </div>
+
+          <!-- STEP 02 -->
+          <div class="timeline-step-card">
+            <div class="timeline-step-badge">02</div>
+            <h3 class="timeline-step-title">START MONITORING</h3>
+            <p class="timeline-step-desc">
+              The driver's camera is enabled for real-time safety monitoring.
+            </p>
+          </div>
+
+          <!-- STEP 03 -->
+          <div class="timeline-step-card">
+            <div class="timeline-step-badge">03</div>
+            <h3 class="timeline-step-title">ADAPTIVE CALIBRATION</h3>
+            <p class="timeline-step-desc">
+              WideEYE establishes a personalized facial baseline for the driver instead of relying on a single fixed threshold.
+            </p>
+          </div>
+
+          <!-- STEP 04 -->
+          <div class="timeline-step-card">
+            <div class="timeline-step-badge">04</div>
+            <h3 class="timeline-step-title">DETECT FATIGUE</h3>
+            <p class="timeline-step-desc">
+              Computer vision analyzes facial landmarks, eye activity, blinking, mouth movement and head position to estimate drowsiness risk.
+            </p>
+          </div>
+
+          <!-- STEP 05 -->
+          <div class="timeline-step-card">
+            <div class="timeline-step-badge">05</div>
+            <h3 class="timeline-step-title">RESPOND TO RISK</h3>
+            <p class="timeline-step-desc">
+              As risk increases, WideEYE provides warnings and can move into an emergency SOS workflow when a critical state is reached.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================
+         SECTION 4 — INSIDE THE AI (4 SIGNALS)
+         ================================================== -->
+    <section class="section inside-ai-section" id="inside-ai">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-kicker">Computer Vision & Facial Analysis</span>
+          <h2 class="section-heading">Inside the AI</h2>
+          <p class="section-subheading">
+            Multiple signals. One safety decision.
+          </p>
+          <p class="section-lead-text">
+            WideEYE does not depend on simple eye detection alone. It tracks multiple synchronized facial cues in real time to build a robust assessment.
+          </p>
+        </div>
+
+        <div class="inside-ai-grid">
+          <!-- SIGNAL 1: EYE ACTIVITY -->
+          <div class="ai-signal-card">
+            <div class="ai-signal-icon-box"><i data-lucide="eye"></i></div>
+            <h3 class="ai-signal-title">EYE ACTIVITY</h3>
+            <p class="ai-signal-desc">
+              Tracks eye openness and changes in eye activity using facial landmarks.
+            </p>
+          </div>
+
+          <!-- SIGNAL 2: BLINK ANALYSIS -->
+          <div class="ai-signal-card">
+            <div class="ai-signal-icon-box"><i data-lucide="activity"></i></div>
+            <h3 class="ai-signal-title">BLINK ANALYSIS</h3>
+            <p class="ai-signal-desc">
+              Analyzes blink duration and patterns over time instead of reacting to a single blink.
+            </p>
+          </div>
+
+          <!-- SIGNAL 3: MOUTH MOVEMENT -->
+          <div class="ai-signal-card">
+            <div class="ai-signal-icon-box"><i data-lucide="smile"></i></div>
+            <h3 class="ai-signal-title">MOUTH MOVEMENT</h3>
+            <p class="ai-signal-desc">
+              Uses Mouth Aspect Ratio (MAR) and mouth movement as an additional fatigue signal.
+            </p>
+          </div>
+
+          <!-- SIGNAL 4: HEAD POSITION -->
+          <div class="ai-signal-card">
+            <div class="ai-signal-icon-box"><i data-lucide="compass"></i></div>
+            <h3 class="ai-signal-title">HEAD POSITION</h3>
+            <p class="ai-signal-desc">
+              Analyzes changes in head orientation and position that may indicate reduced alertness.
+            </p>
+          </div>
+        </div>
+
+        <!-- SUMMARY HIGHLIGHT BANNER -->
+        <div class="ai-summary-banner">
+          <i data-lucide="sparkles"></i>
+          <span>WideEYE combines these signals over time to estimate a drowsiness risk score.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================
+         SECTION 5 — ADAPTIVE CALIBRATION
+         ================================================== -->
+    <section class="section adaptive-calib-section" id="adaptive-calibration">
+      <div class="container">
+        <div class="calibration-section-card">
+          <div class="section-header text-center">
+            <span class="section-kicker">Individualized Driver Baseline</span>
+            <h2 class="section-heading">Personalized AI Calibration</h2>
+            <p class="section-lead-text">
+              Every driver has different natural facial characteristics. WideEYE first establishes a personalized baseline using the driver's facial landmarks and then compares live measurements against that baseline.
+            </p>
+          </div>
+
+          <!-- CALIBRATION FLOW DIAGRAM -->
+          <div class="calib-flow-visual">
+            <div class="calib-step-box">
+              <div class="calib-step-kicker">Step 1</div>
+              <div class="calib-step-val">CALIBRATION</div>
+              <div class="calib-step-sub">5s Facial Mesh Scan</div>
+            </div>
+
+            <div class="calib-arrow"><i data-lucide="arrow-right"></i></div>
+
+            <div class="calib-step-box" style="border-color: rgba(212, 160, 23, 0.4); background: rgba(212, 160, 23, 0.05);">
+              <div class="calib-step-kicker">Step 2</div>
+              <div class="calib-step-val" style="color: var(--lemon-yellow);">BASELINE</div>
+              <div class="calib-step-sub">EAR 0.31 · MAR 0.18</div>
+            </div>
+
+            <div class="calib-arrow"><i data-lucide="arrow-right"></i></div>
+
+            <div class="calib-step-box">
+              <div class="calib-step-kicker">Step 3</div>
+              <div class="calib-step-val">LIVE ANALYSIS</div>
+              <div class="calib-step-sub">Real-Time Comparison</div>
+            </div>
+
+            <div class="calib-arrow"><i data-lucide="arrow-right"></i></div>
+
+            <div class="calib-step-box" style="border-color: rgba(16, 185, 129, 0.4);">
+              <div class="calib-step-kicker">Output</div>
+              <div class="calib-step-val" style="color: #10B981;">RISK SCORE</div>
+              <div class="calib-step-sub">0–100% Index</div>
+            </div>
+          </div>
+
+          <p class="calib-footnote-note">
+            <i data-lucide="info"></i>
+            <span>Calibration helps the system adapt to the individual driver instead of relying on one universal facial threshold.</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================
+         WIDEEYE SAFETY FEATURE HIGHLIGHT (INTERACTIVE DEMO)
+         ================================================== -->
     <section class="section safety-feature-section" id="safety-preview">
       <div class="container">
         <div class="safety-feature-wrapper">
@@ -526,8 +753,8 @@
             </div>
 
             <div class="safety-cta-row">
-              <a href="#how-it-works" class="btn btn-primary">
-                <span>See How WideEYE Works</span>
+              <a href="monitor.html" class="btn btn-primary">
+                <span>Launch Live AI Safety Monitor</span>
                 <i data-lucide="arrow-right" class="btn-icon"></i>
               </a>
               <a href="book.html" class="btn btn-secondary">
@@ -536,7 +763,7 @@
             </div>
           </div>
 
-          <!-- RIGHT: SAFETY MONITOR CARD MOCKUP (REQUIRED DISPLAY) -->
+          <!-- RIGHT: SAFETY MONITOR CARD MOCKUP -->
           <div class="safety-monitor-container">
             <div class="monitor-card-wrapper">
               
@@ -617,7 +844,7 @@
                   </div>
                 </div>
 
-                <!-- Interactive Preview State Switcher (To demo Safe vs Warning for SIH Judges) -->
+                <!-- Interactive Preview State Switcher -->
                 <div class="monitor-demo-controls">
                   <span class="demo-ctrl-title">Interactive Simulator Mode:</span>
                   <div class="demo-btn-group">
@@ -644,240 +871,364 @@
       </div>
     </section>
 
-    <!-- HOW IT WORKS (4 STEPS) -->
-    <section class="section how-it-works-section" id="how-it-works">
+    <!-- ==================================================
+         SECTION 6 — FROM SAFE TO CRITICAL (4 TIERS)
+         ================================================== -->
+    <section class="section risk-tiers-section" id="risk-levels">
       <div class="container">
         <div class="section-header text-center">
-          <span class="section-kicker">Simple & Seamless</span>
-          <h2 class="section-heading">How WideEYE Works</h2>
+          <span class="section-kicker">Dynamic Risk Scoring</span>
+          <h2 class="section-heading">From Safe to Critical</h2>
           <p class="section-subheading">
-            From pickup to drop-off, intelligent safety works silently in the background without complicating your ride.
+            The score is based on multiple signals and temporal patterns rather than a single frame.
           </p>
         </div>
 
-        <div class="steps-container">
-          <div class="steps-flow-line" aria-hidden="true"></div>
-
-          <div class="steps-grid">
-            <!-- STEP 01 -->
-            <div class="step-card">
-              <div class="step-header">
-                <span class="step-number">01</span>
-                <div class="step-icon-wrap">
-                  <i data-lucide="map-pin"></i>
-                </div>
-              </div>
-              <h3 class="step-title">Book Your Ride</h3>
-              <p class="step-desc">
-                Choose your destination and ride type. WideEYE safety features are automatically activated for every trip.
-              </p>
-              <div class="step-tag">Instant Booking</div>
+        <div class="risk-tiers-grid">
+          <!-- TIER 1: SAFE -->
+          <div class="risk-tier-card tier-safe">
+            <div class="risk-tier-top">
+              <span class="risk-tier-name">SAFE</span>
+              <span class="risk-tier-range">0–30</span>
             </div>
+            <p class="risk-tier-desc">Normal alertness</p>
+          </div>
 
-            <!-- STEP 02 -->
-            <div class="step-card">
-              <div class="step-header">
-                <span class="step-number">02</span>
-                <div class="step-icon-wrap">
-                  <i data-lucide="car"></i>
-                </div>
-              </div>
-              <h3 class="step-title">Start the Journey</h3>
-              <p class="step-desc">
-                Your driver and trip details appear in the app. Camera sensor connects securely before departure.
-              </p>
-              <div class="step-tag">Verified Trip</div>
+          <!-- TIER 2: WARNING -->
+          <div class="risk-tier-card tier-warning">
+            <div class="risk-tier-top">
+              <span class="risk-tier-name">WARNING</span>
+              <span class="risk-tier-range">31–60</span>
             </div>
+            <p class="risk-tier-desc">Early signs of fatigue</p>
+          </div>
 
-            <!-- STEP 03 -->
-            <div class="step-card">
-              <div class="step-header">
-                <span class="step-number">03</span>
-                <div class="step-icon-wrap">
-                  <i data-lucide="eye"></i>
-                </div>
-              </div>
-              <h3 class="step-title">WideEYE Monitors</h3>
-              <p class="step-desc">
-                Camera-based technology continuously monitors subtle signs of driver fatigue and micro-sleeps in real time.
-              </p>
-              <div class="step-tag">Active Vision AI</div>
+          <!-- TIER 3: HIGH RISK -->
+          <div class="risk-tier-card tier-high">
+            <div class="risk-tier-top">
+              <span class="risk-tier-name">HIGH RISK</span>
+              <span class="risk-tier-range">61–90</span>
             </div>
+            <p class="risk-tier-desc">Strong fatigue indicators</p>
+          </div>
 
-            <!-- STEP 04 -->
-            <div class="step-card">
-              <div class="step-header">
-                <span class="step-number">04</span>
-                <div class="step-icon-wrap">
-                  <i data-lucide="shield-alert"></i>
-                </div>
-              </div>
-              <h3 class="step-title">Stay Safe</h3>
-              <p class="step-desc">
-                Intelligent warnings and emergency assistance can activate immediately when risk becomes critical.
-              </p>
-              <div class="step-tag">Automated Triage</div>
+          <!-- TIER 4: CRITICAL -->
+          <div class="risk-tier-card tier-critical">
+            <div class="risk-tier-top">
+              <span class="risk-tier-name">CRITICAL</span>
+              <span class="risk-tier-range">91–100</span>
+            </div>
+            <p class="risk-tier-desc">Immediate safety response</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================
+         SECTION 7 — WHAT HAPPENS WHEN RISK INCREASES?
+         ================================================== -->
+    <section class="section risk-progression-section" id="risk-progression">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-kicker">Progressive Escalation</span>
+          <h2 class="section-heading">When Risk Increases</h2>
+          <p class="section-subheading">
+            WideEYE executes a clear multi-tiered intervention protocol to protect both driver and passenger.
+          </p>
+        </div>
+
+        <div class="progression-flow-grid">
+          <!-- STAGE 1 -->
+          <div class="prog-step-card">
+            <div class="prog-step-head" style="color: #10B981;">
+              <span class="pulse-dot" style="background: #10B981;"></span>
+              <span>STATE 01 · SAFE</span>
+            </div>
+            <h3 class="prog-step-title">Visual Monitoring</h3>
+            <p class="prog-step-desc">
+              Silent background camera monitoring with live telemetry tracking baseline alertness.
+            </p>
+          </div>
+
+          <!-- STAGE 2 -->
+          <div class="prog-step-card">
+            <div class="prog-step-head" style="color: var(--lemon-yellow);">
+              <span class="pulse-lemon-dot"></span>
+              <span>STATE 02 · WARNING</span>
+            </div>
+            <h3 class="prog-step-title">Driver Alert</h3>
+            <p class="prog-step-desc">
+              Subtle visual HUD notifications and gentle sound cues prompt the driver to refocus.
+            </p>
+          </div>
+
+          <!-- STAGE 3 -->
+          <div class="prog-step-card">
+            <div class="prog-step-head" style="color: #F59E0B;">
+              <span class="pulse-dot" style="background: #F59E0B;"></span>
+              <span>STATE 03 · HIGH RISK</span>
+            </div>
+            <h3 class="prog-step-title">Stronger Safety Alert</h3>
+            <p class="prog-step-desc">
+              Escalating dual-frequency chime, passenger app alert, and rest break suggestion.
+            </p>
+          </div>
+
+          <!-- STAGE 4 -->
+          <div class="prog-step-card" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.05);">
+            <div class="prog-step-head" style="color: #EF4444;">
+              <span class="pulse-red-dot"></span>
+              <span>STATE 04 · CRITICAL</span>
+            </div>
+            <h3 class="prog-step-title" style="color: #EF4444;">SOS RESPONSE</h3>
+            <p class="prog-step-desc">
+              5-second automated countdown triggers emergency contact alerts and location broadcast.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================
+         SECTION 8 — EMERGENCY SOS
+         ================================================== -->
+    <section class="section emergency-sos-section" id="emergency-sos">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-kicker">Critical Incident Protocol</span>
+          <h2 class="section-heading">When Every Second Matters</h2>
+          <p class="section-lead-text">
+            If the system reaches a critical state, WideEYE can move into an emergency response workflow.
+          </p>
+        </div>
+
+        <div class="sos-actions-grid">
+          <!-- ACTION 1 -->
+          <div class="sos-feat-card">
+            <div class="sos-feat-icon"><i data-lucide="phone-call"></i></div>
+            <h3 class="sos-feat-title">CALL EMERGENCY CONTACT</h3>
+            <p class="sos-feat-desc">
+              Quick access to a designated emergency contact.
+            </p>
+          </div>
+
+          <!-- ACTION 2 -->
+          <div class="sos-feat-card">
+            <div class="sos-feat-icon"><i data-lucide="share-2"></i></div>
+            <h3 class="sos-feat-title">SHARE LOCATION</h3>
+            <p class="sos-feat-desc">
+              Share the current ride location.
+            </p>
+          </div>
+
+          <!-- ACTION 3 -->
+          <div class="sos-feat-card">
+            <div class="sos-feat-icon"><i data-lucide="navigation"></i></div>
+            <h3 class="sos-feat-title">VIEW LIVE RIDE</h3>
+            <p class="sos-feat-desc">
+              Access the current ride and location information.
+            </p>
+          </div>
+
+          <!-- ACTION 4 -->
+          <div class="sos-feat-card">
+            <div class="sos-feat-icon"><i data-lucide="alert-octagon"></i></div>
+            <h3 class="sos-feat-title">SOS ACTIVATED</h3>
+            <p class="sos-feat-desc">
+              Move the incident into an emergency response state.
+            </p>
+          </div>
+        </div>
+
+        <div class="sos-disclaimer-card">
+          <i data-lucide="info"></i>
+          <span>Emergency communication shown in this prototype is simulated.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================
+         SECTION 9 — WHAT YOU ARE SEEING (PROTOTYPE SCOPE)
+         ================================================== -->
+    <section class="section prototype-scope-section" id="prototype-scope">
+      <div class="container">
+        <div class="prototype-scope-card">
+          <div class="section-header text-center">
+            <span class="section-kicker">Transparent Prototype Scope</span>
+            <h2 class="section-heading">This is the WideEYE Prototype</h2>
+            <p class="section-lead-text">
+              What you're exploring is our working web prototype that demonstrates the core WideEYE experience — ride booking, driver monitoring, AI-based fatigue detection, emergency SOS and safety analytics.
+            </p>
+          </div>
+
+          <div class="proto-scope-grid">
+            <div class="proto-check-item">
+              <i data-lucide="check-circle-2"></i>
+              <span>Ride Booking</span>
+            </div>
+            <div class="proto-check-item">
+              <i data-lucide="check-circle-2"></i>
+              <span>Real-Time Camera Monitoring</span>
+            </div>
+            <div class="proto-check-item">
+              <i data-lucide="check-circle-2"></i>
+              <span>Facial Landmark Detection</span>
+            </div>
+            <div class="proto-check-item">
+              <i data-lucide="check-circle-2"></i>
+              <span>Adaptive Calibration</span>
+            </div>
+            <div class="proto-check-item">
+              <i data-lucide="check-circle-2"></i>
+              <span>Drowsiness Risk Analysis</span>
+            </div>
+            <div class="proto-check-item">
+              <i data-lucide="check-circle-2"></i>
+              <span>Smart Alerts</span>
+            </div>
+            <div class="proto-check-item">
+              <i data-lucide="check-circle-2"></i>
+              <span>Emergency SOS Workflow</span>
+            </div>
+            <div class="proto-check-item">
+              <i data-lucide="check-circle-2"></i>
+              <span>Live Location Visualization</span>
+            </div>
+            <div class="proto-check-item">
+              <i data-lucide="check-circle-2"></i>
+              <span>Safety Dashboard</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- BENEFITS SECTION (4 AUDIENCE CARDS) -->
-    <section class="section benefits-section" id="benefits">
+    <!-- ==================================================
+         SECTION 10 — OUR NEXT STEP (ROADMAP)
+         ================================================== -->
+    <section class="section roadmap-section" id="future-roadmap">
       <div class="container">
         <div class="section-header text-center">
-          <span class="section-kicker">Reassurance For Everyone</span>
-          <h2 class="section-heading">Built for safer journeys.</h2>
-          <p class="section-subheading">
-            Tailored protection designed to support drivers, passengers, families, and fleet operators.
+          <span class="section-kicker">Future Development</span>
+          <h2 class="section-heading">From Prototype to Mobile App</h2>
+          <p class="section-lead-text">
+            Our next step is to transform the WideEYE concept into a complete mobile application for real-world mobility and safety use.
           </p>
         </div>
 
-        <div class="benefits-grid">
-          <!-- CARD 1: FOR DRIVERS -->
-          <div class="card benefit-card">
-            <div class="benefit-icon-header">
-              <div class="benefit-icon-box">
-                <i data-lucide="user-check"></i>
-              </div>
-              <span class="audience-badge">For Drivers</span>
-            </div>
-            <h3 class="benefit-title">Proactive Fatigue Support</h3>
-            <p class="benefit-desc">
-              Early fatigue warnings help drivers stay alert during long journeys and night driving, preventing exhaustion before it becomes dangerous.
+        <div class="roadmap-3stage-grid">
+          <!-- STAGE 1: NOW -->
+          <div class="roadmap-card active-stage">
+            <span class="roadmap-stage-badge stage-now">NOW</span>
+            <h3 class="roadmap-title">Web Prototype</h3>
+            <p class="roadmap-desc">
+              Working browser prototype demonstrating edge vision AI, live calibration, real-time telemetry, and incident dispatch flows.
             </p>
-            <div class="benefit-perk">
-              <i data-lucide="check"></i>
-              <span>Rest break suggestions & alert prompts</span>
+            <div class="roadmap-features-list">
+              <div class="roadmap-feat-item"><i data-lucide="check"></i> <span>Browser Camera Vision AI</span></div>
+              <div class="roadmap-feat-item"><i data-lucide="check"></i> <span>Simulation & Live Tests</span></div>
+              <div class="roadmap-feat-item"><i data-lucide="check"></i> <span>Interactive SOS Center</span></div>
             </div>
           </div>
 
-          <!-- CARD 2: FOR PASSENGERS -->
-          <div class="card benefit-card">
-            <div class="benefit-icon-header">
-              <div class="benefit-icon-box">
-                <i data-lucide="users"></i>
-              </div>
-              <span class="audience-badge">For Passengers</span>
-            </div>
-            <h3 class="benefit-title">Uncompromising Peace of Mind</h3>
-            <p class="benefit-desc">
-              Know that driver safety is being monitored throughout your journey with live transparency and built-in emergency escalation.
+          <!-- STAGE 2: NEXT -->
+          <div class="roadmap-card">
+            <span class="roadmap-stage-badge stage-next">NEXT</span>
+            <h3 class="roadmap-title">Mobile Application</h3>
+            <p class="roadmap-desc">
+              Native iOS & Android mobile application with embedded in-cabin optical sensor pipeline and rider safety pairing.
             </p>
-            <div class="benefit-perk">
-              <i data-lucide="check"></i>
-              <span>Live trip safety status in passenger app</span>
+            <div class="roadmap-features-list">
+              <div class="roadmap-feat-item"><i data-lucide="circle-dot"></i> <span>Ride booking</span></div>
+              <div class="roadmap-feat-item"><i data-lucide="circle-dot"></i> <span>Driver safety monitoring</span></div>
+              <div class="roadmap-feat-item"><i data-lucide="circle-dot"></i> <span>GPS and live ride tracking</span></div>
+              <div class="roadmap-feat-item"><i data-lucide="circle-dot"></i> <span>Real-time alerts</span></div>
+              <div class="roadmap-feat-item"><i data-lucide="circle-dot"></i> <span>Emergency SOS</span></div>
+              <div class="roadmap-feat-item"><i data-lucide="circle-dot"></i> <span>Safety history and analytics</span></div>
             </div>
           </div>
 
-          <!-- CARD 3: FOR FAMILIES -->
-          <div class="card benefit-card">
-            <div class="benefit-icon-header">
-              <div class="benefit-icon-box">
-                <i data-lucide="heart-handshake"></i>
-              </div>
-              <span class="audience-badge">For Families</span>
-            </div>
-            <h3 class="benefit-title">Continuous Reassurance</h3>
-            <p class="benefit-desc">
-              Emergency assistance provides additional reassurance when something goes wrong, keeping loved ones connected during night transit.
+          <!-- STAGE 3: FUTURE -->
+          <div class="roadmap-card">
+            <span class="roadmap-stage-badge stage-future">FUTURE</span>
+            <h3 class="roadmap-title">Scalable Safety Platform</h3>
+            <p class="roadmap-desc">
+              Enterprise fleet telematics, commercial insurer integration, and proactive roadside assistance dispatch ecosystem.
             </p>
-            <div class="benefit-perk">
-              <i data-lucide="check"></i>
-              <span>Automated SOS dispatch & family alerts</span>
-            </div>
-          </div>
-
-          <!-- CARD 4: FOR FLEET OPERATORS -->
-          <div class="card benefit-card">
-            <div class="benefit-icon-header">
-              <div class="benefit-icon-box">
-                <i data-lucide="truck"></i>
-              </div>
-              <span class="audience-badge">For Fleet Operators</span>
-            </div>
-            <h3 class="benefit-title">Scalable Fleet Protection</h3>
-            <p class="benefit-desc">
-              A scalable safety layer designed to help reduce accident-related risks, insurance liabilities, and vehicle downtime costs.
-            </p>
-            <div class="benefit-perk">
-              <i data-lucide="check"></i>
-              <span>Zero specialized hardware overhead</span>
+            <div class="roadmap-features-list">
+              <div class="roadmap-feat-item"><i data-lucide="circle-dot"></i> <span>Fleet Telematics API</span></div>
+              <div class="roadmap-feat-item"><i data-lucide="circle-dot"></i> <span>Insurance Risk Analytics</span></div>
+              <div class="roadmap-feat-item"><i data-lucide="circle-dot"></i> <span>Smart City Road Safety</span></div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- WHY WIDEEYE SECTION (4 PILLARS) -->
-    <section class="section why-section" id="why-wideeye">
+    <!-- ==================================================
+         SECTION 11 — WHY IT MATTERS
+         ================================================== -->
+    <section class="section why-it-matters-section" id="why-it-matters">
       <div class="container">
         <div class="section-header text-center">
-          <span class="section-kicker">Core Advantages</span>
-          <h2 class="section-heading">Why WideEYE?</h2>
-          <p class="section-subheading">
-            Modern vision computing allows unprecedented safety without the baggage of proprietary hardware.
+          <span class="section-kicker">Holistic Ecosystem Value</span>
+          <h2 class="section-heading">More Than a Ride</h2>
+          <p class="section-lead-text">
+            WideEYE aims to bring an additional layer of intelligence to everyday mobility — helping detect risk earlier, supporting drivers with timely warnings and creating a clearer emergency response workflow.
           </p>
         </div>
 
-        <div class="why-grid">
-          <!-- PILLAR 01 -->
-          <div class="why-card">
-            <div class="why-num">01</div>
-            <h3 class="why-title">Camera-Based</h3>
-            <p class="why-desc">No specialized hardware required. Works on standard smartphones and integrated dash cameras.</p>
-            <div class="why-divider"></div>
-            <span class="why-subtext">Low barrier to adoption</span>
+        <div class="impact-cards-grid">
+          <!-- IMPACT 1 -->
+          <div class="impact-card">
+            <div class="impact-icon-box"><i data-lucide="user-check"></i></div>
+            <h3 class="impact-title">DRIVERS</h3>
+            <p class="impact-desc">Earlier awareness of fatigue.</p>
           </div>
 
-          <!-- PILLAR 02 -->
-          <div class="why-card">
-            <div class="why-num">02</div>
-            <h3 class="why-title">Real-Time</h3>
-            <p class="why-desc">Safety monitoring happens during the journey with millisecond edge processing and zero latency delay.</p>
-            <div class="why-divider"></div>
-            <span class="why-subtext">Instant detection cycle</span>
+          <!-- IMPACT 2 -->
+          <div class="impact-card">
+            <div class="impact-icon-box"><i data-lucide="users"></i></div>
+            <h3 class="impact-title">PASSENGERS</h3>
+            <p class="impact-desc">An additional safety layer during rides.</p>
           </div>
 
-          <!-- PILLAR 03 -->
-          <div class="why-card">
-            <div class="why-num">03</div>
-            <h3 class="why-title">Accessible</h3>
-            <p class="why-desc">Designed around devices with a camera, making enterprise-grade safety accessible to everyday rides.</p>
-            <div class="why-divider"></div>
-            <span class="why-subtext">Universal platform compatibility</span>
+          <!-- IMPACT 3 -->
+          <div class="impact-card">
+            <div class="impact-icon-box"><i data-lucide="truck"></i></div>
+            <h3 class="impact-title">FLEETS</h3>
+            <p class="impact-desc">Potential for driver alertness monitoring and safety insights.</p>
           </div>
 
-          <!-- PILLAR 04 -->
-          <div class="why-card">
-            <div class="why-num">04</div>
-            <h3 class="why-title">Actionable</h3>
-            <p class="why-desc">Detection can lead to progressive alerts, driver interventions, and automated emergency assistance.</p>
-            <div class="why-divider"></div>
-            <span class="why-subtext">Beyond passive analytics</span>
+          <!-- IMPACT 4 -->
+          <div class="impact-card">
+            <div class="impact-icon-box"><i data-lucide="heart-pulse"></i></div>
+            <h3 class="impact-title">EMERGENCY RESPONSE</h3>
+            <p class="impact-desc">Faster access to location and ride information during critical situations.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- FINAL CTA SECTION -->
-    <section class="section final-cta-section">
+    <!-- ==================================================
+         SECTION 12 — FINAL CTA
+         ================================================== -->
+    <section class="section final-cta-section" id="final-cta">
       <div class="container">
         <div class="final-cta-box text-center">
           <div class="final-kicker">Next-Gen Mobility Safety</div>
-          <h2 class="final-heading">Ready for a safer ride?</h2>
+          <h2 class="final-heading">Ready to See WideEYE in Action?</h2>
           <p class="final-subtext">
-            Experience mobility with intelligent safety built in. Designed for drivers, trusted by riders.
+            Explore the prototype and experience how AI-powered driver safety can become part of the ride.
           </p>
           <div class="final-btn-group">
             <a href="book.html" class="btn btn-primary btn-lg">
-              <span>Book a Safe Ride</span>
+              <span>Explore WideEYE</span>
               <i data-lucide="arrow-right" class="btn-icon"></i>
             </a>
-            <a href="#safety-preview" class="btn btn-secondary btn-lg">
-              <span>Learn More About Safety</span>
-              <i data-lucide="shield" class="btn-icon"></i>
+            <a href="monitor.html" class="btn btn-secondary btn-lg">
+              <span>View AI Safety Demo</span>
+              <i data-lucide="eye" class="btn-icon"></i>
             </a>
           </div>
         </div>

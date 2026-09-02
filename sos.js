@@ -13,6 +13,13 @@ class WideEyeEmergencyCenter {
     this.countdownInterval = null;
     this.locationHeartbeatInterval = null;
     
+    // Single Source of Truth for GPS & Telemetry
+    this.currentLocation = {
+      lat: 28.4986,
+      lng: 77.0878,
+      speed: '34 km/h'
+    };
+
     // Emergency Context Data (Consistent across Phase 2, 3, 4, 5)
     this.data = {
       driver: 'Rahul Kumar',
@@ -24,7 +31,7 @@ class WideEyeEmergencyCenter {
       fare: '₹96',
       distance: '8.4 km',
       riskScore: 94,
-      coordinates: { lat: 28.4986, lng: 77.0878 },
+      coordinates: this.currentLocation,
       speed: '34 km/h',
       contact: {
         name: 'Priya Sharma',
@@ -44,6 +51,10 @@ class WideEyeEmergencyCenter {
     this.bindDom();
     this.initAudioContext();
     this.parseUrlParams();
+    
+    // Initialize Real Leaflet OpenStreetMap Immediately on Page Load
+    this.initEmergencyMap();
+    this.startLocationHeartbeat();
     this.initEmergencyFlow();
   }
 
@@ -65,7 +76,9 @@ class WideEyeEmergencyCenter {
       soundIcon: document.getElementById('sound-icon'),
       
       // Map & Telemetry
-      emergencyMapCanvas: document.getElementById('emergency-map-canvas'),
+      emergencyMap: document.getElementById('emergency-map'),
+      emergencyMapFallback: document.getElementById('emergency-map-fallback'),
+      inmapVehicleSpeed: document.getElementById('inmap-vehicle-speed'),
       gpsCoordText: document.getElementById('gps-coords-text'),
       speedText: document.getElementById('vehicle-speed-text'),
       locationHeartbeatTime: document.getElementById('location-heartbeat-time'),
@@ -216,140 +229,223 @@ class WideEyeEmergencyCenter {
       this.logTimeline('ASSISTANCE_DISPATCHED', 'Central emergency assistance request logged with dispatch center');
     }, 2800);
 
-    // Initialize Map Rendering & Location Heartbeat
-    this.initEmergencyMap();
-    this.startLocationHeartbeat();
+    // Invalidate map geometry when active
+    if (this.leafletMap) {
+      this.leafletMap.invalidateSize();
+    } else {
+      this.initEmergencyMap();
+    }
   }
 
-  // 3. LIVE EMERGENCY LOCATION MAP
+  // 3. LIVE EMERGENCY LOCATION MAP (LEAFLET + OPENSTREETMAP)
   initEmergencyMap() {
-    const canvas = this.dom.emergencyMapCanvas;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const mapContainer = document.getElementById('emergency-map');
+    const fallbackEl = document.getElementById('emergency-map-fallback');
+    
+    if (!mapContainer) return;
 
-    const renderMap = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!window.L) {
+      console.warn('Leaflet library (window.L) not detected.');
+      if (fallbackEl) fallbackEl.classList.remove('hidden');
+      return;
+    }
 
-      // Deep Black Canvas
-      ctx.fillStyle = '#050505';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    try {
+      if (fallbackEl) fallbackEl.classList.add('hidden');
 
-      // Subtle Road Grid
-      ctx.strokeStyle = '#181818';
-      ctx.lineWidth = 1.2;
-      for (let x = 0; x < canvas.width; x += 40) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
-      }
-      for (let y = 0; y < canvas.height; y += 40) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
+      // Clean up previous map instance if already mounted
+      if (this.leafletMap) {
+        this.leafletMap.remove();
+        this.leafletMap = null;
       }
 
-      // Major Arterial Road Lines
-      ctx.strokeStyle = '#222222';
-      ctx.lineWidth = 14;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
+      const initialLat = this.currentLocation.lat;
+      const initialLng = this.currentLocation.lng;
 
-      // Route Path (Cyber City ➔ MG Road)
-      ctx.beginPath();
-      ctx.moveTo(120, 360);
-      ctx.lineTo(260, 280);
-      ctx.lineTo(440, 280);
-      ctx.lineTo(580, 160);
-      ctx.lineTo(760, 160);
-      ctx.stroke();
+      // Initialize Leaflet Map centered at Cyber City, Gurugram (zoom 15 for clear streets & roads)
+      this.leafletMap = L.map('emergency-map', {
+        center: [initialLat, initialLng],
+        zoom: 15,
+        zoomControl: true,
+        attributionControl: true,
+        scrollWheelZoom: true,
+        dragging: true
+      });
 
-      // Lemon Yellow Active Route Vector
-      ctx.strokeStyle = '#D4A017';
-      ctx.lineWidth = 4;
-      ctx.stroke();
+      // Standard OpenStreetMap Tile Layer
+      this.tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        minZoom: 10,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+      }).addTo(this.leafletMap);
 
-      // Pickup Marker (Lemon Yellow Dot)
-      ctx.fillStyle = '#D4A017';
-      ctx.beginPath();
-      ctx.arc(120, 360, 8, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.fillStyle = '#050505';
-      ctx.beginPath();
-      ctx.arc(120, 360, 3, 0, 2 * Math.PI);
-      ctx.fill();
+      this.tileLayer.on('tileerror', (e) => {
+        console.warn('Tile load issue:', e);
+      });
 
-      // Destination Marker (Crisp White / Black)
-      ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath();
-      ctx.arc(760, 160, 8, 0, 2 * Math.PI);
-      ctx.fill();
-      ctx.fillStyle = '#050505';
-      ctx.beginPath();
-      ctx.arc(760, 160, 3, 0, 2 * Math.PI);
-      ctx.fill();
+      // Custom Emergency Vehicle DivIcon with Subtle Pulsing Radar Ring & Car SVG
+      const emergencyVehicleIcon = L.divIcon({
+        className: 'custom-emergency-icon',
+        html: `
+          <div class="emergency-marker-wrap">
+            <div class="emergency-marker-radar"></div>
+            <div class="emergency-marker-core">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+                <circle cx="7" cy="17" r="2"/>
+                <path d="M9 17h6"/>
+                <circle cx="17" cy="17" r="2"/>
+              </svg>
+            </div>
+          </div>
+        `,
+        iconSize: [44, 44],
+        iconAnchor: [22, 22],
+        popupAnchor: [0, -22]
+      });
 
-      // CURRENT VEHICLE POSITION: PULSING RED EMERGENCY MARKER
-      const vehicleX = 390;
-      const vehicleY = 280;
+      // Destination Marker Icon (City Centre Mall, MG Road)
+      const destinationIcon = L.divIcon({
+        className: 'custom-dest-icon',
+        html: `
+          <div class="dest-marker-badge" title="Destination: City Centre Mall">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+        `,
+        iconSize: [26, 26],
+        iconAnchor: [13, 13],
+        popupAnchor: [0, -13]
+      });
 
-      // Pulsing Emergency Radar Ring
-      const pulseTime = (performance.now() % 1500) / 1500;
-      const pulseRadius = 16 + (pulseTime * 28);
-      const pulseAlpha = 1 - pulseTime;
+      // Live Ride Route (DLF Cyber City to MG Road)
+      const routeCoordinates = [
+        [28.4986, 77.0878],
+        [28.4965, 77.0872],
+        [28.4935, 77.0858],
+        [28.4890, 77.0835],
+        [28.4840, 77.0815],
+        [28.4800, 77.0800]
+      ];
 
-      ctx.strokeStyle = `rgba(239, 68, 68, ${pulseAlpha})`;
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.arc(vehicleX, vehicleY, pulseRadius, 0, 2 * Math.PI);
-      ctx.stroke();
+      this.routePolyline = L.polyline(routeCoordinates, {
+        color: '#EF4444',
+        weight: 4,
+        opacity: 0.85,
+        dashArray: '6, 8',
+        lineCap: 'round'
+      }).addTo(this.leafletMap);
 
-      // Red Outer Circle
-      ctx.fillStyle = '#EF4444';
-      ctx.beginPath();
-      ctx.arc(vehicleX, vehicleY, 15, 0, 2 * Math.PI);
-      ctx.fill();
+      // Add Destination Marker
+      L.marker([28.4800, 77.0800], { icon: destinationIcon })
+        .addTo(this.leafletMap)
+        .bindPopup(`
+          <div class="map-emergency-popup">
+            <strong>Destination</strong>
+            <div class="pop-sub" style="color:#D4A017;">City Centre Mall</div>
+            <div class="pop-coords">MG Road, Gurugram</div>
+          </div>
+        `);
 
-      // White Center Vehicle Icon Dot
-      ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath();
-      ctx.arc(vehicleX, vehicleY, 5, 0, 2 * Math.PI);
-      ctx.fill();
+      // Add Emergency Vehicle Marker with Dynamic Interactive Popup
+      this.vehicleMarker = L.marker([initialLat, initialLng], { icon: emergencyVehicleIcon })
+        .addTo(this.leafletMap)
+        .bindPopup(`
+          <div class="map-emergency-popup">
+            <strong>WideEYE Vehicle</strong>
+            <div class="pop-sub">Live Emergency Location</div>
+            <div class="pop-coords" id="popup-gps-coords">${initialLat.toFixed(4)}° N, ${initialLng.toFixed(4)}° E</div>
+            <div class="pop-speed" id="popup-vehicle-speed">Speed: ${this.currentLocation.speed}</div>
+          </div>
+        `);
 
-      // Marker Label
-      ctx.font = 'bold 11px "Space Grotesk", sans-serif';
-      ctx.fillStyle = '#EF4444';
-      ctx.fillText('EMERGENCY VEHICLE HERE', vehicleX - 65, vehicleY - 24);
+      // Open vehicle popup initially
+      this.vehicleMarker.openPopup();
 
-      if (this.state === 'SOS_ACTIVE') {
-        requestAnimationFrame(renderMap);
-      }
-    };
+      // Ensure geometry calculation across initial render ticks
+      [50, 150, 300, 600, 1200].forEach(delay => {
+        setTimeout(() => {
+          if (this.leafletMap) {
+            this.leafletMap.invalidateSize();
+          }
+        }, delay);
+      });
 
-    renderMap();
+    } catch (err) {
+      console.error('Failed to initialize Leaflet emergency map:', err);
+      if (fallbackEl) fallbackEl.classList.remove('hidden');
+    }
+  }
+
+  // Single Source of Truth Location & Telemetry Updater
+  updateCurrentLocation(lat, lng, speed) {
+    this.currentLocation.lat = lat;
+    this.currentLocation.lng = lng;
+    if (speed) this.currentLocation.speed = speed;
+
+    this.data.coordinates.lat = lat;
+    this.data.coordinates.lng = lng;
+    this.data.speed = this.currentLocation.speed;
+
+    // 1. Update Marker Position
+    if (this.vehicleMarker) {
+      this.vehicleMarker.setLatLng([lat, lng]);
+    }
+
+    // 2. Update Interactive Popup Content
+    const popupCoords = document.getElementById('popup-gps-coords');
+    const popupSpeed = document.getElementById('popup-vehicle-speed');
+    if (popupCoords) popupCoords.textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+    if (popupSpeed) popupSpeed.textContent = `Speed: ${this.currentLocation.speed}`;
+
+    // 3. Update In-Map Live Vehicle Chip
+    if (this.dom.inmapVehicleSpeed) {
+      this.dom.inmapVehicleSpeed.textContent = this.currentLocation.speed;
+    }
+
+    // 4. Update Bottom Floating GPS Card
+    if (this.dom.gpsCoordText) {
+      this.dom.gpsCoordText.textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+    }
+    if (this.dom.speedText) {
+      this.dom.speedText.textContent = this.currentLocation.speed;
+    }
+    if (this.dom.locationHeartbeatTime) {
+      const now = new Date();
+      this.dom.locationHeartbeatTime.textContent = `● Location sharing active · Updated ${now.toTimeString().split(' ')[0]}`;
+    }
   }
 
   startLocationHeartbeat() {
     if (this.locationHeartbeatInterval) clearInterval(this.locationHeartbeatInterval);
+
+    let stepIndex = 0;
+    const waypoints = [
+      { lat: 28.4986, lng: 77.0878, speed: '34 km/h' },
+      { lat: 28.4975, lng: 77.0875, speed: '32 km/h' },
+      { lat: 28.4960, lng: 77.0870, speed: '30 km/h' },
+      { lat: 28.4948, lng: 77.0864, speed: '28 km/h' },
+      { lat: 28.4935, lng: 77.0858, speed: '25 km/h' },
+      { lat: 28.4945, lng: 77.0862, speed: '29 km/h' },
+      { lat: 28.4965, lng: 77.0871, speed: '33 km/h' }
+    ];
     
     this.locationHeartbeatInterval = setInterval(() => {
       if (this.state !== 'SOS_ACTIVE') return;
 
-      // Subtle realistic coordinate jitter to simulate live GPS tracking
-      const latJitter = (Math.random() - 0.5) * 0.0002;
-      const lngJitter = (Math.random() - 0.5) * 0.0002;
-      const currentLat = (this.data.coordinates.lat + latJitter).toFixed(4);
-      const currentLng = (this.data.coordinates.lng + lngJitter).toFixed(4);
+      stepIndex = (stepIndex + 1) % waypoints.length;
+      const wp = waypoints[stepIndex];
 
-      if (this.dom.gpsCoordText) {
-        this.dom.gpsCoordText.textContent = `${currentLat}° N, ${currentLng}° E`;
-      }
-      if (this.dom.locationHeartbeatTime) {
-        const now = new Date();
-        this.dom.locationHeartbeatTime.textContent = `Updated ${now.toTimeString().split(' ')[0]}`;
-      }
-    }, 4000);
+      // Subtle natural GPS jitter
+      const latJitter = (Math.random() - 0.5) * 0.00008;
+      const lngJitter = (Math.random() - 0.5) * 0.00008;
+      const currentLat = Number((wp.lat + latJitter).toFixed(4));
+      const currentLng = Number((wp.lng + lngJitter).toFixed(4));
+
+      this.updateCurrentLocation(currentLat, currentLng, wp.speed);
+    }, 3500);
   }
 
   // 4. EMERGENCY ACTIONS

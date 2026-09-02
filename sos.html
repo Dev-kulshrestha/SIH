@@ -13,6 +13,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
+  <!-- Leaflet Map CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -84,7 +88,7 @@
         </div>
       </div>
 
-      <!-- 2. LIVE EMERGENCY MAP WITH PULSING RED MARKER -->
+      <!-- 2. LIVE EMERGENCY MAP WITH REAL OPENSTREETMAP LEAFLET MAP -->
       <div class="emergency-map-card">
         <div class="map-card-header">
           <div class="map-title-group">
@@ -97,8 +101,32 @@
         </div>
 
         <div class="emergency-canvas-wrapper">
-          <canvas id="emergency-map-canvas" width="800" height="420" class="emergency-map-canvas"></canvas>
+          <!-- Real Leaflet Map Container -->
+          <div id="emergency-map" class="emergency-leaflet-map"></div>
           
+          <!-- Top-Left Live Location Badge -->
+          <div class="map-live-tag">
+            <span class="pulse-red-dot"></span>
+            <span>● LIVE LOCATION</span>
+          </div>
+
+          <!-- Top-Right Live Vehicle Speed Overlay -->
+          <div class="map-live-vehicle-chip">
+            <span class="pulse-lemon-dot"></span>
+            <span>LIVE VEHICLE · <strong id="inmap-vehicle-speed" style="color:var(--lemon-yellow);">34 km/h</strong></span>
+          </div>
+
+          <!-- In-Map Error Fallback Card (Hidden unless tile loading fails) -->
+          <div id="emergency-map-fallback" class="map-fallback-overlay hidden">
+            <i data-lucide="map-pin-off" style="width:36px; height:36px; color:#EF4444;"></i>
+            <div class="map-fallback-kicker">MAP UNAVAILABLE</div>
+            <div class="map-fallback-text">Unable to load live map tiles.</div>
+            <button class="btn btn-secondary btn-sm" onclick="window.emergencyCenter.initEmergencyMap()">
+              <i data-lucide="rotate-ccw"></i>
+              <span>Retry Map</span>
+            </button>
+          </div>
+
           <!-- Floating Map Telemetry Overlay -->
           <div class="map-floating-telemetry">
             <div class="map-tel-item">
